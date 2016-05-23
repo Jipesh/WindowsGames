@@ -4,15 +4,14 @@ import java.awt.Image;
 
 public class Obstacle {
 private final Game game;
-private final int x, y; 
-private final Image[] skins = new Image[8];	
-private int skin;
-	public Obstacle(int skin, int x, int y, Game game) {
+private final Image obstacle;
+private int x, y; 
+	public Obstacle(int x, int y, Game game) {
 		this.game = game;
-		skin = 0;
 		this.x = x;
 		this.y = y;
-		skins[0] = game.getSpirite(0, 0);
+		this.obstacle = game.getSprite(0, 0);
+		
 	}
 	/**
 	 * @return the x
@@ -28,7 +27,7 @@ private int skin;
 	}
 	
 	public Image getImage(){
-		return skins[skin];
+		return obstacle;
 	}
 
 }

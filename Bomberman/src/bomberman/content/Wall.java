@@ -3,12 +3,12 @@ package bomberman.content;
 import java.awt.Image;
 
 public class Wall {
-private final int x, y;
 private final Image wall;
+private int x, y;
 	public Wall(int x, int y, Game game) {
 		this.x = x;
 		this.y= y;
-		wall = game.getSpirite(2, 0);
+		this.wall = game.getSprite(2, 0);
 	}
 	/**
 	 * @return the x

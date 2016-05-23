@@ -172,4 +172,5 @@ public class Game {
 	Obstacle getSqrs(int x) {
 		return obstacles.get(x);
 	}
+	
 }

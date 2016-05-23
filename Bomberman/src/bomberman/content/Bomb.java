@@ -1,13 +1,19 @@
 package bomberman.content;
 
+import java.awt.Image;
+
 public class Bomb {
+private final Game game;
+private final Image bomb;
 private int x, y, duration, size;
 
-	public Bomb(int x, int y, int dur, int size) {
+	public Bomb(int x, int y, int dur, int size, Game game) {
+		this.game = game;
 		this.x = x;
 		this.y = y;
 		this.duration = dur;
 		this.size = size;
+		this.bomb = game.getSprite(0, 3);
 	}
 
 	/**
@@ -37,11 +43,9 @@ private int x, y, duration, size;
 	public int getSize() {
 		return size;
 	}
-	private final class Explosion{
-		
-		private Explosion(int x, int y, int size, Game game){
-			
-		}
-		
+	
+	public Image getImage(){
+		return bomb;
 	}
+
 }
