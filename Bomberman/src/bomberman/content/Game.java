@@ -55,7 +55,7 @@ public class Game extends JFrame {
 			}
 		}
 		//TO DO: Better method to add player
-		Player temp = new Player(0,40,40,this); //for starting stage only
+		Player temp = new Player(1,40,40,this); //for starting stage only
 		users.add(new Thread(temp));
 		players.add(temp);
 		addKeyListener(temp);
@@ -64,12 +64,11 @@ public class Game extends JFrame {
 		setVisible(true);
 		setSize((19*40),(13*40 +10));
 		setResizable(false);
-		int fps = 60;
+		int fps = 50;
 		double timePerTick = 1e9 / fps;
 		double delta = 0;
 		long now;
 		long lastTime = System.nanoTime();
-
 		while (true) { // the main loop
 
 			now = System.nanoTime();
@@ -81,7 +80,6 @@ public class Game extends JFrame {
 			}
 		}
 	}
-	 
 
 	private void looper() {
 		players.get(0).play();
@@ -148,8 +146,7 @@ public class Game extends JFrame {
 	//partial check
 		boolean checkColision(Player p){
 			for(Wall wall : walls){
-				if(p.getX() >= wall.getX() && p.getX() <= (wall.getX()+40) && p.getY() >= wall.getY() && p.getY() <= (wall.getY() + 40) ){
-					System.out.println(true);
+				if(wall.getBoundingBox().checkCollision(p.getBoundingBox())){
 					return true;
 				}
 			}

@@ -5,91 +5,102 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class Player implements KeyListener, Runnable{
-private final Game game; 
-private final Image[][] skins = new Image[4][4];
+private final Game game;
+private final BoundingBox box;
+private final Image[][] skins = new Image[4][2];
 private boolean leftPressed, rightPressed, upPressed, downPressed;
-private int x, y, bombs, speed, explosion_size, skin, running; 
-	public Player(int character, int x, int y, Game game) {
+private int bombs, explosion_size, skin, running; 
+private double speed;	
+public Player(int character, int x, int y, Game game) {
 		super();
 		this.game = game;
-		this.x = x;
-		this.y = y;
 		this.bombs = 1;
-		this.speed = 1;
+		this.speed = 3;
 		this.explosion_size = 1;
+		this.box = new BoundingBox(x,y,36,36);
 		skin = 0;
 		running = 0;
-		setSkins(character);
+		//setSkins(character);
 	}
 	
 	private void setSkins(int character){
 		if(character == 1){
 			for(int i = 0 ; i < 2 ; i++){
 				for(int j = 0 ; j < 4 ; j++){
-					skins[j][i] = game.getSprite(j, ++i);
+					skins[j][0] = game.getSprite(j, ++i);
 				}
 			}
 		}
+	}
+	
+	public void moveUp(){
+		if(box.getY() > 40)
+		box.moveY(1, -speed);
+	}
+	
+	public void moveDown(){
+		if(box.getY() < (11*40))
+		box.moveY(1,speed);
+	}
+	
+	public void moveLeft(){
+		if(box.getX() > 40)
+		box.moveX(1,-speed);
+	}
+	
+	public void moveRight(){
+		if((box.getX() < (17*40))) 
+		box.moveX(1,speed);
 	}
 	
 	public void play(){
 		running = 1;
 		if(leftPressed){
 			skin = 2;
-			if((--x >= 40) && !game.checkColision(this)){
-				setX(--x);
-			}else{
-				setX(++x);
+			moveLeft();
+			if(game.checkColision(this)){
+				box.setX(getX() + speed);
 			}
-		}else if(rightPressed){
+			game.checkColision(this);
+		}
+		if(rightPressed){
 			skin = 3;
-			if(++x <= (40*17) && !game.checkColision(this)){
-				setX(++x);
-			}else{
-				setX(--x);
+			moveRight();
+			if(game.checkColision(this)){
+				box.setX(getX() - speed);
 			}
-		}else if(upPressed){
+			game.checkColision(this);
+		}
+		if(upPressed){
 			skin = 2;
-			if(--y >= 40 && !game.checkColision(this)){
-				setY(--y);
-			}else{
-				setY(++y);
+			moveUp();
+			if(game.checkColision(this)){
+				box.setY(getY() + speed);
 			}
-		}else if(downPressed){
-				skin = 1;
-			if(++y <= (40*11) && !game.checkColision(this)){
-				setY(++y);
-			}else{
-				setY(--y);
+		}
+		if(downPressed){
+			skin = 1;
+			moveDown();
+			if(game.checkColision(this)){
+				box.setY(getY() - speed);
 			}
+			game.checkColision(this);
 		}
 	}
 	/**
 	 * @return the x
 	 */
 	public int getX() {
-		return x;
+		return box.getX();
 	}
-	/**
-	 * @param x the x to set
-	 */
-	public void setX(int x) {
-		x *= speed;
-		this.x = x;
-	}
+
 	/**
 	 * @return the y
 	 */
 	public int getY() {
-		return y;
+		return box.getY();
 	}
-	/**
-	 * @param y the y to set
-	 */
-	public void setY(int y) {
-		y *= speed;
-		this.y = y;
-	}
+	
 	/**
 	 * @return the bombs
 	 */
@@ -105,7 +116,7 @@ private int x, y, bombs, speed, explosion_size, skin, running;
 	/**
 	 * @return the speed
 	 */
-	public int getSpeed() {
+	public double getSpeed() {
 		return speed;
 	}
 	/**
@@ -133,18 +144,22 @@ private int x, y, bombs, speed, explosion_size, skin, running;
 
 	@Override
 	public void run() {
-		
+		play();
+	}
+	
+	public BoundingBox getBoundingBox(){
+		return box;
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_LEFT){
 			leftPressed = true;
-		}else if(e.getKeyCode() == KeyEvent.VK_RIGHT){
+		}if(e.getKeyCode() == KeyEvent.VK_RIGHT){
 			rightPressed = true;
-		}else if(e.getKeyCode() == KeyEvent.VK_UP){
+		}if(e.getKeyCode() == KeyEvent.VK_UP){
 			upPressed = true;
-		}else if(e.getKeyCode() == KeyEvent.VK_DOWN){
+		}if(e.getKeyCode() == KeyEvent.VK_DOWN){
 			downPressed = true;
 		}
 	}
@@ -154,13 +169,13 @@ private int x, y, bombs, speed, explosion_size, skin, running;
 		if(e.getKeyCode() == KeyEvent.VK_LEFT){
 			leftPressed = false;
 			running = 0;
-		}else if(e.getKeyCode() == KeyEvent.VK_RIGHT){
+		}if(e.getKeyCode() == KeyEvent.VK_RIGHT){
 			rightPressed = false;
 			running = 0;
-		}else if(e.getKeyCode() == KeyEvent.VK_UP){
+		}if(e.getKeyCode() == KeyEvent.VK_UP){
 			upPressed = false;
 			running = 0;
-		}else if(e.getKeyCode() == KeyEvent.VK_DOWN){
+		}if(e.getKeyCode() == KeyEvent.VK_DOWN){
 			downPressed = false;
 			running = 0;
 		}
