@@ -32,7 +32,7 @@ public class GameGUI extends JPanel implements ActionListener {
 		this.add(reset);
 		reset.setFocusable(false);
 		try {
-			rocket = ImageIO.read(getClass().getResource("Images/rocket.png"));
+			rocket = ImageIO.read(getClass().getResource("images/rocket.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
