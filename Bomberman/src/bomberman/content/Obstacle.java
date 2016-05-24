@@ -6,7 +6,15 @@ public class Obstacle {
 private final Game game;
 private final BoundingBox box;
 private final Image obstacle;
-private int x, y; 
+private int x, y;
+
+	/**
+	 * set up all the fields
+	 * 
+	 * @param x the x position of the obstacle on the map
+	 * @param y the y position of the obstacle on the map
+	 * @param game the game which the obstacle is used in
+	 */
 	public Obstacle(int x, int y, Game game) {
 		this.game = game;
 		this.x = x;
@@ -27,10 +35,18 @@ private int x, y;
 		return y;
 	}
 	
+	/**
+	 * 
+	 * @return the obstacle sprite
+	 */
 	public Image getImage(){
 		return obstacle;
 	}
 	
+	/**
+	 * 
+	 * @return the bounding box of the obstacle
+	 */
 	public BoundingBox getBoundingBox(){
 		return box;
 	}

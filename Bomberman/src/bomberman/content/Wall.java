@@ -5,6 +5,13 @@ import java.awt.Image;
 public class Wall {
 private final BoundingBox box;
 private final Image wall;
+
+	/**
+	 * 
+	 * @param x the x position
+	 * @param y the y position
+	 * @param game the game it is used in
+	 */
 	public Wall(int x, int y, Game game) {
 		this.wall = game.getSprite(2, 0);
 		this.box = new BoundingBox(x,y,40,40);

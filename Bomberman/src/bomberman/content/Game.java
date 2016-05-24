@@ -26,6 +26,7 @@ public class Game extends JFrame {
 	private List<Bomb> bombs = new ArrayList<>();
 	private List<PowerUp> specials = new ArrayList<>();
 	private List<Thread> users = new ArrayList<>();
+
 	public Game() {
 		super("BomberMan");
 		try {
@@ -33,37 +34,55 @@ public class Game extends JFrame {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		};
+		}
+		;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		init();
 	}
 
+	/**
+	 * initiate method which set up the battlefield with the brick
+	 * wall(Obstacle) and walls, Battle field array represent the map in terms
+	 * of each block. whereby the battlefield is 17 * 11 (width * height)
+	 */
 	private void init() {
 		for (int i = 0; i < 11; i++) {
 			for (int j = 0; j < 17; j++) {
 				if (j % 2 == 1 && i % 2 == 1 && (i != 0 || i != 16)) {
 					BATTLE_FIELD[i][j] = 1;
-					walls.add(new Wall(((j+1)*40),((i+1)*40),this));
+					walls.add(new Wall(((j + 1) * 40), ((i + 1) * 40), this));
+
+					/*
+					 * j+1 and i+1 because it should not be placed at the border
+					 */
+
 				} else if (!((i <= 1 || i >= 9) && (j <= 1 || j >= 15))) {
 					Random rnd = new Random();
 					int x = rnd.nextInt(3);
-					if (x == 1 || x == 2) {
+					if (x == 1 || x == 2) { // fill up as many spaces as
+											// possible
 						BATTLE_FIELD[i][j] = 2;
-						obstacles.add(new Obstacle(((j+1)*40),((i+1)*40), this));
+						obstacles.add(new Obstacle(((j + 1) * 40), ((i + 1) * 40), this));
 					}
 				}
 			}
 		}
-		//TO DO: Better method to add player
-		Player temp = new Player(1,40,40,this); //for starting stage only
+
+		// TO DO: Better method to add player
+		Player temp = new Player(1, 40, 40, this); // for starting stage only
 		users.add(new Thread(temp));
 		players.add(temp);
 		addKeyListener(temp);
 		gui = new GameGraphics(this);
 		add(gui);
 		setVisible(true);
-		setSize((19*40),(13*40 +10));
+		setSize((19 * 40), (13 * 40 + 10));
 		setResizable(false);
+
+		/*
+		 * fps method which makes the refresh rate constant for all types of PC
+		 * fast or slow
+		 */
 		int fps = 60;
 		double timePerTick = 1e9 / fps;
 		double delta = 0;
@@ -85,19 +104,19 @@ public class Game extends JFrame {
 		players.get(0).play();
 		gui.repaint();
 	}
-	
-	/**
-	 * @return the BATTLE_FIELD
-	 */
-	public int[][] getBATTLE_FIELD() {
-		return BATTLE_FIELD;
-	}
 
 	/**
-	 * @return the spirite_sheet
+	 * frees up the exact value in the array by setting it to zero which means
+	 * empty space
+	 * 
+	 * @param x
+	 *            the x position
+	 * @param y
+	 *            the y position
+	 * 
 	 */
-	public BufferedImage getSpirite_sheet() {
-		return sprite_sheet;
+	public void makeAvailable(int x, int y) {
+		BATTLE_FIELD[x - 1][y - 1] = 0;
 	}
 
 	/**
@@ -129,37 +148,95 @@ public class Game extends JFrame {
 	}
 
 	/**
-	 * @return the specials
+	 * @return the power-ups
 	 */
 	public List<PowerUp> getSpecials() {
 		return specials;
 	}
-	
-	Image getSprite(int x, int y){
-		return sprite_sheet.getSubimage((x*40), (y*40), 40, 40);
+
+	/**
+	 * returns the exact sprite image using the x position and the multiply by
+	 * block size which is 40 to locate the image x and y coordinate on the
+	 * sprite sheet
+	 * 
+	 * @param x
+	 *            the x position
+	 * @param y
+	 *            the y position
+	 * @return the exact sprite from the sprite sheet
+	 */
+	Image getSprite(int x, int y) {
+		return sprite_sheet.getSubimage((x * 40), (y * 40), 40, 40);
 	}
-	
-	public Image getBorder(){
-		return getSprite(3,0);
-	}
-	
-	void addBomb(Bomb bomb){
-		bombs.add(bomb);
-	}
-	
-	//partial check
-		boolean checkCollision(BoundingBox box){
-			for(Wall wall : walls){
-				if(wall.getBoundingBox().checkCollision(box)){
-					return true;
-				}
-			}
-			for(Obstacle obs : obstacles){
-				if(obs.getBoundingBox().checkCollision(box)){
-					return true;
-				}
-			}
-			return false;
+
+	/**
+	 * checks if it is outside the battlefield, which is true as it collides
+	 * with the borders
+	 * 
+	 * @param x
+	 *            position on first array
+	 * @param y
+	 *            position on second array
+	 * @return true if there is a collision
+	 */
+	boolean wallCollision(int x, int y) {
+		if (x < 1 || y < 1) {
+			return true;
 		}
+		return BATTLE_FIELD[x - 1][y - 1] == 1;
+	}
+
+	/**
+	 * 
+	 * @return the border sprite
+	 */
+	public Image getBorder() {
+		return getSprite(3, 0);
+	}
+
+	/**
+	 * checks to make sure the position is valid if so adds the bomb to the list
+	 * and updates map
+	 * 
+	 * @param bomb
+	 *            the bomb to add to the list
+	 */
+	void addBomb(Bomb bomb) {
+		if (checkAvailability(bomb.getX(),bomb.getY())) {
+			bombs.add(bomb);
+			BATTLE_FIELD[bomb.getX() - 1][bomb.getY() - 1] = 3;
+		}
+	}
+
+	/**
+	 * A method to check if the x and y position are available on the map
+	 * 
+	 * @param x
+	 *            the x value on first array
+	 * @param y
+	 *            the y value on second array
+	 * @return if the area is empty space
+	 */
+	boolean checkAvailability(int x, int y) {
+		if (BATTLE_FIELD[x - 1][y - 1] == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	// partial check
+	boolean checkCollision(BoundingBox box) {
+		for (Wall wall : walls) {
+			if (wall.getBoundingBox().checkCollision(box)) {
+				return true;
+			}
+		}
+		for (Obstacle obs : obstacles) {
+			if (obs.getBoundingBox().checkCollision(box)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }
