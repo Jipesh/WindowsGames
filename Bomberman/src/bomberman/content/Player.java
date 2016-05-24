@@ -15,7 +15,7 @@ public Player(int character, int x, int y, Game game) {
 		super();
 		this.game = game;
 		this.bombs = 1;
-		this.speed = 7;
+		this.speed = 2;
 		this.explosion_size = 1;
 		this.box = new BoundingBox(x,y,36,36);
 		skin = 0;
