@@ -143,6 +143,10 @@ public class Game extends JFrame {
 		return getSprite(3,0);
 	}
 	
+	void addBomb(Bomb bomb){
+		bombs.add(bomb);
+	}
+	
 	//partial check
 		boolean checkCollision(BoundingBox box){
 			for(Wall wall : walls){

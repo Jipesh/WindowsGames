@@ -95,6 +95,14 @@ public Player(int character, int x, int y, Game game) {
 			game.checkCollision(this.box);
 		}
 	}
+	
+	public void plantBomb(){
+		int x = (getX()+box.getWidth()) / 2;
+			x = x/40; //to make sure it is within a block
+		int y = (getY()+box.getHeight()) / 2;
+			y = y/40;
+		game.addBomb(new Bomb(x,y,4,explosion_size,game)); //collision check needs to be added
+	}
 	/**
 	 * @return the x
 	 */
