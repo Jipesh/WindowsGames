@@ -15,76 +15,84 @@ public Player(int character, int x, int y, Game game) {
 		super();
 		this.game = game;
 		this.bombs = 1;
-		this.speed = 3;
+		this.speed = 7;
 		this.explosion_size = 1;
 		this.box = new BoundingBox(x,y,36,36);
 		skin = 0;
 		running = 0;
-		//setSkins(character);
+		setSkins(character);
 	}
 	
 	private void setSkins(int character){
 		if(character == 1){
 			for(int i = 0 ; i < 2 ; i++){
 				for(int j = 0 ; j < 4 ; j++){
-					skins[j][0] = game.getSprite(j, ++i);
+					int running = i + 1;
+					skins[j][i] = game.getSprite(j, running);
 				}
 			}
 		}
 	}
 	
+	/**
+	 * allows player to move up and changes the current skin of the player
+	 */
 	public void moveUp(){
+		skin = 1;
 		if(box.getY() > 40)
 		box.moveY(1, -speed);
 	}
 	
 	public void moveDown(){
+		skin = 0;
 		if(box.getY() < (11*40))
 		box.moveY(1,speed);
 	}
 	
 	public void moveLeft(){
+		skin = 2;
 		if(box.getX() > 40)
 		box.moveX(1,-speed);
 	}
 	
 	public void moveRight(){
+		skin = 3;
 		if((box.getX() < (17*40))) 
 		box.moveX(1,speed);
 	}
 	
 	public void play(){
-		running = 1;
+		
 		if(leftPressed){
 			skin = 2;
 			moveLeft();
-			if(game.checkColision(this)){
-				box.setX(getX() + speed);
+			if(game.checkCollision(this.box)){
+				box.moveX(1,speed);
 			}
-			game.checkColision(this);
+			game.checkCollision(this.box);
 		}
-		if(rightPressed){
-			skin = 3;
-			moveRight();
-			if(game.checkColision(this)){
-				box.setX(getX() - speed);
-			}
-			game.checkColision(this);
-		}
-		if(upPressed){
+		else if(rightPressed){
 			skin = 2;
+			moveRight();
+			if(game.checkCollision(this.box)){
+				box.moveX(1,-speed);
+			}
+			game.checkCollision(this.box);
+		}
+		else if(upPressed){
+			skin = 3;
 			moveUp();
-			if(game.checkColision(this)){
-				box.setY(getY() + speed);
+			if(game.checkCollision(this.box)){
+				box.moveY(1, speed);
 			}
 		}
-		if(downPressed){
+		else if(downPressed){
 			skin = 1;
 			moveDown();
-			if(game.checkColision(this)){
-				box.setY(getY() - speed);
+			if(game.checkCollision(this.box)){
+				box.moveY(1,-speed);
 			}
-			game.checkColision(this);
+			game.checkCollision(this.box);
 		}
 	}
 	/**
@@ -128,18 +136,18 @@ public Player(int character, int x, int y, Game game) {
 	/**
 	 * @return the explostion_size
 	 */
-	public int getExplostion_size() {
+	public int getExplosion_size() {
 		return explosion_size;
 	}
 	/**
 	 * @param explostion_size the explostion_size to set
 	 */
-	public void setExplostion_size(int explostion_size) {
-		this.explosion_size = explostion_size;
+	public void setExplostion_size(int explosion_size) {
+		this.explosion_size = explosion_size;
 	}
 	
 	public Image getImage(){
-		return game.getSprite(0, 1);
+		return skins[skin][running];
 	}
 
 	@Override
@@ -155,12 +163,16 @@ public Player(int character, int x, int y, Game game) {
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_LEFT){
 			leftPressed = true;
+			running = 1;
 		}if(e.getKeyCode() == KeyEvent.VK_RIGHT){
 			rightPressed = true;
+			running = 1;
 		}if(e.getKeyCode() == KeyEvent.VK_UP){
 			upPressed = true;
+			running = 1;
 		}if(e.getKeyCode() == KeyEvent.VK_DOWN){
 			downPressed = true;
+			running = 1;
 		}
 	}
 

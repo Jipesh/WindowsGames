@@ -64,7 +64,7 @@ public class Game extends JFrame {
 		setVisible(true);
 		setSize((19*40),(13*40 +10));
 		setResizable(false);
-		int fps = 50;
+		int fps = 60;
 		double timePerTick = 1e9 / fps;
 		double delta = 0;
 		long now;
@@ -144,9 +144,14 @@ public class Game extends JFrame {
 	}
 	
 	//partial check
-		boolean checkColision(Player p){
+		boolean checkCollision(BoundingBox box){
 			for(Wall wall : walls){
-				if(wall.getBoundingBox().checkCollision(p.getBoundingBox())){
+				if(wall.getBoundingBox().checkCollision(box)){
+					return true;
+				}
+			}
+			for(Obstacle obs : obstacles){
+				if(obs.getBoundingBox().checkCollision(box)){
 					return true;
 				}
 			}
