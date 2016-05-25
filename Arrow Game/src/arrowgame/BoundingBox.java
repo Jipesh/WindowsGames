@@ -9,7 +9,7 @@ import java.awt.Rectangle;
 public class BoundingBox {
 	private final int width, height;
 	private int x, y;
-		public BoundingBox(int x, int y, int height, int width) {
+		public BoundingBox(int x, int y, int width, int height) {
 			this.x = x;
 			this.y = y;
 			this.width = width;

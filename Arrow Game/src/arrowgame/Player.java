@@ -27,7 +27,7 @@ public class Player extends Entity implements KeyListener, Runnable {
 		super(g);
 		this.x = x;
 		this.y = y;
-		super.setBoundingBox(new BoundingBox(x, y, 32, 62));
+		super.setBoundingBox(new BoundingBox(x, y, 35, 62));
 		score = 0;
 	}
 
