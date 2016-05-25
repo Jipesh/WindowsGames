@@ -58,13 +58,15 @@ public class GameGraphics extends JPanel {
 					Bomb bomb = bombs.next();
 					if (bomb.hasDetonated()) {
 						g.drawImage(player.getImage(), player.getX(), player.getY(), null);
+						g.drawImage(bomb.getImage(), (bomb.getX() * 40), (bomb.getY() * 40), null);
 							for(ExplosionFlame exp : bomb.getExplostions()){
 								BoundingBox box = exp.getExplostionBox();
 								g.drawImage(exp.getImage(), (box.getX()*40), (box.getY()*40), null);
 							}
+						if(bomb.delete()){
 							game.makeAvailable(bomb.getX(), bomb.getY());
 							bombs.remove();
-						g.drawImage(bomb.getImage(), (bomb.getX() * 40), (bomb.getY() * 40), null);
+						}
 					} else {
 						g.drawImage(bomb.getImage(), (bomb.getX() * 40), (bomb.getY() * 40), null);
 						g.drawImage(player.getImage(), player.getX(), player.getY(), null);

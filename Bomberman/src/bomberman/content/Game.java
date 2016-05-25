@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import bomberman.gui.GameGraphics;
 
 public class Game extends JFrame {
-	private final int[][] BATTLE_FIELD = new int[11][17];
+	private final int[][] BATTLE_FIELD = new int[17][11];
 	private JPanel gui;
 	private BufferedImage sprite_sheet;
 	private List<Wall> walls = new ArrayList<>();
@@ -49,7 +49,7 @@ public class Game extends JFrame {
 		for (int i = 0; i < 11; i++) {
 			for (int j = 0; j < 17; j++) {
 				if (j % 2 == 1 && i % 2 == 1 && (i != 0 || i != 16)) {
-					BATTLE_FIELD[i][j] = 1;
+					BATTLE_FIELD[j][i] = 1;
 					walls.add(new Wall(((j + 1) * 40), ((i + 1) * 40), this));
 
 					/*
@@ -61,7 +61,7 @@ public class Game extends JFrame {
 					int x = rnd.nextInt(3);
 					if (x == 1 || x == 2) { // fill up as many spaces as
 											// possible
-						BATTLE_FIELD[i][j] = 2;
+						BATTLE_FIELD[j][i] = 2;
 						obstacles.add(new Obstacle(((j + 1) * 40), ((i + 1) * 40), this));
 					}
 				}
@@ -170,23 +170,6 @@ public class Game extends JFrame {
 	}
 
 	/**
-	 * checks if it is outside the battlefield, which is true as it collides
-	 * with the borders
-	 * 
-	 * @param x
-	 *            position on first array
-	 * @param y
-	 *            position on second array
-	 * @return true if there is a collision
-	 */
-	boolean wallCollision(int x, int y) {
-		if (x < 1 || y < 1) {
-			return true;
-		}
-		return BATTLE_FIELD[x - 1][y - 1] == 1;
-	}
-
-	/**
 	 * 
 	 * @return the border sprite
 	 */
@@ -218,12 +201,30 @@ public class Game extends JFrame {
 	 * @return if the area is empty space
 	 */
 	boolean checkAvailability(int x, int y) {
-		if (BATTLE_FIELD[x - 1][y - 1] == 0) {
+		if(x - 1 < 0 || y - 1 < 0){
+			return false;
+		}
+		else if (BATTLE_FIELD[x - 1][y - 1] == 0) {
 			return true;
 		}
 		return false;
 	}
-
+	
+	/**
+	 * checks to see it's a valid value then return value which exist within the map
+	 * at that x and y position
+	 * 
+	 * @param x the x position on the map
+	 * @param y the y position on the map
+	 * @return the value with that x and y on the map
+	 */
+	int checkMap(int x, int y){
+		if(x - 1 < 0 || y - 1 < 0){
+			return -1;
+		}
+		return BATTLE_FIELD[x-1][y-1];
+	}
+	
 	// partial check
 	boolean checkCollision(BoundingBox box) {
 		for (Wall wall : walls) {
