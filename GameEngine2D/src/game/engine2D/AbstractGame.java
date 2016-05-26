@@ -8,16 +8,19 @@ import java.awt.image.RasterFormatException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 public abstract class AbstractGame {
 	private final List<Screen> screens;
-	private final List<Thread> threads;
 	private boolean running;
 	private JFrame window;
 	private BufferedImage sprite_sheet;
+	private List<Thread> threads;
+	private Timer gameTimer;
 
 	/**
 	 * makes a new window for the game and instantiate the lists
@@ -33,11 +36,11 @@ public abstract class AbstractGame {
 	 */
 	public AbstractGame(String title, int width, int height, boolean resizable) {
 		this.window = new JFrame(title);
-		window.setSize(width, height);
-		window.setResizable(resizable);
-		screens = new ArrayList<>();
-		threads = new ArrayList<>();
-		init();
+		this.window.setSize(width, height);
+		this.window.setResizable(resizable);
+		this.screens = new ArrayList<>();
+		this.threads = new ArrayList<>();
+		this.gameTimer = new Timer();
 	}
 
 	/**
@@ -74,24 +77,10 @@ public abstract class AbstractGame {
 	/**
 	 * The main loop which runs at a constant 60 fps
 	 */
-	public void start() {
+	public void start(int fps) {
 		window.setVisible(true);
 		running = true;
-		int fps = 60; // the refresh rate
-		double timePerTick = 1e9 / fps;
-		double delta = 0;
-		long now;
-		long lastTime = System.nanoTime();
-		while (running) {
-
-			now = System.nanoTime();
-			delta += (now - lastTime) / timePerTick;
-			lastTime = now;
-			if (delta >= 1) {
-				gameLoop();
-				delta--;
-			}
-		}
+		gameTimer.scheduleAtFixedRate(new GameTimer(), 0, 1000/fps);
 	}
 
 	/**
@@ -115,30 +104,19 @@ public abstract class AbstractGame {
 	public void addThread(Thread thread) {
 		threads.add(thread);
 	}
-	
-	/**
-	 * 
-	 * @param screen the Screen to add to the list
-	 */
+
 	public void addScreen(Screen screen) {
 		screens.add(screen);
 	}
 
-	/**
-	 * 
-	 * @param index of the screen to set content pane too
-	 */
 	public void setScreen(int index) {
 		try {
 			window.setContentPane(screens.get(index));
 		} catch (IndexOutOfBoundsException e) {
-			System.err.println("INVALID INDEX");
+			System.err.println("invalid index");
 		}
 	}
 
-	/**
-	 * The method to set up game and its component 
-	 */
 	public abstract void init();
 
 	public abstract void gameLoop();
@@ -151,17 +129,10 @@ public abstract class AbstractGame {
 		window.setMaximumSize(new Dimension(width, height));
 	}
 
-	/**
-	 * 
-	 * @return the amount of screen preset in the game
-	 */
 	public int getScreenCount() {
 		return screens.size();
 	}
 
-	/**
-	 * stops the while loop
-	 */
 	public void pause() {
 		running = false;
 		onPause();
@@ -171,21 +142,28 @@ public abstract class AbstractGame {
 		return window;
 	}
 
-	/**
-	 * a method which is run when game is paused
-	 */
 	public abstract void onPause();
 
 	public void addKeyListener(KeyListener listener) {
 		window.addKeyListener(listener);
 	}
 	
-	/**
-	 * 
-	 * @param operation when closing the JFrame
-	 */
 	public void setDefaultCloseOperation(int operation){
 		window.setDefaultCloseOperation(operation);
 	}
+	
+	public BufferedImage getSpriteSheet(){
+		return sprite_sheet;
+	}
+	
+	private class GameTimer extends TimerTask{
+
+		@Override
+		public void run() {
+			gameLoop();
+		}
+		
+	}
+	
 
 }
