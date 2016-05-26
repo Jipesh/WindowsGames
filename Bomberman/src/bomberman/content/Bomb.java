@@ -7,20 +7,22 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Bomb {
+import game.engine2D.BoundingBox;
+import game.engine2D.Entity;
+
+public class Bomb extends Entity{
 	private final Game game;
 	private final Image bomb[] = new Image[3];
 	private int skin;
 	private boolean delete = false;
 	private boolean detonated = false;
-	private int x, y, duration, size;
+	private int duration, size;
 	private int timmer;
 	private List<ExplosionFlame> explosions = new ArrayList<>();
 
 	public Bomb(int x, int y, int dur, int size, Game game) {
+		super(x,y,40,40,game);
 		this.game = game;
-		this.x = x;
-		this.y = y;
 		this.timmer = dur;
 		this.size = 1;
 		skin = 0;
@@ -63,6 +65,8 @@ public class Bomb {
 	 */
 	public void detonate() {
 		detonated = true;
+		int x = getX();
+		int y = getY();
 		int left = 1;
 		int right = 1;
 		int up = 1;
@@ -74,7 +78,8 @@ public class Bomb {
 				left = -1;
 			}
 			if (right != -1) {
-				left = addExplostion(x, y, true, right, 1); 
+				left = addExplostion(x, y, true, right, 1);
+				System.out.println(x+"\t"+y);
 			}else{
 				right = -1;
 			}
@@ -138,6 +143,7 @@ public class Bomb {
 				direction = -1;
 			}
 		}
+		System.out.println(direction);
 		return direction;
 	}
 
@@ -172,20 +178,6 @@ public class Bomb {
 			return explosions;
 		}
 		return null;
-	}
-
-	/**
-	 * @return the x
-	 */
-	public int getX() {
-		return x;
-	}
-
-	/**
-	 * @return the y
-	 */
-	public int getY() {
-		return y;
 	}
 
 	/**
@@ -229,6 +221,14 @@ public class Bomb {
 		public Image getImage() {
 			return bomb[2];
 		}
+		
+		public String toString(){
+			return explosion_box.getX()+"\\s\t\\s"+explosion_box.getY();
+		}
+	}
+	
+	public String toString(){
+		return getX()+"\\s\t\\s"+getY();
 	}
 
 }

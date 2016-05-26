@@ -2,8 +2,10 @@ package bomberman.content;
 
 import java.awt.Image;
 
-public class Wall {
-private final BoundingBox box;
+import game.engine2D.BoundingBox;
+import game.engine2D.Entity;
+
+public class Wall extends Entity{
 private final Image wall;
 
 	/**
@@ -13,28 +15,13 @@ private final Image wall;
 	 * @param game the game it is used in
 	 */
 	public Wall(int x, int y, Game game) {
+		super(x,y,40,40,game);
 		this.wall = game.getSprite(2, 0);
-		this.box = new BoundingBox(x,y,40,40);
-	}
-	/**
-	 * @return the x
-	 */
-	public int getX() {
-		return box.getX();
-	}
-	/**
-	 * @return the y
-	 */
-	public int getY() {
-		return box.getY();
 	}
 	
 	public Image getImage(){
 		return wall;
 	}
 	
-	public BoundingBox getBoundingBox(){
-		return box;
-	}
 
 }

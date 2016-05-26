@@ -2,43 +2,46 @@ package bomberman.gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.LayoutManager;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import bomberman.content.Bomb;
 import bomberman.content.Bomb.ExplosionFlame;
-import bomberman.content.BoundingBox;
+import game.engine2D.BoundingBox;
 import bomberman.content.Game;
 import bomberman.content.Obstacle;
 import bomberman.content.Player;
 import bomberman.content.PowerUp;
 import bomberman.content.Wall;
+import game.engine2D.Screen;
 
-public class GameGraphics extends JPanel {
-	private final Game game;
-
+public class GameGraphics extends Screen{
+private Image background;
+	
 	public GameGraphics(Game game) {
-		this.game = game;
+		super(game);
+		try {
+			background = ImageIO.read(getClass().getResourceAsStream("/bomberman/resources/background.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
+
 
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		g.setColor(Color.DARK_GRAY);
-		g.fillRect(0, 0, (19 * 40), (13 * 40));
+		Game game = (Game) getGame();
 
-		for (int i = 0; i < 19; i++) {
-			g.drawImage(game.getBorder(), (i * 40), 0, null);
-			g.drawImage(game.getBorder(), (i * 40), (12 * 40), null);
-		}
-
-		for (int i = 1; i < 13; i++) {
-			g.drawImage(game.getBorder(), 0, (i * 40), null);
-			g.drawImage(game.getBorder(), (18 * 40), (i * 40), null);
-		}
-
+		g.drawImage(background, 0,0,null);
 		for (Wall wall : game.getWalls()) {
 			g.drawImage(wall.getImage(), wall.getX(), wall.getY(), null);
 		}

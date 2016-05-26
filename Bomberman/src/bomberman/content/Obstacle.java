@@ -2,11 +2,10 @@ package bomberman.content;
 
 import java.awt.Image;
 
-public class Obstacle {
-private final Game game;
-private final BoundingBox box;
+import game.engine2D.Entity;
+
+public class Obstacle extends Entity{
 private final Image obstacle;
-private int x, y;
 
 	/**
 	 * set up all the fields
@@ -16,23 +15,8 @@ private int x, y;
 	 * @param game the game which the obstacle is used in
 	 */
 	public Obstacle(int x, int y, Game game) {
-		this.game = game;
-		this.x = x;
-		this.y = y;
+		super(x,y,40,40,game);
 		this.obstacle = game.getSprite(0, 0);
-		this.box = new BoundingBox(x,y,40,40);
-	}
-	/**
-	 * @return the x
-	 */
-	public int getX() {
-		return x;
-	}
-	/**
-	 * @return the y
-	 */
-	public int getY() {
-		return y;
 	}
 	
 	/**
@@ -41,14 +25,6 @@ private int x, y;
 	 */
 	public Image getImage(){
 		return obstacle;
-	}
-	
-	/**
-	 * 
-	 * @return the bounding box of the obstacle
-	 */
-	public BoundingBox getBoundingBox(){
-		return box;
 	}
 
 }

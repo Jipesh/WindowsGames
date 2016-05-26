@@ -4,9 +4,10 @@ import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class Player implements KeyListener, Runnable {
+import game.engine2D.Entity;
+
+public class Player extends Entity implements KeyListener, Runnable {
 	private final Game game;
-	private final BoundingBox box;
 	private final Image[][] skins = new Image[4][2];
 	private boolean leftPressed, rightPressed, upPressed, downPressed, spacePressed;
 	private int bombs, explosion_size, skin, running;
@@ -33,11 +34,11 @@ public class Player implements KeyListener, Runnable {
 	 *      BoundingBox(x,y,width,height)
 	 */
 	public Player(int character, int x, int y, Game game) {
+		super(x,y,36,36,game);
 		this.game = game;
 		this.bombs = 1;
 		this.speed = 2;
 		this.explosion_size = 1;
-		this.box = new BoundingBox(x, y, 36, 36);
 		skin = 0;
 		running = 0;
 		setSkins(character);
@@ -74,23 +75,23 @@ public class Player implements KeyListener, Runnable {
 	 * @see BoundingBox#moveX(int, double) moveX(original, multiplaier)
 	 */
 	public void moveUp() {
-		if (box.getY() > 40)
-			box.moveY(1, -speed);
+		if (getY() > 40)
+			getBoundingBox().moveY(1, -speed);
 	}
 
 	public void moveDown() {
-		if (box.getY() < (11 * 40))
-			box.moveY(1, speed);
+		if (getY() < (11 * 40))
+			getBoundingBox().moveY(1, speed);
 	}
 
 	public void moveLeft() {
-		if (box.getX() > 40)
-			box.moveX(1, -speed);
+		if (getX() > 40)
+			getBoundingBox().moveX(1, -speed);
 	}
 
 	public void moveRight() {
-		if ((box.getX() < (17 * 40)))
-			box.moveX(1, speed);
+		if ((getX() < (17 * 40)))
+			getBoundingBox().moveX(1, speed);
 	}
 
 	/**
@@ -102,34 +103,34 @@ public class Player implements KeyListener, Runnable {
 	 * 
 	 */
 	public void play() {
-
+		
 		if (leftPressed) {
 			skin = 2;
 			moveLeft();
-			if (game.checkCollision(this.box)) {
+			if (game.checkCollision(getBoundingBox())) {
 				moveRight();
 			}
-			game.checkCollision(this.box);
+			game.checkCollision(getBoundingBox());
 		} else if (rightPressed) {
 			skin = 3;
 			moveRight();
-			if (game.checkCollision(this.box)) {
+			if (game.checkCollision(getBoundingBox())) {
 				moveLeft();
 			}
-			game.checkCollision(this.box);
+			game.checkCollision(getBoundingBox());
 		} else if (upPressed) {
 			skin = 1;
 			moveUp();
-			if (game.checkCollision(this.box)) {
+			if (game.checkCollision(getBoundingBox())) {
 				moveDown();
 			}
 		} else if (downPressed) {
 			skin = 0;
 			moveDown();
-			if (game.checkCollision(this.box)) {
+			if (game.checkCollision(getBoundingBox())) {
 				moveUp();
 			}
-			game.checkCollision(this.box);
+			game.checkCollision(getBoundingBox());
 		} else if (spacePressed) {
 			plantBomb();
 		}
@@ -150,34 +151,6 @@ public class Player implements KeyListener, Runnable {
 		int y = middleY / 40;
 		new Bomb(x, y, 4, explosion_size, game); // collision check needs to be
 													// added
-	}
-
-	/**
-	 * @return the width of the box
-	 */
-	private int getWidth() {
-		return box.getWidth();
-	}
-
-	/**
-	 * @return the width of the box
-	 */
-	private int getHeight() {
-		return box.getHeight();
-	}
-
-	/**
-	 * @return the x position of the box
-	 */
-	public int getX() {
-		return box.getX();
-	}
-
-	/**
-	 * @return the y position of the box
-	 */
-	public int getY() {
-		return box.getY();
 	}
 
 	/**
@@ -248,9 +221,6 @@ public class Player implements KeyListener, Runnable {
 		play();
 	}
 
-	public BoundingBox getBoundingBox() {
-		return box;
-	}
 
 	@Override
 	/**

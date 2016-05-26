@@ -1,51 +1,48 @@
 package bomberman.content;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import bomberman.gui.GameGraphics;
+import game.engine2D.AbstractGame;
+import game.engine2D.BoundingBox;
+import game.engine2D.Screen;
 
-public class Game extends JFrame {
+public class Game extends AbstractGame{
 	private final int[][] BATTLE_FIELD = new int[17][11];
-	private JPanel gui;
+	private final Image border;
 	private BufferedImage sprite_sheet;
+	private boolean gameover;
+	private Player player1;
+	private Screen gui;
 	private List<Wall> walls = new ArrayList<>();
 	private List<Obstacle> obstacles = new ArrayList<>();
 	private List<Player> players = new ArrayList<>();
 	private List<Bomb> bombs = new ArrayList<>();
 	private List<PowerUp> specials = new ArrayList<>();
-	private List<Thread> users = new ArrayList<>();
 
 	public Game() {
-		super("BomberMan");
+		super("BomberMan",775, 558,true);
 		try {
 			sprite_sheet = ImageIO.read(getClass().getResource("/bomberman/resources/spirites.png"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		;
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.border = getSprite(3,0);
 		init();
 	}
-
+	
+	@Override
 	/**
 	 * initiate method which set up the battlefield with the brick
 	 * wall(Obstacle) and walls, Battle field array represent the map in terms
 	 * of each block. whereby the battlefield is 17 * 11 (width * height)
 	 */
-	private void init() {
+	public void init() {
 		for (int i = 0; i < 11; i++) {
 			for (int j = 0; j < 17; j++) {
 				if (j % 2 == 1 && i % 2 == 1 && (i != 0 || i != 16)) {
@@ -69,40 +66,23 @@ public class Game extends JFrame {
 		}
 
 		// TO DO: Better method to add player
-		Player temp = new Player(1, 40, 40, this); // for starting stage only
-		users.add(new Thread(temp));
-		players.add(temp);
-		addKeyListener(temp);
+		player1 = new Player(1, 40, 40, this); // for starting stage only
+		addThread(new Thread(player1));
+		players.add(player1);
+		addKeyListener(player1);
 		gui = new GameGraphics(this);
-		add(gui);
-		setVisible(true);
-		setSize((19 * 40), (13 * 40 + 10));
-		setResizable(false);
-
-		/*
-		 * fps method which makes the refresh rate constant for all types of PC
-		 * fast or slow
-		 */
-		int fps = 60;
-		double timePerTick = 1e9 / fps;
-		double delta = 0;
-		long now;
-		long lastTime = System.nanoTime();
-		while (true) { // the main loop
-
-			now = System.nanoTime();
-			delta += (now - lastTime) / timePerTick;
-			lastTime = now;
-			if (delta >= 1) {
-				looper();
-				delta--;
-			}
-		}
+		addScreen(gui);
+		setScreen(0);
+		gameover = false;
+		start();
 	}
-
-	private void looper() {
-		players.get(0).play();
-		gui.repaint();
+	
+	@Override
+	public void gameLoop() {
+		if(!gameover){
+			run();
+			gui.repaint();
+		}
 	}
 
 	/**
@@ -174,7 +154,7 @@ public class Game extends JFrame {
 	 * @return the border sprite
 	 */
 	public Image getBorder() {
-		return getSprite(3, 0);
+		return border;
 	}
 
 	/**
@@ -201,7 +181,7 @@ public class Game extends JFrame {
 	 * @return if the area is empty space
 	 */
 	boolean checkAvailability(int x, int y) {
-		if(x - 1 < 0 || y - 1 < 0){
+		if(x - 1 < 0 || y - 1 < 0 || x - 1 > 16 || y - 1 > 10){
 			return false;
 		}
 		else if (BATTLE_FIELD[x - 1][y - 1] == 0) {
@@ -219,7 +199,7 @@ public class Game extends JFrame {
 	 * @return the value with that x and y on the map
 	 */
 	int checkMap(int x, int y){
-		if(x - 1 < 0 || y - 1 < 0){
+		if(x - 1 < 0 || y - 1 < 0 || x - 1 > 16 || y - 1 > 10 ){
 			return -1;
 		}
 		return BATTLE_FIELD[x-1][y-1];
@@ -238,6 +218,12 @@ public class Game extends JFrame {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
