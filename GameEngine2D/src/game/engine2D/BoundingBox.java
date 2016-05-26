@@ -46,14 +46,6 @@ public class BoundingBox {
 	}
 
 	/**
-	 * @param x
-	 *            the x to set
-	 */
-	public void setX(double x) {
-		this.x = (int) x;
-	}
-
-	/**
 	 * @param width the width to set
 	 */
 	public void setWidth(int width) {
@@ -66,6 +58,25 @@ public class BoundingBox {
 	public void setHeight(int height) {
 		this.height = height;
 	}
+	
+	/**
+	 * 
+	 * @param x
+	 *            the x to set
+	 */
+	public void setX(double x) {
+		this.x = (int) x;
+	}
+	
+	/**
+	 * set the x to an exact coordinate using a block size and offset
+	 * 
+	 * @param x
+	 *            the x to set
+	 */
+	public void setX(int block, int offset) {
+		this.x *= block + offset;
+	}
 
 	/**
 	 * @param y
@@ -73,6 +84,14 @@ public class BoundingBox {
 	 */
 	public void setY(double y) {
 		this.y = (int) y;
+	}
+	
+	/**
+	 * @param y
+	 *            the y to set
+	 */
+	public void setY(int block, int offset) {
+		this.y *= block + offset;
 	}
 	
 	/**
@@ -88,8 +107,8 @@ public class BoundingBox {
 	 * @param ofset the offset for the block
 	 * @return the exact x position using the block size and offset 
 	 */
-	public int getX(int block,int ofset){
-		return (x*block)+ofset;
+	public int getX(int block,int offset){
+		return (x*block)+offset;
 	}
 	
 	/**
@@ -98,8 +117,8 @@ public class BoundingBox {
 	 * @param ofset the offset for the block
 	 * @return the exact y position using the block size and offset 
 	 */
-	public int getY(int block, int ofset){
-		return (y*block)+ofset;
+	public int getY(int block, int offset){
+		return (y*block)+offset;
 	}
 
 	/**

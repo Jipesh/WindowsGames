@@ -1,6 +1,7 @@
 package game.engine2D;
 
 import java.awt.Graphics;
+import java.awt.LayoutManager;
 
 import javax.swing.JPanel;
 
@@ -9,7 +10,10 @@ private AbstractGame game;
 	
 	public Screen(AbstractGame game) {
 		this.game = game;
-		this.setLayout(null);
+	}
+	
+	public void setLayout(LayoutManager manager){
+		this.setLayout(manager);
 	}
 	
 	public AbstractGame getGame(){

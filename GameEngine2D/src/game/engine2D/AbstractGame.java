@@ -14,10 +14,10 @@ import javax.swing.JFrame;
 
 public abstract class AbstractGame {
 	private final List<Screen> screens;
+	private final List<Thread> threads;
 	private boolean running;
 	private JFrame window;
 	private BufferedImage sprite_sheet;
-	private List<Thread> threads;
 
 	/**
 	 * makes a new window for the game and instantiate the lists
@@ -37,6 +37,7 @@ public abstract class AbstractGame {
 		window.setResizable(resizable);
 		screens = new ArrayList<>();
 		threads = new ArrayList<>();
+		init();
 	}
 
 	/**
@@ -114,19 +115,30 @@ public abstract class AbstractGame {
 	public void addThread(Thread thread) {
 		threads.add(thread);
 	}
-
+	
+	/**
+	 * 
+	 * @param screen the Screen to add to the list
+	 */
 	public void addScreen(Screen screen) {
 		screens.add(screen);
 	}
 
+	/**
+	 * 
+	 * @param index of the screen to set content pane too
+	 */
 	public void setScreen(int index) {
 		try {
 			window.setContentPane(screens.get(index));
 		} catch (IndexOutOfBoundsException e) {
-			System.err.println("invalid index");
+			System.err.println("INVALID INDEX");
 		}
 	}
 
+	/**
+	 * The method to set up game and its component 
+	 */
 	public abstract void init();
 
 	public abstract void gameLoop();
@@ -139,10 +151,17 @@ public abstract class AbstractGame {
 		window.setMaximumSize(new Dimension(width, height));
 	}
 
+	/**
+	 * 
+	 * @return the amount of screen preset in the game
+	 */
 	public int getScreenCount() {
 		return screens.size();
 	}
 
+	/**
+	 * stops the while loop
+	 */
 	public void pause() {
 		running = false;
 		onPause();
@@ -152,10 +171,21 @@ public abstract class AbstractGame {
 		return window;
 	}
 
+	/**
+	 * a method which is run when game is paused
+	 */
 	public abstract void onPause();
 
 	public void addKeyListener(KeyListener listener) {
 		window.addKeyListener(listener);
+	}
+	
+	/**
+	 * 
+	 * @param operation when closing the JFrame
+	 */
+	public void setDefaultCloseOperation(int operation){
+		window.setDefaultCloseOperation(operation);
 	}
 
 }
