@@ -19,5 +19,4 @@ private AbstractGame game;
 	public AbstractGame getGame(){
 		return game;
 	}
-
 }
