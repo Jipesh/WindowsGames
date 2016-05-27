@@ -6,6 +6,7 @@ import game.engine2D.Entity;
 
 public class Obstacle extends Entity{
 private final Image obstacle;
+private final int id;
 
 	/**
 	 * set up all the fields
@@ -14,8 +15,9 @@ private final Image obstacle;
 	 * @param y the y position of the obstacle on the map
 	 * @param game the game which the obstacle is used in
 	 */
-	public Obstacle(int x, int y, Game game) {
+	public Obstacle(int index, int x, int y, Game game) {
 		super(x,y,40,40,game);
+		this.id = index;
 		this.obstacle = game.getSprite(0, 0);
 	}
 	
@@ -25,6 +27,14 @@ private final Image obstacle;
 	 */
 	public Image getImage(){
 		return obstacle;
+	}
+	
+	public int getID(){
+		return id;
+	}
+	
+	public String toString(){
+		return ""+id;
 	}
 
 }

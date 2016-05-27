@@ -4,35 +4,41 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+
 import javax.imageio.ImageIO;
 import bomberman.gui.GameGraphics;
 import game.engine2D.AbstractGame;
 import game.engine2D.BoundingBox;
+import game.engine2D.Entity;
 import game.engine2D.Screen;
 
 public class Game extends AbstractGame{
 	private final int[][] BATTLE_FIELD = new int[17][11];
 	private final Image border;
+	private final HashMap<String, Entity> entiteys;
+	private final List<Player> players = new ArrayList<>();
+	private final List<PowerUp> specials = new ArrayList<>();
+	private final List<Wall> walls = new ArrayList<>();
+	private final List<Obstacle> obstacles = new ArrayList<>();
+	private final List<Bomb> bombs = new ArrayList<>();
 	private BufferedImage sprite_sheet;
 	private boolean gameover;
 	private Player player1;
 	private Screen gui;
-	private List<Wall> walls = new ArrayList<>();
-	private List<Obstacle> obstacles = new ArrayList<>();
-	private List<Player> players = new ArrayList<>();
-	private List<Bomb> bombs = new ArrayList<>();
-	private List<PowerUp> specials = new ArrayList<>();
 
 	public Game() {
-		super("BomberMan",775, 558,true);
+		super("BomberMan",775, 558,false);
 		try {
-			sprite_sheet = ImageIO.read(getClass().getResource("/bomberman/resources/spirites.png"));
+			sprite_sheet = ImageIO.read(getClass().getResource("/bomberman/resources/sprite_sheet.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		this.border = getSprite(3,0);
+		this.entiteys = new HashMap<>();
 		init();
 	}
 	
@@ -43,11 +49,13 @@ public class Game extends AbstractGame{
 	 * of each block. whereby the battlefield is 17 * 11 (width * height)
 	 */
 	public void init() {
+		int index = 0;
 		for (int i = 0; i < 11; i++) {
 			for (int j = 0; j < 17; j++) {
 				if (j % 2 == 1 && i % 2 == 1 && (i != 0 || i != 16)) {
 					BATTLE_FIELD[j][i] = 1;
-					walls.add(new Wall(((j + 1) * 40), ((i + 1) * 40), this));
+					Wall wall = new Wall(((j + 1) * 40), ((i + 1) * 40), this);
+					walls.add(wall);
 
 					/*
 					 * j+1 and i+1 because it should not be placed at the border
@@ -59,7 +67,9 @@ public class Game extends AbstractGame{
 					if (x == 1 || x == 2) { // fill up as many spaces as
 											// possible
 						BATTLE_FIELD[j][i] = 2;
-						obstacles.add(new Obstacle(((j + 1) * 40), ((i + 1) * 40), this));
+						Obstacle obs = new Obstacle(index++,((j + 1) * 40), ((i + 1) * 40), this);
+						obstacles.add(obs);
+						entiteys.put(j+"x"+i+"y", obs);
 					}
 				}
 			}
@@ -74,7 +84,7 @@ public class Game extends AbstractGame{
 		addScreen(gui);
 		setScreen(0);
 		gameover = false;
-		start();
+		start(60);
 	}
 	
 	@Override
@@ -134,6 +144,21 @@ public class Game extends AbstractGame{
 		return specials;
 	}
 
+	/**
+	 * returns the exact sprite image using the x position and the multiply by
+	 * block size which is 40 to locate the image x and y coordinate on the
+	 * sprite sheet
+	 * 
+	 * @param x
+	 *            the x position
+	 * @param y
+	 *            the y position
+	 * @return the exact sprite from the sprite sheet
+	 */
+	public Image getSprite(int x, int y, int width, int height) {
+		return sprite_sheet.getSubimage((x * 40), (y * 40), width, height);
+	}
+	
 	/**
 	 * returns the exact sprite image using the x position and the multiply by
 	 * block size which is 40 to locate the image x and y coordinate on the
@@ -214,10 +239,27 @@ public class Game extends AbstractGame{
 		}
 		for (Obstacle obs : obstacles) {
 			if (obs.getBoundingBox().checkCollision(box)) {
+				System.out.println(obs+"obsb");
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	public Entity getEntity(String key){
+		return entiteys.get(key);
+	}
+	
+	public Set<String> getKeys(){
+		return entiteys.keySet();
+	}
+	
+	public void removeEntity(int x, int y){
+		entiteys.remove(x+"x"+y+"y");
+	}
+	
+	public void removeObstacle(int index){
+		obstacles.remove(index);
 	}
 
 	@Override

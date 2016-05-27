@@ -18,6 +18,7 @@ public class Bomb extends Entity{
 	private boolean detonated = false;
 	private int duration, size;
 	private int timmer;
+	private Timer countdown;
 	private List<ExplosionFlame> explosions = new ArrayList<>();
 
 	public Bomb(int x, int y, int dur, int size, Game game) {
@@ -30,7 +31,7 @@ public class Bomb extends Entity{
 		game.addBomb(this);
 
 		if (game.getBombs().contains(this)) {
-			Timer countdown = new Timer();
+			countdown = new Timer();
 			countdown.scheduleAtFixedRate(new TimerTask() {
 
 				@Override
@@ -64,6 +65,7 @@ public class Bomb extends Entity{
 	 * @see Bomb#addExplostion(int, int, boolean, int, int) addExplostion(x, y, horizontal, amount, direction)
 	 */
 	public void detonate() {
+		countdown.cancel();
 		detonated = true;
 		int x = getX();
 		int y = getY();
@@ -79,7 +81,6 @@ public class Bomb extends Entity{
 			}
 			if (right != -1) {
 				left = addExplostion(x, y, true, right, 1);
-				System.out.println(x+"\t"+y);
 			}else{
 				right = -1;
 			}
@@ -121,12 +122,16 @@ public class Bomb extends Entity{
 				if (game.checkAvailability(x + ((direction*amount)), y)) {
 					explosions.add(exp);
 					amount += 1;
-				} else if (game.checkMap(x+(direction*amount), y) == 2) {
+				}else if (game.checkMap(x+(direction*amount), y) == 2) {
 					destroyObstacle(x+(direction*amount), y);
 					game.makeAvailable(x+(direction*amount), y);
 					explosions.add(exp);
 					amount = -1;
-				} else {
+				}else if (game.checkMap(x+(direction*amount), y) == 3) {
+					//detonateBomb(x+(direction*amount), y);
+					explosions.add(exp);
+					amount = -1; 
+				}else {
 					amount = -1;
 				}
 		}else{
@@ -134,16 +139,19 @@ public class Bomb extends Entity{
 			if (game.checkAvailability(x, y+(direction*amount))) {
 				explosions.add(exp);
 				direction += 1;
-			} else if (game.checkMap(x, y+(direction*amount)) == 2) {
+			}else if (game.checkMap(x, y+(direction*amount)) == 2) {
 				destroyObstacle(x, y+(direction*amount));
 				game.makeAvailable(x, y+(direction*amount));
 				explosions.add(exp);
 				direction = -1;
-			} else {
+			}else if (game.checkMap(x+(direction*amount), y) == 3) {
+				//detonateBomb(x+(direction*amount), y);
+				explosions.add(exp);
+				amount = -1; 
+			}else {
 				direction = -1;
 			}
 		}
-		System.out.println(direction);
 		return direction;
 	}
 
@@ -155,12 +163,19 @@ public class Bomb extends Entity{
 	 * @param y the y position of the wall on the map
 	 */
 	public void destroyObstacle(int x, int y) {
-		Iterator<Obstacle> obstacles = game.getObstacles().iterator();
-		while (obstacles.hasNext()) {
-			Obstacle obs = obstacles.next();
-			if (obs.getX() / 40 == x && obs.getY() / 40 == y) {
-				obstacles.remove();
-				return;
+		int xPos = x-1;
+		int yPos = y-1;
+		Obstacle obs = (Obstacle) game.getEntity(xPos+"x"+yPos+"y");
+		game.getObstacles().remove(obs);
+		System.out.println(game.getObstacles().size());
+		System.out.println(obs +"\t"+ xPos+"\t"+yPos);
+		game.removeEntity(x-1, y-1);
+	}
+	
+	public void detonateBomb(int x, int y){
+		for(Bomb bomb : game.getBombs()){
+			if(bomb.getX() == x && bomb.getY() == y){
+				bomb.detonate();
 			}
 		}
 	}

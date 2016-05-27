@@ -7,6 +7,7 @@ import java.awt.LayoutManager;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
@@ -22,9 +23,9 @@ import bomberman.content.PowerUp;
 import bomberman.content.Wall;
 import game.engine2D.Screen;
 
-public class GameGraphics extends Screen{
-private Image background;
-	
+public class GameGraphics extends Screen {
+	private Image background;
+
 	public GameGraphics(Game game) {
 		super(game);
 		try {
@@ -35,24 +36,24 @@ private Image background;
 		}
 	}
 
-
 	@Override
-	public void paint(Graphics g) {
+	public void paint(Graphics g) throws ConcurrentModificationException{
 		super.paint(g);
 		Game game = (Game) getGame();
 
-		g.drawImage(background, 0,0,null);
-		for (Wall wall : game.getWalls()) {
-			g.drawImage(wall.getImage(), wall.getX(), wall.getY(), null);
-		}
-		for (Obstacle obs : game.getObstacles()) {
-			g.drawImage(obs.getImage(), obs.getX(), obs.getY(), null);
-		}
-		if (!(game.getSpecials().isEmpty())) {
-			for (PowerUp power : game.getSpecials()) {
-				g.drawImage(power.getImage(), (power.getX() * 40), (power.getY() * 40), null);
+		g.drawImage(background, 0, 0, null);
+
+		/*for (String key : game.getKeys()) {
+			if (game.getEntity(key) instanceof Obstacle) {
+				Obstacle obs = (Obstacle) game.getEntity(key);
+				g.drawImage(obs.getImage(), obs.getX(), obs.getY(), null);
 			}
 		}
+		*/
+		for(Obstacle obs : game.getObstacles()){
+			g.drawImage(obs.getImage(), obs.getX(), obs.getY(), null);
+		}
+
 		for (Player player : game.getPlayers()) {
 			if (!(game.getBombs().isEmpty())) {
 				Iterator<Bomb> bombs = game.getBombs().iterator();
@@ -62,11 +63,11 @@ private Image background;
 					if (bomb.hasDetonated()) {
 						g.drawImage(player.getImage(), player.getX(), player.getY(), null);
 						g.drawImage(bomb.getImage(), (bomb.getX() * 40), (bomb.getY() * 40), null);
-							for(ExplosionFlame exp : bomb.getExplostions()){
-								BoundingBox box = exp.getExplostionBox();
-								g.drawImage(exp.getImage(), (box.getX()*40), (box.getY()*40), null);
-							}
-						if(bomb.delete()){
+						for (ExplosionFlame exp : bomb.getExplostions()) {
+							BoundingBox box = exp.getExplostionBox();
+							g.drawImage(exp.getImage(), (box.getX() * 40), (box.getY() * 40), null);
+						}
+						if (bomb.delete()) {
 							game.makeAvailable(bomb.getX(), bomb.getY());
 							bombs.remove();
 						}

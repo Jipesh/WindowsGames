@@ -34,7 +34,7 @@ public class Player extends Entity implements KeyListener, Runnable {
 	 *      BoundingBox(x,y,width,height)
 	 */
 	public Player(int character, int x, int y, Game game) {
-		super(x,y,36,36,game);
+		super(x+4,y+6,32,36,game);
 		this.game = game;
 		this.bombs = 1;
 		this.speed = 2;
@@ -59,7 +59,7 @@ public class Player extends Entity implements KeyListener, Runnable {
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < 4; j++) {
 					int running = i + 1;
-					skins[j][i] = game.getSprite(j, running);
+					skins[j][i] = game.getSprite(j, running, 36, 36);
 				}
 			}
 		}
