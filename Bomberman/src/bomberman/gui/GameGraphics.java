@@ -37,47 +37,55 @@ public class GameGraphics extends Screen {
 	}
 
 	@Override
-	public void paint(Graphics g) throws ConcurrentModificationException{
+	public void paint(Graphics g){
 		super.paint(g);
 		Game game = (Game) getGame();
 
-		g.drawImage(background, 0, 0, null);
-
-		/*for (String key : game.getKeys()) {
-			if (game.getEntity(key) instanceof Obstacle) {
-				Obstacle obs = (Obstacle) game.getEntity(key);
-				g.drawImage(obs.getImage(), obs.getX(), obs.getY(), null);
+		if (game.gameOver()) {
+			if(game.getPlayers().get(0).getCharacter() == 1) {
+				g.drawString("Player 1 Wins", 775 / 2, 558 / 2);
+			}else if(game.getPlayers().get(0).getCharacter() == 2){
+				g.drawString("Player 2 Wins", 775 / 2, 558 / 2);
 			}
-		}
-		*/
-		for(Obstacle obs : game.getObstacles()){
-			g.drawImage(obs.getImage(), obs.getX(), obs.getY(), null);
-		}
 
-		for (Player player : game.getPlayers()) {
-			if (!(game.getBombs().isEmpty())) {
-				Iterator<Bomb> bombs = game.getBombs().iterator();
-				while (bombs.hasNext()) {
-					// TODO : add explosion check here
-					Bomb bomb = bombs.next();
-					if (bomb.hasDetonated()) {
-						g.drawImage(player.getImage(), player.getX(), player.getY(), null);
-						g.drawImage(bomb.getImage(), (bomb.getX() * 40), (bomb.getY() * 40), null);
-						for (ExplosionFlame exp : bomb.getExplostions()) {
-							BoundingBox box = exp.getExplostionBox();
-							g.drawImage(exp.getImage(), (box.getX() * 40), (box.getY() * 40), null);
-						}
-						if (bomb.delete()) {
-							game.makeAvailable(bomb.getX(), bomb.getY());
-							bombs.remove();
-						}
-					} else {
-						g.drawImage(bomb.getImage(), (bomb.getX() * 40), (bomb.getY() * 40), null);
-						g.drawImage(player.getImage(), player.getX(), player.getY(), null);
-					}
+		}else {
+			g.drawImage(background, 0, 0, null);
+
+			Iterator<Obstacle> obstacles = game.getObstacles().iterator();
+			while(obstacles.hasNext()){
+				try{
+				Obstacle obs = obstacles.next();
+				g.drawImage(obs.getImage(), obs.getX(), obs.getY(), null);
+				}catch(ConcurrentModificationException e){
+					//TODO: do something with it 
 				}
-			} else {
-				g.drawImage(player.getImage(), player.getX(), player.getY(), null);
+			}
+
+			for (Player player : game.getPlayers()) {
+				if (!(game.getBombs().isEmpty())) {
+					Iterator<Bomb> bombs = game.getBombs().iterator();
+					while (bombs.hasNext()) {
+						// TODO : add explosion check here
+						Bomb bomb = bombs.next();
+						if (bomb.hasDetonated()) {
+							g.drawImage(player.getImage(), player.getX(), player.getY() - 6, null);
+							g.drawImage(bomb.getImage(), bomb.getX(), bomb.getY(), null);
+							for (ExplosionFlame exp : bomb.getExplostions()) {
+								BoundingBox box = exp.getExplostionBox();
+								g.drawImage(exp.getImage(), box.getX(), box.getY(), null);
+							}
+							if (bomb.delete()) {
+								game.makeAvailable(bomb.getX()/40, bomb.getY()/40);
+								bombs.remove();
+							}
+						} else {
+							g.drawImage(bomb.getImage(), bomb.getX(), bomb.getY(), null);
+							g.drawImage(player.getImage(), player.getX(), player.getY() - 6, null);
+						}
+					}
+				} else {
+					g.drawImage(player.getImage(), player.getX(), player.getY() - 6, null);
+				}
 			}
 		}
 	}

@@ -5,11 +5,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
+
+import bomberman.content.Bomb.ExplosionFlame;
 import bomberman.gui.GameGraphics;
 import game.engine2D.AbstractGame;
 import game.engine2D.BoundingBox;
@@ -26,12 +29,12 @@ public class Game extends AbstractGame{
 	private final List<Obstacle> obstacles = new ArrayList<>();
 	private final List<Bomb> bombs = new ArrayList<>();
 	private BufferedImage sprite_sheet;
-	private boolean gameover;
-	private Player player1;
+	private boolean gameover = false;
+	private Player player1, player2;
 	private Screen gui;
 
 	public Game() {
-		super("BomberMan",775, 558,false);
+		super("BomberMan",775, 558,true);
 		try {
 			sprite_sheet = ImageIO.read(getClass().getResource("/bomberman/resources/sprite_sheet.png"));
 		} catch (IOException e) {
@@ -76,10 +79,7 @@ public class Game extends AbstractGame{
 		}
 
 		// TO DO: Better method to add player
-		player1 = new Player(1, 40, 40, this); // for starting stage only
-		addThread(new Thread(player1));
-		players.add(player1);
-		addKeyListener(player1);
+		addPlayers();
 		gui = new GameGraphics(this);
 		addScreen(gui);
 		setScreen(0);
@@ -87,10 +87,25 @@ public class Game extends AbstractGame{
 		start(60);
 	}
 	
+	public void addPlayers(){
+		player1 = new Player(2, 40, 40, this); // for starting stage only
+		addThread(new Thread(player1));
+		players.add(player1);
+		addKeyListener(player1);
+		player2 = new Player(1, (17*40), 40, this); // for starting stage only
+		addThread(new Thread(player2));
+		players.add(player2);
+		addKeyListener(player2);
+	}
+	
 	@Override
 	public void gameLoop() {
 		if(!gameover){
 			run();
+			if(players.size() == 1){
+				gameover();
+			}
+			checkGameover();
 			gui.repaint();
 		}
 	}
@@ -190,9 +205,20 @@ public class Game extends AbstractGame{
 	 *            the bomb to add to the list
 	 */
 	void addBomb(Bomb bomb) {
-		if (checkAvailability(bomb.getX(),bomb.getY())) {
+		if (checkAvailability((bomb.getX()/40),(bomb.getY()/40))) {
+			System.out.println(true);
 			bombs.add(bomb);
-			BATTLE_FIELD[bomb.getX() - 1][bomb.getY() - 1] = 3;
+			BATTLE_FIELD[(bomb.getX()/40)-1][(bomb.getY()/40)-1] = 3;
+		}
+	}
+	
+	void checkGameover(){
+		for(Bomb bomb : getBombs()){
+			if(bomb.getDetonated()){
+				for(ExplosionFlame exp : bomb.getExplostions()){
+					bomb.playerHit(exp.getExplostionBox().getX(), exp.getExplostionBox().getY());
+				}
+			}
 		}
 	}
 
@@ -230,6 +256,18 @@ public class Game extends AbstractGame{
 		return BATTLE_FIELD[x-1][y-1];
 	}
 	
+	public boolean boundryCollision(Player p, BoundingBox box){
+		BoundingBox playerBox = p.getBoundingBox();
+		if((playerBox.getX() + playerBox.getWidth()) == box.getX() || playerBox.getX() == (box.getX() + box.getWidth())
+				&& (playerBox.getY() + playerBox.getHeight()) >= box.getY() && playerBox.getY() <= (box.getY() + box.getHeight())){
+			return true;
+		}else if((playerBox.getY() + playerBox.getHeight()) == box.getY() || playerBox.getY() == (box.getY() + box.getHeight()) 
+				&& (playerBox.getX() + playerBox.getWidth()) >= box.getX() && playerBox.getX() <= (box.getX() + box.getWidth())){
+					return true;
+		}
+		return false;
+	}
+	
 	// partial check
 	boolean checkCollision(BoundingBox box) {
 		for (Wall wall : walls) {
@@ -239,7 +277,6 @@ public class Game extends AbstractGame{
 		}
 		for (Obstacle obs : obstacles) {
 			if (obs.getBoundingBox().checkCollision(box)) {
-				System.out.println(obs+"obsb");
 				return true;
 			}
 		}
@@ -261,11 +298,20 @@ public class Game extends AbstractGame{
 	public void removeObstacle(int index){
 		obstacles.remove(index);
 	}
+	
+	public void gameover(){
+		gameover = true;
+		pause();
+	}
 
 	@Override
 	public void onPause() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public boolean gameOver(){
+		return gameover;
 	}
 
 }

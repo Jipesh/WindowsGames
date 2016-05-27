@@ -2,30 +2,27 @@ package bomberman.content;
 
 import java.awt.Image;
 
-public class PowerUp {
-private final int x,y;
+import game.engine2D.Entity;
+
+public class PowerUp extends Entity{
+private final int id;
+private Image powerup;
 	
-	public PowerUp(int x, int y) {
-		this.x = x;
-		this.y = y;
+	public PowerUp(final int id, final int x, final int y,final Game game){
+		super(x,y,40,40,game);
+		this.id = id;
 	}
 	
-	public Image getImage(){
+	public void setPower(int id){
+		
+	}
+	
+	public Image getImage(int id){
 		return null; //TODO: Add sprite file to sprite sheet;
 	}
-
-	/**
-	 * @return the x
-	 */
-	public int getX() {
-		return x;
-	}
-
-	/**
-	 * @return the y
-	 */
-	public int getY() {
-		return y;
+	
+	public String toString(){
+		return ""+id;
 	}
 
 }
