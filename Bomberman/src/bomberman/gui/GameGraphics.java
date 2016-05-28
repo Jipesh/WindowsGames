@@ -44,7 +44,6 @@ public class GameGraphics extends Screen {
 	public void paint(Graphics g) {
 		super.paint(g);
 		Game game = (Game) getGame();
-
 		if (game.gameOver()) {
 			if (game.getPlayers().get(0).getCharacter() == 1) {
 				g.drawString("Player 1 Wins", 775 / 2, 558 / 2);
