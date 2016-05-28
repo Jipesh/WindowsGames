@@ -316,7 +316,6 @@ public class Player extends Entity implements Runnable {
 				}
 				game.makeAvailable((power.getX()/40), (power.getY()/40));
 				specials.remove();
-				
 			}
 		}
 	}
