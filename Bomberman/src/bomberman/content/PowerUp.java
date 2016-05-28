@@ -1,3 +1,7 @@
+/**
+ * 
+ * @author Jipesh
+ */
 package bomberman.content;
 
 import java.awt.Image;
@@ -16,6 +20,11 @@ private Image powerup;
 		setPower(id);
 	}
 	
+	/**
+	 * set's the image according to the id
+	 * 
+	 * @param id the id of the power-up
+	 */
 	public void setPower(int id){
 		powerup = game.getSprite(--id, 8);
 	}

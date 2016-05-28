@@ -1,3 +1,7 @@
+/**
+ * 
+ * @author Jipesh
+ */
 package bomberman.content;
 
 import java.awt.Image;
@@ -29,6 +33,10 @@ private final int id;
 		return obstacle;
 	}
 	
+	/**
+	 * 
+	 * @return unique id
+	 */
 	public int getID(){
 		return id;
 	}

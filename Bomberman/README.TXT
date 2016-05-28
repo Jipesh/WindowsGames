@@ -1,19 +1,35 @@
-add the game engine jar to the project to run it on eclipse, since the lib package isn't being pushed for some reason.
+=============================================
+Reference the game engine to the project
 
-Player 2 controls - green and blue costume
+on eclipse:
+
+step 1 : Right click on the project and click on properties
+
+step 2 : Click on java build path remove the game engine if there is a red cross on it
+
+step 3 : click on "Add JARS..."
+
+step 4 : navigate to the lib folder (Bomberman/src/lib) and double click on the game engine jar
+
+step 5 : click apply and close the window now the project should no longer have errors and should be runnable
+
+
+
+=============================================
+Player 2 controls - blue and green costume
 --------------------
-w  =  Up
-s  =  Down
-a  =  Left
-d  =  Right
-m  =  Plant Bomb
+w      =  Up
+s      =  Down
+a  	   =  Left
+d      =  Right
+space  =  Plant Bomb
 
-player 1 controlls - red and blue costume
+player 1 controls - red and blue costume
 --------------------
 Up Arrow     =  Up
 Down Arrow   =  Down
 Left Arrow   =  Left
 Right arrow  =  Right
-Space        =  Plant Bomb
+m            =  Plant Bomb
 
 If you want to run the game you can run it using the bomberman jar file

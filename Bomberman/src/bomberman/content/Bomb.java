@@ -1,3 +1,7 @@
+/**
+ * 
+ * @author Jipesh
+ */
 package bomberman.content;
 
 import java.awt.Image;
@@ -46,14 +50,22 @@ public class Bomb extends Entity {
 					}
 				}
 
-			}, 0, 1000);
+			}, 0, 1000); //4 seconds before detonation
 		}
 	}
 
+	/**
+	 * 
+	 * @return if bomb has detonated
+	 */
 	public boolean hasDetonated() {
 		return detonated;
 	}
 
+	/**
+	 * set the skin profiles by setting it with the corresponding sprite file
+	 * TODO: add running stage 2 skin
+	 */
 	private void setSkin() {
 		for (int i = 0; i < 3; i++) {
 			bomb[i] = game.getSprite(i, 7);
@@ -69,10 +81,12 @@ public class Bomb extends Entity {
 	 *      horizontal, amount, direction)
 	 */
 	public synchronized void detonate() {
-		if (detonated == false) {
+		if (detonated == false) { 	/* to stop bombs from detonating
+									 * which has already detonated
+									 */	
 			detonated = true;
-			int x = (getX() / 40);
-			int y = (getY() / 40);
+			int x = (getX() / 40); //to get the position suitable for array
+			int y = (getY() / 40);	 
 			int left = 1;
 			int right = 1;
 			int up = 1;
@@ -100,6 +114,10 @@ public class Bomb extends Entity {
 				}
 			}
 			skin = 1;
+			
+			/*
+			 * allows the flames to last for a split second
+			 */
 			Timer countdown = new Timer();
 			countdown.schedule(new TimerTask() {
 
@@ -108,7 +126,7 @@ public class Bomb extends Entity {
 					delete = true;
 				}
 
-			}, 1000);
+			}, 500);
 		}
 	}
 
@@ -124,24 +142,26 @@ public class Bomb extends Entity {
 	 *            amount it goes in the direction
 	 * @param the
 	 *            direction it goes at
+	 * @see 
+	 * 			Bomb#detonate() detonate()
 	 * @return
 	 */
 	private int addExplostion(int x, int y, boolean horizontal, int amount, int direction) {
-		if (horizontal) {
-			int xPos = (x + (direction * amount));
+		if (horizontal) { //since only x values will change
+			int xPos = (x + (direction * amount)); //allows the flame depending on the direction and size
 			int yPos = y;
 			ExplosionFlame exp = new ExplosionFlame((xPos * 40), (y * 40), 40, 40);
-			destroyPowerUp(exp.getExplostionBox());
+			destroyPowerUp(exp.getBoundingBox());
 			if (game.checkAvailability(xPos, yPos)) {
 				explosions.add(exp);
-				amount += 1;
+				amount += 1;	//allows the loop to continue
 			} else if (game.checkMap(xPos, yPos) == 2) {
 				destroyObstacle(xPos, yPos);
 				game.makeAvailable(xPos, yPos);
 				explosions.add(exp);
-				amount = -1;
+				amount = -1;	//stops the loop
 			} else if (game.checkMap(xPos, yPos) == 3) {
-				detonateBomb(exp.getExplostionBox());
+				detonateBomb(exp.getBoundingBox());
 				explosions.add(exp);
 				amount = -1;
 			}else {
@@ -151,7 +171,7 @@ public class Bomb extends Entity {
 			int xPos = x;
 			int yPos = (y + (direction * amount));
 			ExplosionFlame exp = new ExplosionFlame((xPos * 40), (yPos * 40), 40, 40);
-			destroyPowerUp(exp.getExplostionBox());
+			destroyPowerUp(exp.getBoundingBox());
 			if (game.checkAvailability(xPos, yPos)) {
 				explosions.add(exp);
 				amount += 1;
@@ -161,7 +181,7 @@ public class Bomb extends Entity {
 				explosions.add(exp);
 				amount = -1;
 			} else if (game.checkMap(xPos, yPos) == 3) {
-				detonateBomb(exp.getExplostionBox());
+				detonateBomb(exp.getBoundingBox());
 				explosions.add(exp);
 				amount = -1;
 			}else {
@@ -171,6 +191,10 @@ public class Bomb extends Entity {
 		return amount;
 	}
 
+	/**
+	 * 
+	 * @param box the bounding box of the ExplosionFlame
+	 */
 	public synchronized void destroyPowerUp(BoundingBox box) {
 		Iterator<PowerUp> specials = game.getSpecials().iterator();
 		while (specials.hasNext()) {
@@ -198,7 +222,7 @@ public class Bomb extends Entity {
 		game.getObstacles().remove(obs);
 		game.removeEntity(x - 1, y - 1);
 		Random rnd = new Random();
-		int num = rnd.nextInt(6) + 1;
+		int num = rnd.nextInt(6) + 1; //random number between 1 to 6
 		PowerUp power = new PowerUp(num, (xPos + 1) * 40, (yPos + 1) * 40, game);
 		game.addSpecials(power);
 	}
@@ -211,6 +235,12 @@ public class Bomb extends Entity {
 		}
 	}
 
+	/**
+	 * iterator iterates though all players and checks if there is a collision between the two entities
+	 * 
+	 * @param x the x position of the explosion flame
+	 * @param y the y position of the explosion flame
+	 */
 	public void playerHit(int x, int y) {
 
 		BoundingBox explosion = new BoundingBox(x, y, 40, 40);
@@ -225,6 +255,9 @@ public class Bomb extends Entity {
 		}
 	}
 
+	/**
+	 * detonates the bomb
+	 */
 	public void detonateNow() {
 		countdown.cancel();
 		detonate();
@@ -238,6 +271,12 @@ public class Bomb extends Entity {
 		return delete;
 	}
 
+	/**
+	 * The method will only return the list of explosion flame if
+	 * the bomb has already detonated
+	 * 
+	 * @return the list of explosions flames list
+	 */
 	public List<ExplosionFlame> getExplostions() {
 		if (detonated) {
 			return explosions;
@@ -259,12 +298,27 @@ public class Bomb extends Entity {
 		return size;
 	}
 
+	/**
+	 * 
+	 * @return the image depending on the skin value
+	 */
 	public Image getImage() {
 		return bomb[skin];
 	}
+	
+	public void updatePlayer(){
+		player.recoverBomb();
+	}
 
-	public class ExplosionFlame {
-		private final BoundingBox explosion_box;
+	public String toString() {
+		return getX() + "\\s\t\\s" + getY();
+	}
+
+	public boolean getDetonated() {
+		return detonated;
+	}
+	
+	public class ExplosionFlame extends Entity{
 
 		/**
 		 * 
@@ -280,11 +334,7 @@ public class Bomb extends Entity {
 		 * @see Bomb#detonate() detonate()
 		 */
 		private ExplosionFlame(int x, int y, int width, int height) {
-			explosion_box = new BoundingBox(x, y, width, height);
-		}
-
-		public BoundingBox getExplostionBox() {
-			return explosion_box;
+			super(x, y, width, height,game);
 		}
 
 		public Image getImage() {
@@ -292,20 +342,8 @@ public class Bomb extends Entity {
 		}
 
 		public String toString() {
-			return explosion_box.getX() + "\\s\t\\s" + explosion_box.getY();
+			return this.getX() + "\\s\t\\s" + this.getY();
 		}
-	}
-	
-	public void updatePlayer(){
-		player.recoverBomb();
-	}
-
-	public String toString() {
-		return getX() + "\\s\t\\s" + getY();
-	}
-
-	public boolean getDetonated() {
-		return detonated;
 	}
 
 }

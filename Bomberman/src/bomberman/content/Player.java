@@ -1,3 +1,7 @@
+/**
+ * 
+ * @author Jipesh
+ */
 package bomberman.content;
 
 import java.awt.Image;
@@ -127,65 +131,70 @@ public class Player extends Entity implements Runnable {
 			if (leftPressed) {
 				skin = 2;
 				moveLeft();
-				if (game.checkCollision(getBoundingBox())) {
+				Bomb bomb = game.bombCollision((Entity)this);
+				if (game.checkCollision(getBoundingBox()) || (bomb != null && !isOntop(bomb))) {
 					moveRight();
 				}
-				game.checkCollision(getBoundingBox());
 			} if (rightPressed) {
 				skin = 3;
 				moveRight();
-				if (game.checkCollision(getBoundingBox())) {
+				Bomb bomb = game.bombCollision((Entity)this);
+				if (game.checkCollision(getBoundingBox()) || (bomb != null && !isOntop(bomb))) {
 					moveLeft();
 				}
 				game.checkCollision(getBoundingBox());
 			} if (upPressed) {
 				skin = 1;
 				moveUp();
-				if (game.checkCollision(getBoundingBox())) {
+				Bomb bomb = game.bombCollision((Entity)this);
+				if (game.checkCollision(getBoundingBox()) || (bomb != null && !isOntop(bomb))) {
 					moveDown();
 				}
 			} if (downPressed) {
 				skin = 0;
 				moveDown();
-				if (game.checkCollision(getBoundingBox())) {
+				Bomb bomb = game.bombCollision((Entity)this);
+				if (game.checkCollision(getBoundingBox()) || (bomb != null && !isOntop(bomb))) {
 					moveUp();
 				}
-				game.checkCollision(getBoundingBox());
-			} if (spacePressed) {
+			} if (mPressed) {
 				plantBomb();
 			}
 		} else if (character == 2) {
 			if (aPressed) {
 				skin = 2;
 				moveLeft();
-				if (game.checkCollision(getBoundingBox())) {
+				Bomb bomb = game.bombCollision((Entity)this);
+				if (game.checkCollision(getBoundingBox()) || (bomb != null && !isOntop(bomb))) {
 					moveRight();
 				}
-				game.checkCollision(getBoundingBox());
 			} if (dPressed) {
 				skin = 3;
 				moveRight();
-				if (game.checkCollision(getBoundingBox())) {
+				Bomb bomb = game.bombCollision((Entity)this);
+				if (game.checkCollision(getBoundingBox()) || (bomb != null && !isOntop(bomb))) {
 					moveLeft();
 				}
 				game.checkCollision(getBoundingBox());
 			} if (wPressed) {
 				skin = 1;
 				moveUp();
-				if (game.checkCollision(getBoundingBox())) {
+				Bomb bomb = game.bombCollision((Entity)this);
+				if (game.checkCollision(getBoundingBox()) || (bomb != null && !isOntop(bomb))) {
 					moveDown();
 				}
 			} if (sPressed) {
 				skin = 0;
 				moveDown();
-				if (game.checkCollision(getBoundingBox())) {
+				Bomb bomb = game.bombCollision((Entity)this);
+				if (game.checkCollision(getBoundingBox()) || (bomb != null && !isOntop(bomb))) {
 					moveUp();
 				}
-				game.checkCollision(getBoundingBox());
-			} if (mPressed) {
+			} if (spacePressed) {
 				plantBomb();
 			}
 		}
+		game.updateWalkable();
 	}
 
 	/**
@@ -207,6 +216,10 @@ public class Player extends Entity implements Runnable {
 				bombs--;
 			}
 		}
+	}
+	
+	protected boolean isOntop(Bomb bomb){
+		return ontop.contains(bomb);
 	}
 
 	void recoverBomb() {
@@ -284,9 +297,41 @@ public class Player extends Entity implements Runnable {
 	public void run() {
 		play();
 		pickPower();
+		updateWalkable();
+	}
+	
+	/**
+	 * adds a bomb to the walkable list so it's ignored when doing collision check
+	 * 
+	 * @param bomb the bomb to allow walking over
+	 */
+	protected void addWalkable(Bomb bomb){
+		ontop.add(bomb);
+	}
+	
+	/**
+	 * makes sure that the player is still on top of the bomb else if will  remove the bomb
+	 * from the list so collision check will be no longer ignored
+	 * 
+	 * @see
+	 * 		Player#play() play()
+	 */
+	protected void updateWalkable(){
+		Iterator<Bomb> bombs = ontop.iterator();
+		while(bombs.hasNext()){
+			Bomb bomb = bombs.next();
+			if(!(this.getBoundingBox().checkCollision(bomb.getBoundingBox()))){
+				bombs.remove();
+			}
+		}
 	}
 
-	public void pickPower() {
+	/**
+	 * checks to see if the player is colliding with any of the power-ups if so the id
+	 * of it will update the player speed, explosion size or bombs
+	 * 
+	 */
+	private void pickPower() {
 		Iterator<PowerUp> specials = game.getSpecials().iterator();
 		while (specials.hasNext()) {
 			PowerUp power = specials.next();
@@ -319,60 +364,11 @@ public class Player extends Entity implements Runnable {
 			}
 		}
 	}
-
-	public boolean leftCollision() {
-		for (Bomb bomb : game.getBombs()) {
-			BoundingBox box = bomb.getBoundingBox();
-			if ((getX() + getWidth()) == box.getX() && (getY() + getHeight()) >= box.getY()
-					&& getY() <= (box.getY() + box.getHeight())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean rightCollision() {
-		for (Bomb bomb : game.getBombs()) {
-			BoundingBox box = bomb.getBoundingBox();
-			if (getX() == (box.getX() + box.getWidth()) && (getY() + getHeight()) >= box.getY()
-					&& getY() <= (box.getY() + box.getHeight())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean topCollision() {
-		for (Bomb bomb : game.getBombs()) {
-			BoundingBox box = bomb.getBoundingBox();
-			if ((getY() + getHeight()) == box.getY() && (getX() + getWidth()) >= box.getX()
-					&& getX() <= (box.getX() + box.getWidth())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean bottomCollision() {
-		for (Bomb bomb : game.getBombs()) {
-			BoundingBox box = bomb.getBoundingBox();
-			if (getY() == (box.getY() + box.getHeight()) && (getX() + getWidth()) >= box.getX()
-					&& getX() <= (box.getX() + box.getWidth())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean bombCollision() {
-		for (Bomb bomb : game.getBombs()) {
-			if (game.boundryCollision(this, bomb.getBoundingBox())) {
-				return true;
-			}
-		}
-		return false;
-	}
 	
+	/**
+	 * 
+	 * @return the character id
+	 */
 	public int getCharacter() {
 		return character;
 	}
@@ -407,8 +403,8 @@ public class Player extends Entity implements Runnable {
 					running = 1;
 					last_running = ++last_running % 2;
 				}
-				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-					spacePressed = true;
+				if (e.getKeyCode() == KeyEvent.VK_M) {
+					mPressed = true;
 				}
 			} else if (character == 2) {
 				if (e.getKeyCode() == KeyEvent.VK_A) {
@@ -431,8 +427,8 @@ public class Player extends Entity implements Runnable {
 					running = 5;
 					last_running = ++last_running % 2;
 				}
-				if (e.getKeyCode() == KeyEvent.VK_M) {
-					mPressed = true;
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					spacePressed = true;
 				}
 			}
 		}
@@ -440,7 +436,7 @@ public class Player extends Entity implements Runnable {
 		@Override
 		/**
 		 * the method checks if the button is no longer pressed therefore changes
-		 * running back to 0
+		 * running back to non running skin
 		 */
 		public void keyReleased(KeyEvent e) {
 			if (character == 1) {
@@ -460,8 +456,8 @@ public class Player extends Entity implements Runnable {
 					downPressed = false;
 					running = 0;
 				}
-				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-					spacePressed = false;
+				if (e.getKeyCode() == KeyEvent.VK_M) {
+					mPressed = false;
 				}
 			} else if (character == 2) {
 				if (e.getKeyCode() == KeyEvent.VK_A) {
@@ -480,8 +476,8 @@ public class Player extends Entity implements Runnable {
 					sPressed = false;
 					running = 3;
 				}
-				if (e.getKeyCode() == KeyEvent.VK_M) {
-					mPressed = false;
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					spacePressed = false;
 				}
 			}
 		}

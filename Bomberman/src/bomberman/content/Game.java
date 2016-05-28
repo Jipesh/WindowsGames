@@ -1,3 +1,7 @@
+/**
+ * 
+ * @author Jipesh
+ */
 package bomberman.content;
 
 import java.awt.Image;
@@ -22,7 +26,6 @@ import game.engine2D.Screen;
 
 public class Game extends AbstractGame {
 	private final int[][] BATTLE_FIELD = new int[17][11];
-	private final Image border;
 	private final HashMap<String, Entity> entiteys;
 	private final List<Player> players = new ArrayList<>();
 	private final List<PowerUp> specials = new ArrayList<>();
@@ -33,16 +36,14 @@ public class Game extends AbstractGame {
 	private boolean gameover = false;
 	private Player player1, player2;
 	private Screen gui;
-	private Thread GPU;
 
 	public Game() {
-		super("BomberMan", 775, 558, true);
+		super("BomberMan", 766, 620, false);
 		try {
 			sprite_sheet = ImageIO.read(getClass().getResource("/bomberman/resources/sprite_sheet.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.border = getSprite(3, 0);
 		this.entiteys = new HashMap<>();
 		init();
 	}
@@ -89,11 +90,11 @@ public class Game extends AbstractGame {
 		start(60);
 	}
 
-	public void addPlayers() {
-		player1 = new Player(2, 40, 40, this); // for starting stage only
+	private void addPlayers() {
+		player1 = new Player(1, 40, 40, this); // for starting stage only
 		addThread(new Thread(player1));
 		players.add(player1);
-		player2 = new Player(1, (17 * 40), 40, this); // for starting stage only
+		player2 = new Player(2, (17 * 40), 40, this); // for starting stage only
 		addThread(new Thread(player2));
 		players.add(player2);
 
@@ -104,20 +105,11 @@ public class Game extends AbstractGame {
 		if (!gameover) {
 			run();
 			if (players.size() == 1) {
-				gameover();
+				gameover(); //if there is only one player then game will be over
 			}
 			checkGameover();
 			gui.repaint();
 		}
-	}
-
-	void render() {
-		gui.repaint();
-	}
-
-	private void runThread() {
-		player1.play();
-		player2.play();
 	}
 
 	/**
@@ -183,6 +175,34 @@ public class Game extends AbstractGame {
 	public Image getSprite(int x, int y, int width, int height) {
 		return sprite_sheet.getSubimage((x * 40), (y * 40), width, height);
 	}
+	
+	protected Bomb bombCollision(Entity e){
+		for(Bomb bomb : getBombs()){
+			if(e.getBoundingBox().checkCollision(bomb.getBoundingBox())){
+				return bomb;
+			}
+		}
+		return null;
+		
+	}
+
+	/**
+	 * the method checks if the player is on top of the bomb and around the center 
+	 */
+	protected void updateWalkable() {
+		if (!bombs.isEmpty()) {
+			for (Bomb bomb : getBombs()) {
+				for (Player player : getPlayers()) {
+					if (bomb.getBoundingBox().checkCollision(player.getBoundingBox())){
+						BoundingBox box = new BoundingBox(bomb.getX() + 4,bomb.getY()+4,bomb.getWidth()-4,bomb.getHeight()-4);			
+						if(player.getBoundingBox().checkCollision(box)){
+						player.addWalkable(bomb);
+						}
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * returns the exact sprite image using the x position and the multiply by
@@ -197,14 +217,6 @@ public class Game extends AbstractGame {
 	 */
 	Image getSprite(int x, int y) {
 		return sprite_sheet.getSubimage((x * 40), (y * 40), 40, 40);
-	}
-
-	/**
-	 * 
-	 * @return the border sprite
-	 */
-	public Image getBorder() {
-		return border;
 	}
 
 	/**
@@ -225,12 +237,15 @@ public class Game extends AbstractGame {
 		specials.add(power);
 		BATTLE_FIELD[(power.getX() / 40) - 1][(power.getY() / 40) - 1] = 4;
 	}
-
+	
+	/**
+	 * checks if the explosions have touched any of the player
+	 */
 	synchronized void checkGameover() {
 		for (Bomb bomb : getBombs()) {
 			if (bomb.getDetonated()) {
 				for (ExplosionFlame exp : bomb.getExplostions()) {
-					bomb.playerHit(exp.getExplostionBox().getX(), exp.getExplostionBox().getY());
+					bomb.playerHit(exp.getBoundingBox().getX(), exp.getBoundingBox().getY());
 				}
 			}
 		}
@@ -271,22 +286,12 @@ public class Game extends AbstractGame {
 		return BATTLE_FIELD[x - 1][y - 1];
 	}
 
-	public boolean boundryCollision(Player p, BoundingBox box) {
-		BoundingBox playerBox = p.getBoundingBox();
-		if ((playerBox.getX() + playerBox.getWidth()) == box.getX() || playerBox.getX() == (box.getX() + box.getWidth())
-				&& (playerBox.getY() + playerBox.getHeight()) >= box.getY()
-				&& playerBox.getY() <= (box.getY() + box.getHeight())) {
-			return true;
-		} else if ((playerBox.getY() + playerBox.getHeight()) == box.getY()
-				|| playerBox.getY() == (box.getY() + box.getHeight())
-						&& (playerBox.getX() + playerBox.getWidth()) >= box.getX()
-						&& playerBox.getX() <= (box.getX() + box.getWidth())) {
-			return true;
-		}
-		return false;
-	}
-
-	// partial check
+	/**
+	 * The method checks if the entity is overlapping/colliding with any of the walls or obstacles
+	 * 
+	 * @param box the entity bounding box
+	 * @return if the entity is colliding with wall or obstacles
+	 */
 	boolean checkCollision(BoundingBox box) {
 		for (Wall wall : walls) {
 			if (wall.getBoundingBox().checkCollision(box)) {

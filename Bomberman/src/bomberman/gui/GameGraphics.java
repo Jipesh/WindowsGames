@@ -1,3 +1,7 @@
+/**
+ * 
+ * @author Jipesh
+ */
 package bomberman.gui;
 
 import java.awt.Color;
@@ -58,13 +62,17 @@ public class GameGraphics extends Screen {
 			int position = 0;
 			for (Player player : game.getPlayers()) {
 				g.setColor(Color.DARK_GRAY);
-				g.fillRect((position * 40), 13 * 40, 120, 120);
+				g.fillRect((position * 40), 13 * 40, 200, 120);
 				int id = player.getCharacter();
 				g.setColor(Color.WHITE);
-				g.drawString("Player " + id + " speed : " + player.getSpeed(), (position * 40), 13 * 40 + 10);
-				g.drawString("Player " + id + " bombs : " + player.getBombs(), (position * 40), 13 * 40 + 20);
-				g.drawString("Player " + id + " flame : " + player.getExplosion_size(), (position * 40), 13 * 40 + 30);
-				position += 4;
+				
+				/*
+				 * draws the player statistics
+				 */
+				g.drawString("Player " + id + " Speed           : " + player.getSpeed(), (position * 40), 13 * 40 + 20);
+				g.drawString("Player " + id + " Bombs           : " + player.getBombs(), (position * 40), 13 * 40 + 40);
+				g.drawString("Player " + id + " explostion size : " + player.getExplosion_size(), (position * 40), 13 * 40 + 60);
+				position += 6;
 
 				if (!(game.getBombs().isEmpty())) {
 					Iterator<Bomb> bombs = game.getBombs().iterator();
@@ -72,11 +80,15 @@ public class GameGraphics extends Screen {
 						// TODO : add explosion check here
 						Bomb bomb = bombs.next();
 						if (bomb.hasDetonated()) {
-							g.drawImage(player.getImage(), player.getX(), player.getY() - 6, null);
+							g.drawImage(player.getImage(), player.getX(), player.getY() - 6, null); 
 							g.drawImage(bomb.getImage(), bomb.getX(), bomb.getY(), null);
 							for (ExplosionFlame exp : bomb.getExplostions()) {
-								BoundingBox box = exp.getExplostionBox();
+								BoundingBox box = exp.getBoundingBox();
 								g.drawImage(exp.getImage(), box.getX(), box.getY(), null);
+								
+								/*
+								 * player will be bellow the explosion
+								 */
 							}
 							if (bomb.delete()) {
 								game.makeAvailable(bomb.getX() / 40, bomb.getY() / 40);
@@ -86,10 +98,16 @@ public class GameGraphics extends Screen {
 						} else {
 							g.drawImage(bomb.getImage(), bomb.getX(), bomb.getY(), null);
 							g.drawImage(player.getImage(), player.getX(), player.getY() - 6, null);
+							
+							/*
+							 * player will be ontop of the box
+							 */
 						}
 					}
 				} else {
-					g.drawImage(player.getImage(), player.getX(), player.getY() - 6, null);
+					g.drawImage(player.getImage(), player.getX(), player.getY() - 6, null); 
+					
+					//there may be no bombs plated
 				}
 			}
 			for (PowerUp power : game.getSpecials()) {
