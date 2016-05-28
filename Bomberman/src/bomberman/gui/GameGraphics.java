@@ -37,31 +37,35 @@ public class GameGraphics extends Screen {
 	}
 
 	@Override
-	public void paint(Graphics g){
+	public void paint(Graphics g) {
 		super.paint(g);
 		Game game = (Game) getGame();
 
 		if (game.gameOver()) {
-			if(game.getPlayers().get(0).getCharacter() == 1) {
+			if (game.getPlayers().get(0).getCharacter() == 1) {
 				g.drawString("Player 1 Wins", 775 / 2, 558 / 2);
-			}else if(game.getPlayers().get(0).getCharacter() == 2){
+			} else if (game.getPlayers().get(0).getCharacter() == 2) {
 				g.drawString("Player 2 Wins", 775 / 2, 558 / 2);
 			}
 
-		}else {
+		} else {
 			g.drawImage(background, 0, 0, null);
-
 			Iterator<Obstacle> obstacles = game.getObstacles().iterator();
-			while(obstacles.hasNext()){
-				try{
+			while (obstacles.hasNext()) {
 				Obstacle obs = obstacles.next();
 				g.drawImage(obs.getImage(), obs.getX(), obs.getY(), null);
-				}catch(ConcurrentModificationException e){
-					//TODO: do something with it 
-				}
 			}
-
+			int position = 0;
 			for (Player player : game.getPlayers()) {
+				g.setColor(Color.DARK_GRAY);
+				g.fillRect((position * 40), 13 * 40, 120, 120);
+				int id = player.getCharacter();
+				g.setColor(Color.WHITE);
+				g.drawString("Player " + id + " speed : " + player.getSpeed(), (position * 40), 13 * 40 + 10);
+				g.drawString("Player " + id + " bombs : " + player.getBombs(), (position * 40), 13 * 40 + 20);
+				g.drawString("Player " + id + " flame : " + player.getExplosion_size(), (position * 40), 13 * 40 + 30);
+				position += 4;
+
 				if (!(game.getBombs().isEmpty())) {
 					Iterator<Bomb> bombs = game.getBombs().iterator();
 					while (bombs.hasNext()) {
@@ -75,8 +79,9 @@ public class GameGraphics extends Screen {
 								g.drawImage(exp.getImage(), box.getX(), box.getY(), null);
 							}
 							if (bomb.delete()) {
-								game.makeAvailable(bomb.getX()/40, bomb.getY()/40);
+								game.makeAvailable(bomb.getX() / 40, bomb.getY() / 40);
 								bombs.remove();
+								bomb.updatePlayer();
 							}
 						} else {
 							g.drawImage(bomb.getImage(), bomb.getX(), bomb.getY(), null);
@@ -87,6 +92,10 @@ public class GameGraphics extends Screen {
 					g.drawImage(player.getImage(), player.getX(), player.getY() - 6, null);
 				}
 			}
+			for (PowerUp power : game.getSpecials()) {
+				g.drawImage(power.getImage(), power.getX(), power.getY(), null);
+			}
+
 		}
 	}
 }

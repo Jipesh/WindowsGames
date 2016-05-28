@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -26,7 +27,7 @@ public class Bomb extends Entity {
 		super(x, y, 40, 40, game);
 		this.game = game;
 		this.timmer = dur;
-		this.size = 1;
+		this.size = size;
 		this.player = player;
 		skin = 0;
 		setSkin();
@@ -67,7 +68,7 @@ public class Bomb extends Entity {
 	 * @see Bomb#addExplostion(int, int, boolean, int, int) addExplostion(x, y,
 	 *      horizontal, amount, direction)
 	 */
-	public void detonate() {
+	public synchronized void detonate() {
 		if (detonated == false) {
 			detonated = true;
 			int x = (getX() / 40);
@@ -83,7 +84,7 @@ public class Bomb extends Entity {
 					left = -1;
 				}
 				if (right != -1) {
-					left = addExplostion(x, y, true, right, 1);
+					right = addExplostion(x, y, true, right, 1);
 				} else {
 					right = -1;
 				}
@@ -105,8 +106,6 @@ public class Bomb extends Entity {
 				@Override
 				public void run() {
 					delete = true;
-					player.recoverBomb();
-
 				}
 
 			}, 1000);
@@ -132,7 +131,7 @@ public class Bomb extends Entity {
 			int xPos = (x + (direction * amount));
 			int yPos = y;
 			ExplosionFlame exp = new ExplosionFlame((xPos * 40), (y * 40), 40, 40);
-			System.out.println(xPos + "\t" + yPos);
+			destroyPowerUp(exp.getExplostionBox());
 			if (game.checkAvailability(xPos, yPos)) {
 				explosions.add(exp);
 				amount += 1;
@@ -142,31 +141,45 @@ public class Bomb extends Entity {
 				explosions.add(exp);
 				amount = -1;
 			} else if (game.checkMap(xPos, yPos) == 3) {
+				detonateBomb(exp.getExplostionBox());
 				explosions.add(exp);
 				amount = -1;
-			} else {
+			}else {
 				amount = -1;
 			}
 		} else {
 			int xPos = x;
 			int yPos = (y + (direction * amount));
-			ExplosionFlame exp = new ExplosionFlame((xPos*40), (yPos*40), 40, 40);
+			ExplosionFlame exp = new ExplosionFlame((xPos * 40), (yPos * 40), 40, 40);
+			destroyPowerUp(exp.getExplostionBox());
 			if (game.checkAvailability(xPos, yPos)) {
 				explosions.add(exp);
-				direction += 1;
+				amount += 1;
 			} else if (game.checkMap(xPos, yPos) == 2) {
 				destroyObstacle(xPos, yPos);
 				game.makeAvailable(xPos, yPos);
 				explosions.add(exp);
-				direction = -1;
+				amount = -1;
 			} else if (game.checkMap(xPos, yPos) == 3) {
+				detonateBomb(exp.getExplostionBox());
 				explosions.add(exp);
 				amount = -1;
-			} else {
-				direction = -1;
+			}else {
+				amount = -1;
 			}
 		}
-		return direction;
+		return amount;
+	}
+
+	public synchronized void destroyPowerUp(BoundingBox box) {
+		Iterator<PowerUp> specials = game.getSpecials().iterator();
+		while (specials.hasNext()) {
+			PowerUp power = specials.next();
+			if (power.getX() == box.getX() && power.getY() == box.getY()) {
+				game.makeAvailable(power.getX()/40, power.getY()/40);
+				specials.remove();
+			}
+		}
 	}
 
 	/**
@@ -178,18 +191,21 @@ public class Bomb extends Entity {
 	 * @param y
 	 *            the y position of the wall on the map
 	 */
-	public void destroyObstacle(int x, int y) {
+	public synchronized void destroyObstacle(int x, int y) {
 		int xPos = x - 1;
 		int yPos = y - 1;
 		Obstacle obs = (Obstacle) game.getEntity(xPos + "x" + yPos + "y");
 		game.getObstacles().remove(obs);
 		game.removeEntity(x - 1, y - 1);
+		Random rnd = new Random();
+		int num = rnd.nextInt(6) + 1;
+		PowerUp power = new PowerUp(num, (xPos + 1) * 40, (yPos + 1) * 40, game);
+		game.addSpecials(power);
 	}
 
-	public void detonateBomb(int x, int y) {
-		System.out.println(x + "\t" + y);
+	public void detonateBomb(BoundingBox box) {
 		for (Bomb bomb : game.getBombs()) {
-			if (bomb.getX() == x && bomb.getY() == y) {
+			if (box.checkCollision(bomb.getBoundingBox()) && bomb.getDetonated() == false) {
 				bomb.detonateNow();
 			}
 		}
@@ -197,13 +213,12 @@ public class Bomb extends Entity {
 
 	public void playerHit(int x, int y) {
 
-		BoundingBox explosion = new BoundingBox(x , y, 40, 40);
+		BoundingBox explosion = new BoundingBox(x, y, 40, 40);
 		BoundingBox playerBox;
 		Iterator<Player> players = game.getPlayers().iterator();
 		while (players.hasNext()) {
 			Player player = players.next();
-			playerBox = new BoundingBox((player.getX() - 6), (player.getY() - 6), (player.getWidth()),
-					(player.getHeight()));
+			playerBox = new BoundingBox((player.getX()), (player.getY()), (player.getWidth()), (player.getHeight()));
 			if (playerBox.checkCollision(explosion) || playerBox.checkCollision(getBoundingBox())) {
 				players.remove();
 			}
@@ -212,7 +227,7 @@ public class Bomb extends Entity {
 
 	public void detonateNow() {
 		countdown.cancel();
-		detonated = true;
+		detonate();
 	}
 
 	/**
@@ -279,6 +294,10 @@ public class Bomb extends Entity {
 		public String toString() {
 			return explosion_box.getX() + "\\s\t\\s" + explosion_box.getY();
 		}
+	}
+	
+	public void updatePlayer(){
+		player.recoverBomb();
 	}
 
 	public String toString() {

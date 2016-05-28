@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +20,7 @@ import game.engine2D.BoundingBox;
 import game.engine2D.Entity;
 import game.engine2D.Screen;
 
-public class Game extends AbstractGame{
+public class Game extends AbstractGame {
 	private final int[][] BATTLE_FIELD = new int[17][11];
 	private final Image border;
 	private final HashMap<String, Entity> entiteys;
@@ -32,19 +33,20 @@ public class Game extends AbstractGame{
 	private boolean gameover = false;
 	private Player player1, player2;
 	private Screen gui;
+	private Thread GPU;
 
 	public Game() {
-		super("BomberMan",775, 558,true);
+		super("BomberMan", 775, 558, true);
 		try {
 			sprite_sheet = ImageIO.read(getClass().getResource("/bomberman/resources/sprite_sheet.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.border = getSprite(3,0);
+		this.border = getSprite(3, 0);
 		this.entiteys = new HashMap<>();
 		init();
 	}
-	
+
 	@Override
 	/**
 	 * initiate method which set up the battlefield with the brick
@@ -70,9 +72,9 @@ public class Game extends AbstractGame{
 					if (x == 1 || x == 2) { // fill up as many spaces as
 											// possible
 						BATTLE_FIELD[j][i] = 2;
-						Obstacle obs = new Obstacle(index++,((j + 1) * 40), ((i + 1) * 40), this);
+						Obstacle obs = new Obstacle(index++, ((j + 1) * 40), ((i + 1) * 40), this);
 						obstacles.add(obs);
-						entiteys.put(j+"x"+i+"y", obs);
+						entiteys.put(j + "x" + i + "y", obs);
 					}
 				}
 			}
@@ -86,28 +88,36 @@ public class Game extends AbstractGame{
 		gameover = false;
 		start(60);
 	}
-	
-	public void addPlayers(){
+
+	public void addPlayers() {
 		player1 = new Player(2, 40, 40, this); // for starting stage only
 		addThread(new Thread(player1));
 		players.add(player1);
-		addKeyListener(player1);
-		player2 = new Player(1, (17*40), 40, this); // for starting stage only
+		player2 = new Player(1, (17 * 40), 40, this); // for starting stage only
 		addThread(new Thread(player2));
 		players.add(player2);
-		addKeyListener(player2);
+
 	}
-	
+
 	@Override
 	public void gameLoop() {
-		if(!gameover){
+		if (!gameover) {
 			run();
-			if(players.size() == 1){
+			if (players.size() == 1) {
 				gameover();
 			}
 			checkGameover();
 			gui.repaint();
 		}
+	}
+
+	void render() {
+		gui.repaint();
+	}
+
+	private void runThread() {
+		player1.play();
+		player2.play();
 	}
 
 	/**
@@ -173,7 +183,7 @@ public class Game extends AbstractGame{
 	public Image getSprite(int x, int y, int width, int height) {
 		return sprite_sheet.getSubimage((x * 40), (y * 40), width, height);
 	}
-	
+
 	/**
 	 * returns the exact sprite image using the x position and the multiply by
 	 * block size which is 40 to locate the image x and y coordinate on the
@@ -205,17 +215,21 @@ public class Game extends AbstractGame{
 	 *            the bomb to add to the list
 	 */
 	void addBomb(Bomb bomb) {
-		if (checkAvailability((bomb.getX()/40),(bomb.getY()/40))) {
-			System.out.println(true);
+		if (checkAvailability((bomb.getX() / 40), (bomb.getY() / 40))) {
 			bombs.add(bomb);
-			BATTLE_FIELD[(bomb.getX()/40)-1][(bomb.getY()/40)-1] = 3;
+			BATTLE_FIELD[(bomb.getX() / 40) - 1][(bomb.getY() / 40) - 1] = 3;
 		}
 	}
-	
-	void checkGameover(){
-		for(Bomb bomb : getBombs()){
-			if(bomb.getDetonated()){
-				for(ExplosionFlame exp : bomb.getExplostions()){
+
+	public void addSpecials(PowerUp power) {
+		specials.add(power);
+		BATTLE_FIELD[(power.getX() / 40) - 1][(power.getY() / 40) - 1] = 4;
+	}
+
+	synchronized void checkGameover() {
+		for (Bomb bomb : getBombs()) {
+			if (bomb.getDetonated()) {
+				for (ExplosionFlame exp : bomb.getExplostions()) {
 					bomb.playerHit(exp.getExplostionBox().getX(), exp.getExplostionBox().getY());
 				}
 			}
@@ -232,42 +246,46 @@ public class Game extends AbstractGame{
 	 * @return if the area is empty space
 	 */
 	boolean checkAvailability(int x, int y) {
-		if(x - 1 < 0 || y - 1 < 0 || x - 1 > 16 || y - 1 > 10){
+		if (x - 1 < 0 || y - 1 < 0 || x - 1 > 16 || y - 1 > 10) {
 			return false;
-		}
-		else if (BATTLE_FIELD[x - 1][y - 1] == 0) {
+		} else if (BATTLE_FIELD[x - 1][y - 1] == 0) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	/**
-	 * checks to see it's a valid value then return value which exist within the map
-	 * at that x and y position
+	 * checks to see it's a valid value then return value which exist within the
+	 * map at that x and y position
 	 * 
-	 * @param x the x position on the map
-	 * @param y the y position on the map
+	 * @param x
+	 *            the x position on the map
+	 * @param y
+	 *            the y position on the map
 	 * @return the value with that x and y on the map
 	 */
-	int checkMap(int x, int y){
-		if(x - 1 < 0 || y - 1 < 0 || x - 1 > 16 || y - 1 > 10 ){
+	int checkMap(int x, int y) {
+		if (x - 1 < 0 || y - 1 < 0 || x - 1 > 16 || y - 1 > 10) {
 			return -1;
 		}
-		return BATTLE_FIELD[x-1][y-1];
+		return BATTLE_FIELD[x - 1][y - 1];
 	}
-	
-	public boolean boundryCollision(Player p, BoundingBox box){
+
+	public boolean boundryCollision(Player p, BoundingBox box) {
 		BoundingBox playerBox = p.getBoundingBox();
-		if((playerBox.getX() + playerBox.getWidth()) == box.getX() || playerBox.getX() == (box.getX() + box.getWidth())
-				&& (playerBox.getY() + playerBox.getHeight()) >= box.getY() && playerBox.getY() <= (box.getY() + box.getHeight())){
+		if ((playerBox.getX() + playerBox.getWidth()) == box.getX() || playerBox.getX() == (box.getX() + box.getWidth())
+				&& (playerBox.getY() + playerBox.getHeight()) >= box.getY()
+				&& playerBox.getY() <= (box.getY() + box.getHeight())) {
 			return true;
-		}else if((playerBox.getY() + playerBox.getHeight()) == box.getY() || playerBox.getY() == (box.getY() + box.getHeight()) 
-				&& (playerBox.getX() + playerBox.getWidth()) >= box.getX() && playerBox.getX() <= (box.getX() + box.getWidth())){
-					return true;
+		} else if ((playerBox.getY() + playerBox.getHeight()) == box.getY()
+				|| playerBox.getY() == (box.getY() + box.getHeight())
+						&& (playerBox.getX() + playerBox.getWidth()) >= box.getX()
+						&& playerBox.getX() <= (box.getX() + box.getWidth())) {
+			return true;
 		}
 		return false;
 	}
-	
+
 	// partial check
 	boolean checkCollision(BoundingBox box) {
 		for (Wall wall : walls) {
@@ -282,24 +300,24 @@ public class Game extends AbstractGame{
 		}
 		return false;
 	}
-	
-	public Entity getEntity(String key){
+
+	public Entity getEntity(String key) {
 		return entiteys.get(key);
 	}
-	
-	public Set<String> getKeys(){
+
+	public Set<String> getKeys() {
 		return entiteys.keySet();
 	}
-	
-	public void removeEntity(int x, int y){
-		entiteys.remove(x+"x"+y+"y");
+
+	public void removeEntity(int x, int y) {
+		entiteys.remove(x + "x" + y + "y");
 	}
-	
-	public void removeObstacle(int index){
+
+	public void removeObstacle(int index) {
 		obstacles.remove(index);
 	}
-	
-	public void gameover(){
+
+	public void gameover() {
 		gameover = true;
 		pause();
 	}
@@ -307,10 +325,10 @@ public class Game extends AbstractGame{
 	@Override
 	public void onPause() {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	public boolean gameOver(){
+
+	public boolean gameOver() {
 		return gameover;
 	}
 

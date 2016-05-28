@@ -1,15 +1,17 @@
 package bomberman.content;
 
 import java.awt.Image;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import game.engine2D.BoundingBox;
 import game.engine2D.Entity;
 
-public class Player extends Entity implements KeyListener, Runnable {
+public class Player extends Entity implements Runnable {
 	private final Game game;
 	private final Image[][] skins = new Image[4][7];
 	private boolean leftPressed, rightPressed, upPressed, downPressed, spacePressed, aPressed, dPressed, wPressed,
@@ -41,16 +43,15 @@ public class Player extends Entity implements KeyListener, Runnable {
 	public Player(int character, int x, int y, Game game) {
 		super(x + 6, y + 6, 30, 30, game);
 		this.game = game;
-		this.bombs = 2;
-		this.speed = 2;
+		this.bombs = 1;
+		this.speed = 1;
 		this.explosion_size = 1;
 		skin = 0;
-
 		skins[1][0] = game.getSprite(1, 4);
 		this.character = character;
 		setSkins(character);
-		System.out.println(this.character);
 		last_running = 0;
+		game.addKeyListener(new KeyInput());
 	}
 
 	/**
@@ -73,11 +74,10 @@ public class Player extends Entity implements KeyListener, Runnable {
 			}
 			running = 0;
 		} else if (character == 2) {
-			for (int i = 3; i < 6; i++) {
+			for (int i = 2; i < 7; i++) {
 				for (int j = 0; j < 4; j++) {
 					int running = i + 1;
 					skins[j][i] = game.getSprite(j, running, 36, 36);
-					System.out.println(character + "a");
 				}
 			}
 			running = 3;
@@ -122,7 +122,7 @@ public class Player extends Entity implements KeyListener, Runnable {
 	 * @see Player#plantBomb() plantBomb()
 	 * 
 	 */
-	public void play() {
+	public synchronized void play() {
 		if (character == 1) {
 			if (leftPressed) {
 				skin = 2;
@@ -131,27 +131,27 @@ public class Player extends Entity implements KeyListener, Runnable {
 					moveRight();
 				}
 				game.checkCollision(getBoundingBox());
-			} else if (rightPressed) {
+			} if (rightPressed) {
 				skin = 3;
 				moveRight();
 				if (game.checkCollision(getBoundingBox())) {
 					moveLeft();
 				}
 				game.checkCollision(getBoundingBox());
-			} else if (upPressed) {
+			} if (upPressed) {
 				skin = 1;
 				moveUp();
 				if (game.checkCollision(getBoundingBox())) {
 					moveDown();
 				}
-			} else if (downPressed) {
+			} if (downPressed) {
 				skin = 0;
 				moveDown();
 				if (game.checkCollision(getBoundingBox())) {
 					moveUp();
 				}
 				game.checkCollision(getBoundingBox());
-			} else if (spacePressed) {
+			} if (spacePressed) {
 				plantBomb();
 			}
 		} else if (character == 2) {
@@ -162,27 +162,27 @@ public class Player extends Entity implements KeyListener, Runnable {
 					moveRight();
 				}
 				game.checkCollision(getBoundingBox());
-			} else if (dPressed) {
+			} if (dPressed) {
 				skin = 3;
 				moveRight();
 				if (game.checkCollision(getBoundingBox())) {
 					moveLeft();
 				}
 				game.checkCollision(getBoundingBox());
-			} else if (wPressed) {
+			} if (wPressed) {
 				skin = 1;
 				moveUp();
 				if (game.checkCollision(getBoundingBox())) {
 					moveDown();
 				}
-			} else if (sPressed) {
+			} if (sPressed) {
 				skin = 0;
 				moveDown();
 				if (game.checkCollision(getBoundingBox())) {
 					moveUp();
 				}
 				game.checkCollision(getBoundingBox());
-			} else if (mPressed) {
+			} if (mPressed) {
 				plantBomb();
 			}
 		}
@@ -202,7 +202,7 @@ public class Player extends Entity implements KeyListener, Runnable {
 			int x = middleX / 40;
 			int middleY = getY() + (getHeight() / 2);
 			int y = middleY / 40;
-			Bomb bomb = new Bomb(this, (x*40), (y*40), 4, explosion_size, game);
+			Bomb bomb = new Bomb(this, (x * 40), (y * 40), 4, explosion_size, game);
 			if (game.getBombs().contains(bomb)) {
 				bombs--;
 			}
@@ -283,171 +283,209 @@ public class Player extends Entity implements KeyListener, Runnable {
 	 */
 	public void run() {
 		play();
+		pickPower();
 	}
 
-	@Override
-	/**
-	 * a series of if statement to check if the different key is pressed if so
-	 * then changes the boolean value of key...Pressed
-	 * 
-	 * @see Player#play() play()
-	 */
-	public void keyPressed(KeyEvent e) {
-		if (character == 1) {
-			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-				leftPressed = true;
-				running = 1;
-				last_running = ++last_running % 2;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-				rightPressed = true;
-				running = 1;
-				last_running = ++last_running % 2;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_UP) {
-				upPressed = true;
-				running = 1;
-				last_running = ++last_running % 2;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-				downPressed = true;
-				running = 1;
-				last_running = ++last_running % 2;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-				spacePressed = true;
-			}
-		} else if (character == 2) {
-			if (e.getKeyCode() == KeyEvent.VK_A) {
-				aPressed = true;
-				running = 5;
-				last_running = ++last_running % 2;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_D) {
-				dPressed = true;
-				running = 5;
-				last_running = ++last_running % 2;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_W) {
-				wPressed = true;
-				running = 5;
-				last_running = ++last_running % 2;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_S) {
-				sPressed = true;
-				running = 5;
-				last_running = ++last_running % 2;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_M) {
-				mPressed = true;
+	public void pickPower() {
+		Iterator<PowerUp> specials = game.getSpecials().iterator();
+		while (specials.hasNext()) {
+			PowerUp power = specials.next();
+			if (power.getBoundingBox().checkCollision(getBoundingBox())) {
+				if (power.getID() == 1) {
+					explosion_size--;
+					if (explosion_size < 1) {
+						explosion_size = 1;
+					}
+				} else if (power.getID() == 2) {
+					bombs--;
+					if (bombs < 1) {
+						bombs = 1;
+					}
+				} else if (power.getID() == 3) {
+					speed--;
+					if (speed < 1) {
+						speed = 1;
+					}
+				} else if (power.getID() == 4) {
+					explosion_size++;
+					System.out.println(explosion_size);
+				} else if (power.getID() == 5) {
+					bombs++;
+				} else if (power.getID() == 6) {
+					speed++;
+				}
+				game.makeAvailable((power.getX()/40), (power.getY()/40));
+				specials.remove();
+				
 			}
 		}
 	}
 
-	@Override
-	/**
-	 * the method checks if the button is no longer pressed therefore changes
-	 * running back to 0
-	 */
-	public void keyReleased(KeyEvent e) {
-		if (character == 1) {
-			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-				leftPressed = false;
-				running = 0;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-				rightPressed = false;
-				running = 0;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_UP) {
-				upPressed = false;
-				running = 0;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-				downPressed = false;
-				running = 0;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-				spacePressed = false;
-			}
-		} else if (character == 2) {
-			if (e.getKeyCode() == KeyEvent.VK_A) {
-				aPressed = false;
-				running = 3;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_D) {
-				dPressed = false;
-				running = 3;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_W) {
-				wPressed = false;
-				running = 3;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_S) {
-				sPressed = false;
-				running = 3;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_M) {
-				mPressed = false;
-			}
-		}
-	}
-	
-	public boolean leftCollision(){
-		for (Bomb bomb : game.getBombs()){
-		BoundingBox box = bomb.getBoundingBox();
-			if((getX() + getWidth()) == box.getX() && (getY() + getHeight()) >= box.getY() && getY() <= (box.getY() + box.getHeight())){
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean rightCollision(){
-		for (Bomb bomb : game.getBombs()){
-		BoundingBox box = bomb.getBoundingBox();
-			if(getX() == (box.getX() + box.getWidth()) && (getY() + getHeight()) >= box.getY() && getY() <= (box.getY() + box.getHeight())){
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean topCollision(){
-		for (Bomb bomb : game.getBombs()){
-		BoundingBox box = bomb.getBoundingBox();
-			if((getY() + getHeight()) == box.getY() && (getX() + getWidth()) >= box.getX() && getX() <= (box.getX() + box.getWidth())){
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean bottomCollision(){
-		for (Bomb bomb : game.getBombs()){
-		BoundingBox box = bomb.getBoundingBox();
-			if(getY() == (box.getY() + box.getHeight()) && (getX() + getWidth()) >= box.getX() && getX() <= (box.getX() + box.getWidth())){
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean bombCollision(){
-		for(Bomb bomb : game.getBombs()){
-			if(game.boundryCollision(this, bomb.getBoundingBox())){
+	public boolean leftCollision() {
+		for (Bomb bomb : game.getBombs()) {
+			BoundingBox box = bomb.getBoundingBox();
+			if ((getX() + getWidth()) == box.getX() && (getY() + getHeight()) >= box.getY()
+					&& getY() <= (box.getY() + box.getHeight())) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	@Override
-	public void keyTyped(KeyEvent e) {
+	public boolean rightCollision() {
+		for (Bomb bomb : game.getBombs()) {
+			BoundingBox box = bomb.getBoundingBox();
+			if (getX() == (box.getX() + box.getWidth()) && (getY() + getHeight()) >= box.getY()
+					&& getY() <= (box.getY() + box.getHeight())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
+	public boolean topCollision() {
+		for (Bomb bomb : game.getBombs()) {
+			BoundingBox box = bomb.getBoundingBox();
+			if ((getY() + getHeight()) == box.getY() && (getX() + getWidth()) >= box.getX()
+					&& getX() <= (box.getX() + box.getWidth())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean bottomCollision() {
+		for (Bomb bomb : game.getBombs()) {
+			BoundingBox box = bomb.getBoundingBox();
+			if (getY() == (box.getY() + box.getHeight()) && (getX() + getWidth()) >= box.getX()
+					&& getX() <= (box.getX() + box.getWidth())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean bombCollision() {
+		for (Bomb bomb : game.getBombs()) {
+			if (game.boundryCollision(this, bomb.getBoundingBox())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public int getCharacter() {
 		return character;
+	}
+	
+	private class KeyInput extends KeyAdapter{
+		@Override
+		/**
+		 * a series of if statement to check if the different key is pressed if so
+		 * then changes the boolean value of key...Pressed
+		 * 
+		 * @see Player#play() play()
+		 */
+		public void keyPressed(KeyEvent e) {
+			if (character == 1) {
+				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+					leftPressed = true;
+					running = 1;
+					last_running = ++last_running % 2;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+					rightPressed = true;
+					running = 1;
+					last_running = ++last_running % 2;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_UP) {
+					upPressed = true;
+					running = 1;
+					last_running = ++last_running % 2;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+					downPressed = true;
+					running = 1;
+					last_running = ++last_running % 2;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					spacePressed = true;
+				}
+			} else if (character == 2) {
+				if (e.getKeyCode() == KeyEvent.VK_A) {
+					aPressed = true;
+					running = 5;
+					last_running = ++last_running % 2;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_D) {
+					dPressed = true;
+					running = 5;
+					last_running = ++last_running % 2;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_W) {
+					wPressed = true;
+					running = 5;
+					last_running = ++last_running % 2;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_S) {
+					sPressed = true;
+					running = 5;
+					last_running = ++last_running % 2;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_M) {
+					mPressed = true;
+				}
+			}
+		}
+
+		@Override
+		/**
+		 * the method checks if the button is no longer pressed therefore changes
+		 * running back to 0
+		 */
+		public void keyReleased(KeyEvent e) {
+			if (character == 1) {
+				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+					leftPressed = false;
+					running = 0;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+					rightPressed = false;
+					running = 0;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_UP) {
+					upPressed = false;
+					running = 0;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+					downPressed = false;
+					running = 0;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					spacePressed = false;
+				}
+			} else if (character == 2) {
+				if (e.getKeyCode() == KeyEvent.VK_A) {
+					aPressed = false;
+					running = 3;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_D) {
+					dPressed = false;
+					running = 3;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_W) {
+					wPressed = false;
+					running = 3;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_S) {
+					sPressed = false;
+					running = 3;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_M) {
+					mPressed = false;
+				}
+			}
+		}
 	}
 
 }
