@@ -17,14 +17,12 @@ public class Computer extends Player implements Runnable {
 	super(character, x, y, game);
 	this.game = game;
 	this.rnd = new Random();
-	
 	setTarget();
 	moveDecider.scheduleAtFixedRate(new TimerTask(){
 	  
 		 @Override 
 		 public void run() {
 			 plantBomb();
-			 game.updateWalkable();
 			 if(getX() == targetX && getY() == targetX){
 				setTarget();
 			 }
@@ -34,7 +32,6 @@ public class Computer extends Player implements Runnable {
 
 	private void setTarget() {
 		int x = randomChecker(ignore, 4);
-		System.out.println(x);
 		switch (x) {
 
 		case 1:
@@ -183,11 +180,15 @@ public class Computer extends Player implements Runnable {
 				moveUp();
 				if(explostionCheck(getBoundingBox())){
 					nextAvailable();
-					ignore = 1;
+					ignore = 3;
 				}
 			} else if (targetY > getY()  && targetX == getX()) {
 				skin = 0;
 				moveDown();
+				if(explostionCheck(getBoundingBox())){
+					nextAvailable();
+					ignore = 4;
+				}
 			}
 		}
 	}

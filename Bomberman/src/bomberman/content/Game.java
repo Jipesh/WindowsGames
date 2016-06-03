@@ -91,10 +91,10 @@ public class Game extends AbstractGame {
 	}
 
 	private void addPlayers() {
-		player1 = new Player(1, 40, 40, this); // for starting stage only
+		player1 = new Player(1, 42, 42, this); // for starting stage only
 		addThread(new Thread(player1));
 		players.add(player1);
-		player2 = new Computer(2, (17 * 40), 40, this); // for starting stage only
+		player2 = new Computer(2, (17 * 40)+2, 42, this); // for starting stage only
 		addThread(new Thread(player2));
 		players.add(player2);
 
