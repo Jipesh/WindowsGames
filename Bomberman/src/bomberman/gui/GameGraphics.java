@@ -7,31 +7,22 @@ package bomberman.gui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.LayoutManager;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
-import javax.swing.JPanel;
-
 import bomberman.content.Bomb;
 import bomberman.content.Bomb.ExplosionFlame;
 import bomberman.content.Character;
 import game.engine2D.BoundingBox;
 import bomberman.content.Game;
 import bomberman.content.Obstacle;
-import bomberman.content.Player;
 import bomberman.content.PowerUp;
-import bomberman.content.Wall;
 import game.engine2D.Screen;
 
 public class GameGraphics extends Screen {
 	private Image background;
-	private JButton restart = new JButton("Restart");
+	private JButton restart;
 
 	public GameGraphics(Game game) {
 		super(game);
@@ -40,7 +31,8 @@ public class GameGraphics extends Screen {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		restart.setBounds(250, 300, 60, 40);
+		restart = new JButton("Restart");
+		restart.setBounds(250, 580, 60, 40);
 		restart.setFocusable(false);
 		restart.setVisible(false);
 	}
@@ -51,7 +43,7 @@ public class GameGraphics extends Screen {
 		Game game = (Game) getGame();
 		g.drawImage(background, 0, 0, null);
 		if (game.gameOver()) {
-			restart.setVisible(false);
+			restart.setVisible(true);
 			g.setColor(Color.WHITE);
 			if (game.getPlayers().get(0).getCharacter() == 1) {
 				g.drawString("Player 1 Wins", 700 / 2, 558 / 2);

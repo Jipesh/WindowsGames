@@ -234,9 +234,7 @@ public class Game extends AbstractGame {
 
 	public void addSpecials(PowerUp power) {
 		specials.add(power);
-		System.out.println((power.getX()/40) + "\t" + (power.getY()/40) + "\tpower");
 		BATTLE_FIELD[(power.getX()/40) - 1][(power.getY()/40) - 1] = 4;
-		System.out.println(BATTLE_FIELD[(power.getX()/40) - 1][(power.getY()/40) - 1]);
 	}
 	
 	/**
