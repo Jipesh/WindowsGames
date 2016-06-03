@@ -72,10 +72,10 @@ public class Game extends AbstractGame {
 					int x = rnd.nextInt(3);
 					if (x == 1 || x == 2) { // fill up as many spaces as
 											// possible
-						BATTLE_FIELD[j][i] = 2;
+						/*BATTLE_FIELD[j][i] = 2;
 						Obstacle obs = new Obstacle(index++, ((j + 1) * 40), ((i + 1) * 40), this);
 						obstacles.add(obs);
-						entiteys.put(j + "x" + i + "y", obs);
+						entiteys.put(j + "x" + i + "y", obs);*/
 					}
 				}
 			}
@@ -94,7 +94,7 @@ public class Game extends AbstractGame {
 		player1 = new Player(1, 40, 40, this); // for starting stage only
 		addThread(new Thread(player1));
 		players.add(player1);
-		player2 = new Player(2, (17 * 40), 40, this); // for starting stage only
+		player2 = new Computer(2, (17 * 40), 40, this); // for starting stage only
 		addThread(new Thread(player2));
 		players.add(player2);
 
@@ -104,11 +104,11 @@ public class Game extends AbstractGame {
 	public void gameLoop() {
 		if (!gameover) {
 			run();
+			gui.repaint();
 			if (players.size() == 1) {
 				gameover(); //if there is only one player then game will be over
 			}
 			checkGameover();
-			gui.repaint();
 		}
 	}
 
@@ -235,7 +235,9 @@ public class Game extends AbstractGame {
 
 	public void addSpecials(PowerUp power) {
 		specials.add(power);
-		BATTLE_FIELD[(power.getX() / 40) - 1][(power.getY() / 40) - 1] = 4;
+		System.out.println((power.getX()/40) + "\t" + (power.getY()/40) + "\tpower");
+		BATTLE_FIELD[(power.getX()/40) - 1][(power.getY()/40) - 1] = 4;
+		System.out.println(BATTLE_FIELD[(power.getX()/40) - 1][(power.getY()/40) - 1]);
 	}
 	
 	/**
@@ -290,20 +292,20 @@ public class Game extends AbstractGame {
 	 * The method checks if the entity is overlapping/colliding with any of the walls or obstacles
 	 * 
 	 * @param box the entity bounding box
-	 * @return if the entity is colliding with wall or obstacles
+	 * @return the entity it is colliding with
 	 */
-	boolean checkCollision(BoundingBox box) {
+	Entity checkCollision(BoundingBox box) {
 		for (Wall wall : walls) {
 			if (wall.getBoundingBox().checkCollision(box)) {
-				return true;
+				return wall;
 			}
 		}
 		for (Obstacle obs : obstacles) {
 			if (obs.getBoundingBox().checkCollision(box)) {
-				return true;
+				return obs;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	public Entity getEntity(String key) {
@@ -324,7 +326,6 @@ public class Game extends AbstractGame {
 
 	public void gameover() {
 		gameover = true;
-		pause();
 	}
 
 	@Override

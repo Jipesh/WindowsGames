@@ -16,7 +16,7 @@ import javax.swing.JFrame;
 
 public abstract class AbstractGame {
 	private final List<Screen> screens;
-	private boolean running;
+	private boolean running, gameover;
 	private JFrame window;
 	private BufferedImage sprite_sheet;
 	private List<Thread> threads;
@@ -156,11 +156,30 @@ public abstract class AbstractGame {
 		return sprite_sheet;
 	}
 	
+	public void setRunning(boolean value){
+		running = value;
+	}
+	
+	public boolean getRunning(){
+		return running;
+	}
+	
+	public void reset(){
+		threads.clear();
+		screens.clear();
+	}
+	
+	public Timer getTimer(){
+		return gameTimer;
+	}
+	
 	private class GameTimer extends TimerTask{
 
 		@Override
 		public void run() {
+			if(running){
 			gameLoop();
+			}
 		}
 		
 	}

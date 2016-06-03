@@ -15,6 +15,7 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import bomberman.content.Bomb;
@@ -29,6 +30,7 @@ import game.engine2D.Screen;
 
 public class GameGraphics extends Screen {
 	private Image background;
+	private JButton restart = new JButton("Restart");
 
 	public GameGraphics(Game game) {
 		super(game);
@@ -37,6 +39,9 @@ public class GameGraphics extends Screen {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			restart.setBounds(250, 300, 60, 40);
+			restart.setFocusable(false);
+			restart.setVisible(false);
 		}
 	}
 
@@ -44,16 +49,15 @@ public class GameGraphics extends Screen {
 	public void paint(Graphics g) {
 		super.paint(g);
 		Game game = (Game) getGame();
-
-		if (game.gameOver()) {
+		g.drawImage(background, 0, 0, null);
+		/*if (game.gameOver()) {
 			if (game.getPlayers().get(0).getCharacter() == 1) {
 				g.drawString("Player 1 Wins", 775 / 2, 558 / 2);
 			} else if (game.getPlayers().get(0).getCharacter() == 2) {
 				g.drawString("Player 2 Wins", 775 / 2, 558 / 2);
 			}
-
-		} else {
-			g.drawImage(background, 0, 0, null);
+		} else {*/
+			//restart.setVisible(false);
 			Iterator<Obstacle> obstacles = game.getObstacles().iterator();
 			while (obstacles.hasNext()) {
 				Obstacle obs = obstacles.next();
@@ -73,14 +77,14 @@ public class GameGraphics extends Screen {
 				g.drawString("Player " + id + " Bombs           : " + player.getBombs(), (position * 40), 13 * 40 + 40);
 				g.drawString("Player " + id + " explostion size : " + player.getExplosion_size(), (position * 40), 13 * 40 + 60);
 				position += 6;
-
+		
 				if (!(game.getBombs().isEmpty())) {
 					Iterator<Bomb> bombs = game.getBombs().iterator();
 					while (bombs.hasNext()) {
 						// TODO : add explosion check here
 						Bomb bomb = bombs.next();
 						if (bomb.hasDetonated()) {
-							g.drawImage(player.getImage(), player.getX(), player.getY() - 6, null); 
+							g.drawImage(player.getImage(), player.getX(), player.getY(), null); 
 							g.drawImage(bomb.getImage(), bomb.getX(), bomb.getY(), null);
 							for (ExplosionFlame exp : bomb.getExplostions()) {
 								BoundingBox box = exp.getBoundingBox();
@@ -91,13 +95,13 @@ public class GameGraphics extends Screen {
 								 */
 							}
 							if (bomb.delete()) {
-								game.makeAvailable(bomb.getX() / 40, bomb.getY() / 40);
 								bombs.remove();
+								game.makeAvailable(bomb.getX() / 40, bomb.getY() / 40);
 								bomb.updatePlayer();
 							}
 						} else {
 							g.drawImage(bomb.getImage(), bomb.getX(), bomb.getY(), null);
-							g.drawImage(player.getImage(), player.getX(), player.getY() - 6, null);
+							g.drawImage(player.getImage(), player.getX(), player.getY(), null);
 							
 							/*
 							 * player will be ontop of the box
@@ -105,7 +109,7 @@ public class GameGraphics extends Screen {
 						}
 					}
 				} else {
-					g.drawImage(player.getImage(), player.getX(), player.getY() - 6, null); 
+					g.drawImage(player.getImage(), player.getX(), player.getY(), null); 
 					
 					//there may be no bombs plated
 				}
@@ -115,5 +119,5 @@ public class GameGraphics extends Screen {
 			}
 
 		}
-	}
+	
 }

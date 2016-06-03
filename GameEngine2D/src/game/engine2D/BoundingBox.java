@@ -44,7 +44,7 @@ public class BoundingBox {
 	 * @param multiplier the speed multiplier
 	 */
 	public void moveX(int original, double multiplier) {
-		this.x += original * multiplier;
+		this.x += (original * multiplier);
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class BoundingBox {
 	 * @param multiplier the speed multiplier
 	 */
 	public void moveY(int orginal, double multiplier) {
-		this.y += orginal * multiplier;
+		this.y += (orginal * multiplier);
 	}
 
 	/**
