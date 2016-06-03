@@ -255,9 +255,9 @@ public class Bomb extends Entity {
 
 		BoundingBox explosion = new BoundingBox(x, y, 40, 40);
 		BoundingBox playerBox;
-		Iterator<Player> players = game.getPlayers().iterator();
+		Iterator<Character> players = game.getPlayers().iterator();
 		while (players.hasNext()) {
-			Player player = players.next();
+			Character player = players.next();
 			playerBox = player.getBoundingBox();
 			if (playerBox.checkCollision(explosion) || playerBox.checkCollision(getBoundingBox())) {
 				players.remove();

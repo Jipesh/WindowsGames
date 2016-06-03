@@ -7,7 +7,7 @@ import java.util.TimerTask;
 import game.engine2D.BoundingBox;
 import game.engine2D.Entity;
 
-public class Computer extends Player implements Runnable {
+public class Computer extends Character implements Runnable {
 	private final Game game;
 	private final Random rnd;
 	private int targetX, targetY, ignore;
@@ -22,7 +22,7 @@ public class Computer extends Player implements Runnable {
 	  
 		 @Override 
 		 public void run() {
-			 plantBomb();
+			 //plantBomb();
 			 if(getX() == targetX && getY() == targetX){
 				setTarget();
 			 }
@@ -222,6 +222,7 @@ public class Computer extends Player implements Runnable {
 		move();
 		pickPower();
 		updateWalkable();
+		game.render();
 	}
 
 }

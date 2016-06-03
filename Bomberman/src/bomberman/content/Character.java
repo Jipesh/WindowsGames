@@ -71,16 +71,15 @@ public abstract class Character extends Entity implements Runnable{
 					skins[j][i] = game.getSprite(j, running, 36, 36);
 				}
 			}
-			running = 0;
 		} else if (character == 2) {
 			for (int i = 2; i < 7; i++) {
 				for (int j = 0; j < 4; j++) {
-					int running = i + 1;
-					skins[j][i] = game.getSprite(j, running, 36, 36);
+					int motion = i + 3;
+					skins[j][i] = game.getSprite(j, motion, 36, 36);
 				}
 			}
-			running = 3;
 		}
+		running = 0;
 	}
 
 	/**
@@ -339,11 +338,13 @@ public abstract class Character extends Entity implements Runnable{
 	 *         is 0 or 1
 	 */
 	public Image getImage() {
-		if (running == 0) {
+		switch(character){
+		case 1:
 			return skins[skin][running];
-		} else {
-			return skins[skin][running];
+		case 2:
+			return skins[skin][running + 3];
 		}
+		return null;
 	}
 	
 

@@ -8,9 +8,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -27,14 +25,14 @@ import game.engine2D.Screen;
 public class Game extends AbstractGame {
 	private final int[][] BATTLE_FIELD = new int[17][11];
 	private final HashMap<String, Entity> entiteys;
-	private final List<Player> players = new ArrayList<>();
+	private final List<Character> players = new ArrayList<>();
 	private final List<PowerUp> specials = new ArrayList<>();
 	private final List<Wall> walls = new ArrayList<>();
 	private final List<Obstacle> obstacles = new ArrayList<>();
 	private final List<Bomb> bombs = new ArrayList<>();
 	private BufferedImage sprite_sheet;
 	private boolean gameover = false;
-	private Player player1, player2;
+	private Character player1, player2;
 	private Screen gui;
 
 	public Game() {
@@ -72,16 +70,14 @@ public class Game extends AbstractGame {
 					int x = rnd.nextInt(3);
 					if (x == 1 || x == 2) { // fill up as many spaces as
 											// possible
-						/*BATTLE_FIELD[j][i] = 2;
+						BATTLE_FIELD[j][i] = 2;
 						Obstacle obs = new Obstacle(index++, ((j + 1) * 40), ((i + 1) * 40), this);
 						obstacles.add(obs);
-						entiteys.put(j + "x" + i + "y", obs);*/
+						entiteys.put(j + "x" + i + "y", obs);
 					}
 				}
 			}
 		}
-
-		// TO DO: Better method to add player
 		addPlayers();
 		gui = new GameGraphics(this);
 		addScreen(gui);
@@ -94,7 +90,7 @@ public class Game extends AbstractGame {
 		player1 = new Player(1, 42, 42, this); // for starting stage only
 		addThread(new Thread(player1));
 		players.add(player1);
-		player2 = new Computer(2, (17 * 40)+2, 42, this); // for starting stage only
+		player2 = new Player(2, (17 * 40)+2, 42, this); // for starting stage only
 		addThread(new Thread(player2));
 		players.add(player2);
 
@@ -104,12 +100,15 @@ public class Game extends AbstractGame {
 	public void gameLoop() {
 		if (!gameover) {
 			run();
-			gui.repaint();
 			if (players.size() == 1) {
 				gameover(); //if there is only one player then game will be over
 			}
 			checkGameover();
 		}
+	}
+	
+	public void render(){
+		gui.repaint();
 	}
 
 	/**
@@ -143,7 +142,7 @@ public class Game extends AbstractGame {
 	/**
 	 * @return the players
 	 */
-	public List<Player> getPlayers() {
+	public List<Character> getPlayers() {
 		return players;
 	}
 
@@ -192,7 +191,7 @@ public class Game extends AbstractGame {
 	protected void updateWalkable() {
 		if (!bombs.isEmpty()) {
 			for (Bomb bomb : getBombs()) {
-				for (Player player : getPlayers()) {
+				for (Character player : getPlayers()) {
 					if (bomb.getBoundingBox().checkCollision(player.getBoundingBox())){
 						BoundingBox box = new BoundingBox(bomb.getX() + 4,bomb.getY()+4,bomb.getWidth()-4,bomb.getHeight()-4);			
 						if(player.getBoundingBox().checkCollision(box)){
