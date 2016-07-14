@@ -4,36 +4,41 @@
 - Arrow Game (realesed)
 - Bomberman (under-development)
 - PingPong (realesed)
+- GameEngine2D (under-development)
 
-<b><i>ArrowGame</b></i>  
+<b>ArrowGame</b>  
 
 <br><b><i>Instructions</i></b></br>
 Your aim is to dodge as many squares as you can for each square which successfully reaches the bottom of the screen you earn 2 point towards your score
 
-<i><b><br/>Arrow Game Controls</br></b></i>
+<b><i><br/>Arrow Game Controls</br></i></b>
 
-<br/>Left arrow - Left</br>
-<br>Right arrow - Right</br>
+- Left arrow - <i>move left</i>
+- Right arrow - <i>move right</i>
 
-<b><i>Ping Pong</b></i>  
+<b>Ping Pong</b> 
 
 <br><b><i>Instructions</i></b></br>
 A simple ping pong game where you can either play <b>player vs player</b>, <b>player vs computer</b> or watch two computer play against each other
 
-<i><b><br/>Ping Pong Controls</br></b></i>
+<b><i><br/>Ping Pong Controls</br></i></b>
 
-<i>Player 1</i>
+<b><i>Player 1</i></b>
 
-<br/>W - Up</br>
-<br>S - Down</br>
+- W - <i>move up</i>
+- S - <i>move down</i>
 
-<i>Player 2</i>
+<b><i>Player 2</i></b>
 
-<br/>Up arrow  - Up</br>
-<br>Down arrow - Down</br>
+- Up arrow - <i>move up</i>
+- Down arrow - <i>move down</i>
 
-<i>Game Controls</i>
+<b><i>Game Controls</i></b>
 
-<br>D - Dark theme</br>
-<br>L - Light theme</br>
-<br/>P  - Pause</br>
+- D - <i>dark theme</i>
+- L - <i>light theme</i>
+- P - <i>pause</i>
+
+<b>Game Engine 2D<b>
+
+<i>A simple game engine which can be used to make 2D games easily</i>
