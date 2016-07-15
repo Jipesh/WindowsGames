@@ -88,7 +88,7 @@ public abstract class AbstractGame {
 				window.setVisible(true);
 				gameover = false;
 				running = true;
-				run();
+				startThreads();
 				startLoop();
 				
 			}
@@ -99,7 +99,7 @@ public abstract class AbstractGame {
 	/**
 	 * starts each threads
 	 */
-	public void run() {
+	public void startThreads() {
 		if (!threads.isEmpty()) {
 			for (Thread thread : threads) {
 				thread.start();
@@ -240,7 +240,6 @@ public abstract class AbstractGame {
 					gameLoop();
 				}else{
 					pause();
-					onPause();
 				}
 			}else{
 				gameOver();

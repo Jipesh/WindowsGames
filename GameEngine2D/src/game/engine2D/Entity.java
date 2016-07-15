@@ -7,8 +7,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public abstract class Entity {
-	protected Engine2DBoundingShape box;
-	protected Engine2DBoundingShape.RectangleBoundingShape recBox;
+	public Engine2DBoundingShape box;
+	public Engine2DBoundingShape.RectangleBoundingShape recBox;
 	private final AbstractGame game;
 	private Image image;
 
