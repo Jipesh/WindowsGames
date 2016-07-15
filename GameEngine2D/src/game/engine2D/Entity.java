@@ -7,46 +7,90 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public abstract class Entity {
-private final BoundingBox box;
-private final AbstractGame game;
-private Image image;
-	
-	public Entity(int x, int y, int width, int height, AbstractGame game) {
-		box = new BoundingBox(x,y,width,height);
+	protected Engine2DBoundingShape box;
+	protected Engine2DBoundingShape.RectangleBoundingShape recBox;
+	private final AbstractGame game;
+	private Image image;
+
+	/**
+	 * 
+	 * @param game - the game the entity belongs too
+	 */
+	public Entity(AbstractGame game) {
 		this.game = game;
 	}
 	
-	public void setImage(String res) throws IOException{
+	/**
+	 * 
+	 * @param box - the bounding box
+	 * @param game - the game the entity belongs too
+	 */
+	public Entity(Engine2DBoundingShape.RectangleBoundingShape recBox, AbstractGame game) {
+		this.recBox = recBox;
+		this.game = game;
+	}
+
+	/**
+	 * 
+	 * @param box - the bounding box
+	 * @param game - the game the entity belongs too
+	 */
+	public Entity(Engine2DBoundingShape box, AbstractGame game) {
+		this.box = box;
+		this.game = game;
+	}
+	
+	/**
+	 * The method set's a rectangle bounding box for the entity
+	 * 
+	 * @param recBox - the rectangle bounding box
+	 */
+	public void setBoundingBox(Engine2DBoundingShape.RectangleBoundingShape recBox){
+		this.recBox = recBox;
+	}
+
+	/**
+	 * The method set's an image file for the entity from the current directory
+	 * 
+	 * @param res - the path to the image file
+	 * @throws IOException - if the image was not found
+	 */
+	public void setImage(String res) throws IOException {
 		image = ImageIO.read(getClass().getResourceAsStream(res));
 	}
-	
-	public void setImage(File file) throws IOException{
+
+	/**
+	 * The method allows the ability to set the image of the entity to a path
+	 * outside the current directory.
+	 * 
+	 * @param res - the path to the image file
+	 * @throws IOException - if the image was not found
+	 */
+	public void setImage(File file) throws IOException {
 		image = ImageIO.read(file);
 	}
-	
+
+	/**
+	 * The method set's an image to a sub image from the game sprite site
+	 * if a sprite sheet was assigned to the game
+	 * 
+	 * @param res - the path to the image file
+	 * @throws IOException - if the image was not found
+	 */
 	public Image setImage(int x, int y, int width, int height){
-		return game.getSprite(x,y,width,height);
+		if(game.getSpriteSheet() != null){
+			return game.getSprite(x,y,width,height);
+		}else{
+			throw new RuntimeException("Spritesheet not set");
+		}
 	}
 	
-	public int getX(){
-		return box.getX();
+	/**
+	 * 
+	 * @return the game object
+	 */
+	public AbstractGame getGame(){
+		return game;
 	}
-	
-	public int getY(){
-		return box.getY();
-	}
-	
-	public int getWidth(){
-		return box.getWidth();
-	}
-	
-	public int getHeight(){
-		return box.getHeight();
-	}
-	
-	public BoundingBox getBoundingBox(){
-		return box;
-	}
-	
 
 }

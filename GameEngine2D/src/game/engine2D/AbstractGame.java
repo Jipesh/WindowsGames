@@ -17,10 +17,12 @@ import javax.swing.JFrame;
 public abstract class AbstractGame {
 	private final List<Screen> screens;
 	private boolean running, gameover;
+	private int fps;
 	private JFrame window;
 	private BufferedImage sprite_sheet;
 	private List<Thread> threads;
 	private Timer gameTimer;
+	private Thread gameThread;
 
 	/**
 	 * makes a new window for the game and instantiate the lists
@@ -75,21 +77,32 @@ public abstract class AbstractGame {
 	}
 
 	/**
-	 * The main loop which runs at a constant 60 fps
+	 * The main loop which runs at a constant fps
 	 */
 	public void start(int fps) {
-		window.setVisible(true);
-		running = true;
-		gameTimer.scheduleAtFixedRate(new GameTimer(), 0, 1000/fps);
+		gameThread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				setFPS(fps);
+				window.setVisible(true);
+				gameover = false;
+				running = true;
+				run();
+				startLoop();
+				
+			}
+		});
+		gameThread.start();
 	}
 
 	/**
-	 * run's each threads
+	 * starts each threads
 	 */
 	public void run() {
 		if (!threads.isEmpty()) {
 			for (Thread thread : threads) {
-				thread.run();
+				thread.start();
 			}
 		}
 	}
@@ -116,6 +129,15 @@ public abstract class AbstractGame {
 			System.err.println("invalid index");
 		}
 	}
+	
+	public Screen getScreen(int index){
+		try {
+			return screens.get(index);
+		} catch (IndexOutOfBoundsException e) {
+			System.err.println("invalid index");
+		}
+		return null;
+	}
 
 	public abstract void init();
 
@@ -133,7 +155,7 @@ public abstract class AbstractGame {
 		return screens.size();
 	}
 
-	public void pause() {
+	private void pause() {
 		running = false;
 		onPause();
 	}
@@ -143,6 +165,8 @@ public abstract class AbstractGame {
 	}
 
 	public abstract void onPause();
+	
+	public abstract void gameOver();
 
 	public void addKeyListener(KeyListener listener) {
 		window.addKeyListener(listener);
@@ -160,8 +184,16 @@ public abstract class AbstractGame {
 		running = value;
 	}
 	
+	public void setGameOver(boolean value){
+		gameover = value;
+	}
+	
 	public boolean getRunning(){
 		return running;
+	}
+	
+	public boolean getGameOver(){
+		return gameover;
 	}
 	
 	public void reset(){
@@ -173,12 +205,45 @@ public abstract class AbstractGame {
 		return gameTimer;
 	}
 	
-	private class GameTimer extends TimerTask{
+	public void stopLoop(){
+		gameTimer.cancel();
+	}
+	
+	public void startLoop(){
+		gameTimer = new Timer();
+		gameTimer.scheduleAtFixedRate(new GameLoopTask(), 0, (long) (100f/fps));
+	}
+	
+	/**
+	 * This method will end the game thread
+	 * 
+	 * @throws InterruptedException if the thread was interrupted
+	 */
+	public void stopThread() throws InterruptedException{
+		gameThread.join();
+	}
+	
+	private void setFPS(final int fps){
+		this.fps = fps;
+	}
+	
+	public int getFPS() {
+		return fps;
+	}
+	
+	private class GameLoopTask extends TimerTask{
 
 		@Override
 		public void run() {
-			if(running){
-			gameLoop();
+			if(!gameover){
+				if(running){
+					gameLoop();
+				}else{
+					pause();
+					onPause();
+				}
+			}else{
+				gameOver();
 			}
 		}
 		
