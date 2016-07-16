@@ -3,22 +3,24 @@ package game.engine2D;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public abstract class Engine2DMovableEntity extends Entity implements Runnable{
+import game.engine2D.Engine2DBoundingPolygon.Engine2DBoundingRectangle;
+
+public abstract class Engine2DMovableRectangleEntity extends Engine2DRectangleEntity implements Runnable{
 	private Timer loopTimer;
 	
-	public Engine2DMovableEntity(AbstractGame game) {
-		super(game);
-	}
-	
-	public Engine2DMovableEntity(Engine2DBoundingShape box, AbstractGame game) {
-		super(box,game);
-	}
-	
-	public Engine2DMovableEntity(Engine2DBoundingShape.RectangleBoundingShape recBox, AbstractGame game) {
+	public Engine2DMovableRectangleEntity(Engine2DBoundingPolygon.Engine2DBoundingRectangle recBox, Engine2DGame game) {
 		super(recBox,game);
 	}
 	
+	public Engine2DMovableRectangleEntity(int x, int y, int width, int height, Engine2DGame game) {
+		super(x,y,width,height,game);
+	}
+	
 	public abstract void update();
+	
+	public void stopLoop(){
+		loopTimer.cancel();
+	}
 	
 	public void resume(){
 		startLoop();

@@ -3,50 +3,18 @@ package game.engine2D;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 
-public abstract class Entity {
-	public Engine2DBoundingShape box;
-	public Engine2DBoundingShape.RectangleBoundingShape recBox;
-	private final AbstractGame game;
+public abstract class Engine2DEntity {
+	private final Engine2DGame game;
 	private Image image;
 
 	/**
 	 * 
 	 * @param game - the game the entity belongs too
 	 */
-	public Entity(AbstractGame game) {
+	public Engine2DEntity(Engine2DGame game) {
 		this.game = game;
-	}
-	
-	/**
-	 * 
-	 * @param box - the bounding box
-	 * @param game - the game the entity belongs too
-	 */
-	public Entity(Engine2DBoundingShape.RectangleBoundingShape recBox, AbstractGame game) {
-		this.recBox = recBox;
-		this.game = game;
-	}
-
-	/**
-	 * 
-	 * @param box - the bounding box
-	 * @param game - the game the entity belongs too
-	 */
-	public Entity(Engine2DBoundingShape box, AbstractGame game) {
-		this.box = box;
-		this.game = game;
-	}
-	
-	/**
-	 * The method set's a rectangle bounding box for the entity
-	 * 
-	 * @param recBox - the rectangle bounding box
-	 */
-	public void setBoundingBox(Engine2DBoundingShape.RectangleBoundingShape recBox){
-		this.recBox = recBox;
 	}
 
 	/**
@@ -89,8 +57,16 @@ public abstract class Entity {
 	 * 
 	 * @return the game object
 	 */
-	public AbstractGame getGame(){
+	public Engine2DGame getGame(){
 		return game;
+	}
+
+	public Image getImage() {
+		return image;
+	}
+
+	public void setImage(Image image) {
+		this.image = image;
 	}
 
 }

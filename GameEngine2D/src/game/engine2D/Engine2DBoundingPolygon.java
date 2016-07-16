@@ -1,14 +1,15 @@
 package game.engine2D;
 
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.geom.Area;
 
 
-public class Engine2DBoundingShape {
+public class Engine2DBoundingPolygon {
+	private final Polygon polygon;
 	private Area area;
-	private Polygon polygon;
 
-	public Engine2DBoundingShape(int[] xpoints,int[] ypoints){
+	public Engine2DBoundingPolygon(int[] xpoints,int[] ypoints){
 		if(xpoints.length != ypoints.length){
 			System.err.println("Polygon will fail to give accurate colision");
 		}
@@ -22,9 +23,24 @@ public class Engine2DBoundingShape {
 	 * @param area of the other shape
 	 * @return if there is a collision between the two area's
 	 */
-	public static boolean checkAriaCollision(Area area1, Area area2){
-		area1.intersect(area2);
-		return area1.isEmpty();
+	public static boolean checkAreaCollision(final Area area1, final Area area2){
+		Area a1 = area1;
+		a1.intersect(area2);
+		return a1.isEmpty();
+	}
+	
+	public boolean checkCollision(Area area){
+		return Engine2DBoundingPolygon.checkAreaCollision(this.area, area);
+	}
+	
+	public boolean checkAriaCollision(Polygon polygon){
+		Area area2 = new Area(polygon);
+		return checkCollision(area2);
+	}
+	
+	public boolean checkCollision(Engine2DBoundingRectangle recBox){
+		Rectangle rec = new Rectangle(recBox.x, recBox.y, recBox.width, recBox.height);
+		return Engine2DBoundingPolygon.checkAreaCollision(area, new Area(rec));
 	}
 	
 	/**
@@ -57,6 +73,18 @@ public class Engine2DBoundingShape {
 	 */
 	public Polygon getPolygon(){
 		return polygon;
+	}
+	
+	/**
+	 * 
+	 * @return the area object representing the shape
+	 */
+	public Area getArea(){
+		return area;
+	}
+	
+	public void reformArea(){
+		this.area = new Area(polygon);
 	}
 	
 	/**
@@ -127,7 +155,7 @@ public class Engine2DBoundingShape {
 		return _ypoints;
 	}
 	
-	public static class RectangleBoundingShape {
+	public static class Engine2DBoundingRectangle {
 	private int x, y, width, height;
 		
 	/**
@@ -142,9 +170,9 @@ public class Engine2DBoundingShape {
 	 * @param width
 	 *            the width of the box
 	 * 
-	 * @see Engine2DBoundingShape#checkCollision(Engine2DBoundingShape) checkCollision(BoundingBox)
+	 * @see Engine2DBoundingPolygon#checkCollision(Engine2DBoundingPolygon) checkCollision(BoundingBox)
 	 */	
-	public RectangleBoundingShape(int x, int y, int width, int height){
+	public Engine2DBoundingRectangle(int x, int y, int width, int height){
 			this.x = x;
 			this.y = y;
 			this.width = width;
@@ -155,13 +183,18 @@ public class Engine2DBoundingShape {
 		 * The method checks to see if the two bounding box or overlapping each
 		 * other
 		 * 
-		 * @param box
+		 * @param recBox
 		 *            the bounding box to check for collision
 		 * @return true if its overlapping false if its not
 		 */
-		public boolean checkCollision(RectangleBoundingShape box) {
-			return ((this.x + this.width >= box.getX()) && (this.x <= box.getX() + box.getWidth()))
-					&& (this.y + this.height >= box.getY()) && (this.y <= box.getY() + box.getHeight());
+		public boolean checkCollision(Engine2DBoundingRectangle recBox) {
+			return ((this.x + this.width >= recBox.getX()) && (this.x <= recBox.getX() + recBox.getWidth()))
+					&& (this.y + this.height >= recBox.getY()) && (this.y <= recBox.getY() + recBox.getHeight());
+		}
+		
+		public boolean checkCollision(Engine2DBoundingPolygon polygonBox) {
+			Rectangle rec = new Rectangle(x, y, width, height);
+			return Engine2DBoundingPolygon.checkAreaCollision(new Area(rec), polygonBox.area);
 		}
 		
 		/**

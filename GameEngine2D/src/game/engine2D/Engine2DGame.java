@@ -14,7 +14,7 @@ import java.util.TimerTask;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-public abstract class AbstractGame {
+public abstract class Engine2DGame {
 	private final List<Screen> screens;
 	private boolean running, gameover;
 	private int fps;
@@ -36,7 +36,7 @@ public abstract class AbstractGame {
 	 * @param resizable
 	 *            should it be resizable
 	 */
-	public AbstractGame(String title, int width, int height, boolean resizable) {
+	public Engine2DGame(String title, int width, int height, boolean resizable) {
 		this.window = new JFrame(title);
 		this.window.setSize(width, height);
 		this.window.setResizable(resizable);

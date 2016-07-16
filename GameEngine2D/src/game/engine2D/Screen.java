@@ -3,14 +3,14 @@ package game.engine2D;
 import javax.swing.JPanel;
 
 public abstract class Screen extends JPanel{
-	private AbstractGame game;
+	private Engine2DGame game;
 	
-	public Screen(AbstractGame game) {
+	public Screen(Engine2DGame game) {
 		this.game = game;
 		this.setLayout(null);
 	}
 	
-	public AbstractGame getGame(){
+	public Engine2DGame getGame(){
 		return game;
 	}
 
