@@ -14,7 +14,7 @@ import javax.swing.JButton;
 import bomberman.content.Bomb;
 import bomberman.content.Bomb.ExplosionFlame;
 import bomberman.content.Character;
-import game.engine2D.BoundingBox;
+import game.engine2D.Engine2DBoundingPolygon.Engine2DBoundingRectangle;
 import bomberman.content.Game;
 import bomberman.content.Obstacle;
 import bomberman.content.PowerUp;
@@ -42,7 +42,7 @@ public class GameGraphics extends Screen {
 		super.paint(g);
 		Game game = (Game) getGame();
 		g.drawImage(background, 0, 0, null);
-		if (game.gameOver()) {
+		if (game.getGameOver()) {
 			restart.setVisible(true);
 			g.setColor(Color.WHITE);
 			if (game.getPlayers().get(0).getCharacter() == 1) {
@@ -81,7 +81,7 @@ public class GameGraphics extends Screen {
 							g.drawImage(player.getImage(), player.getX(), player.getY(), null);
 							g.drawImage(bomb.getImage(), bomb.getX(), bomb.getY(), null);
 							for (ExplosionFlame exp : bomb.getExplostions()) {
-								BoundingBox box = exp.getBoundingBox();
+								Engine2DBoundingRectangle box = exp.getBoundingBox();
 								g.drawImage(exp.getImage(), box.getX(), box.getY(), null);
 
 								/*

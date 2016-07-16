@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import game.engine2D.AbstractGame;
-import game.engine2D.BoundingBox;
-import game.engine2D.Entity;
 
-public abstract class Character extends Entity implements Runnable{
+import game.engine2D.Engine2DMovableRectangleEntity;
+import game.engine2D.Engine2DRectangleEntity;
+
+public abstract class Character extends Engine2DMovableRectangleEntity implements Runnable{
 	private final Game game;
 	private final Image[][] skins = new Image[4][7];
 	private int bombs, explosion_size;
@@ -94,8 +94,8 @@ public abstract class Character extends Entity implements Runnable{
 	public void moveUp() {
 		if (getY() > 40){
 			getBoundingBox().moveY(1, -speed);
-			Entity entity = game.checkCollision(getBoundingBox());
-			Bomb bomb = game.bombCollision((Entity)this);
+			Engine2DRectangleEntity entity = game.checkCollision(getBoundingBox());
+			Bomb bomb = game.bombCollision((Engine2DRectangleEntity)this);
 			if (entity != null) {
 				moveDown();
 				if((this.getX() + (this.getWidth()/2)) <= (entity.getX())){
@@ -116,8 +116,8 @@ public abstract class Character extends Entity implements Runnable{
 	public void moveDown() {
 		if (getY() < (11 * 40) + 2){
 			getBoundingBox().moveY(1, speed);
-			Entity entity = game.checkCollision(getBoundingBox());
-			Bomb bomb = game.bombCollision((Entity)this);
+			Engine2DRectangleEntity entity = game.checkCollision(getBoundingBox());
+			Bomb bomb = game.bombCollision((Engine2DRectangleEntity)this);
 			if (entity != null) {
 				moveUp();
 				if((this.getX() + (this.getWidth()/2)) <= entity.getX()){
@@ -138,8 +138,8 @@ public abstract class Character extends Entity implements Runnable{
 	public void moveLeft() {
 		if (getX() > 40) {
 			getBoundingBox().moveX(1, -speed);
-			Entity entity = game.checkCollision(getBoundingBox());
-			Bomb bomb = game.bombCollision((Entity)this);
+			Engine2DRectangleEntity entity = game.checkCollision(getBoundingBox());
+			Bomb bomb = game.bombCollision((Engine2DRectangleEntity)this);
 			if (entity != null) {
 				moveRight();
 				if((this.getY() + (this.getHeight()/2)) <= entity.getY()){
@@ -160,8 +160,8 @@ public abstract class Character extends Entity implements Runnable{
 	public void moveRight() {
 		if ((getX() < (17 * 40) + 4)){
 			getBoundingBox().moveX(1, speed);
-			Entity entity = game.checkCollision(getBoundingBox());
-			Bomb bomb = game.bombCollision((Entity)this);
+			Engine2DRectangleEntity entity = game.checkCollision(getBoundingBox());
+			Bomb bomb = game.bombCollision(this);
 			if (entity != null) {
 				moveLeft();
 				if((this.getY() + (this.getHeight()/2)) <= (entity.getY())){

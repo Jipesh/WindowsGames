@@ -17,14 +17,16 @@ import javax.imageio.ImageIO;
 
 import bomberman.content.Bomb.ExplosionFlame;
 import bomberman.gui.GameGraphics;
-import game.engine2D.AbstractGame;
-import game.engine2D.BoundingBox;
-import game.engine2D.Entity;
+
+import game.engine2D.Engine2DGame;
+import game.engine2D.Engine2DRectangleEntity;
+import game.engine2D.Engine2DBoundingPolygon.Engine2DBoundingRectangle;
+import game.engine2D.Engine2DEntity;
 import game.engine2D.Screen;
 
-public class Game extends AbstractGame {
+public class Game extends Engine2DGame {
 	private final int[][] BATTLE_FIELD = new int[17][11];
-	private final HashMap<String, Entity> entiteys;
+	private final HashMap<String, Engine2DRectangleEntity> entiteys;
 	private final List<Character> players = new ArrayList<>();
 	private final List<PowerUp> specials = new ArrayList<>();
 	private final List<Wall> walls = new ArrayList<>();
@@ -90,7 +92,8 @@ public class Game extends AbstractGame {
 		player1 = new Player(1, 42, 42, this); // for starting stage only
 		addThread(new Thread(player1));
 		players.add(player1);
-		player2 = new Player(2, (17 * 40)+2, 42, this); // for starting stage only
+		player2 = new Player(2, (17 * 40) + 2, 42, this); // for starting stage
+															// only
 		addThread(new Thread(player2));
 		players.add(player2);
 
@@ -98,16 +101,13 @@ public class Game extends AbstractGame {
 
 	@Override
 	public void gameLoop() {
-		if (!gameover) {
-			run();
-			if (players.size() == 1) {
-				gameover(); //if there is only one player then game will be over
-			}
-			checkGameover();
+		if (players.size() == 1) {
+			gameOver(); // if there is only one player then game will be over
 		}
+		checkGameover();
 	}
-	
-	public void render(){
+
+	public void render() {
 		gui.repaint();
 	}
 
@@ -174,28 +174,30 @@ public class Game extends AbstractGame {
 	public Image getSprite(int x, int y, int width, int height) {
 		return sprite_sheet.getSubimage((x * 40), (y * 40), width, height);
 	}
-	
-	protected Bomb bombCollision(Entity e){
-		for(Bomb bomb : getBombs()){
-			if(e.getBoundingBox().checkCollision(bomb.getBoundingBox())){
+
+	protected Bomb bombCollision(Engine2DRectangleEntity e) {
+		for (Bomb bomb : getBombs()) {
+			if (e.getBoundingBox().checkCollision(bomb.getBoundingBox())) {
 				return bomb;
 			}
 		}
 		return null;
-		
+
 	}
 
 	/**
-	 * the method checks if the player is on top of the bomb and around the center 
+	 * the method checks if the player is on top of the bomb and around the
+	 * center
 	 */
 	protected void updateWalkable() {
 		if (!bombs.isEmpty()) {
 			for (Bomb bomb : getBombs()) {
 				for (Character player : getPlayers()) {
-					if (bomb.getBoundingBox().checkCollision(player.getBoundingBox())){
-						BoundingBox box = new BoundingBox(bomb.getX() + 4,bomb.getY()+4,bomb.getWidth()-4,bomb.getHeight()-4);			
-						if(player.getBoundingBox().checkCollision(box)){
-						player.addWalkable(bomb);
+					if (bomb.getBoundingBox().checkCollision(player.getBoundingBox())) {
+						Engine2DBoundingRectangle box = new Engine2DBoundingRectangle(bomb.getX() + 4, bomb.getY() + 4, bomb.getWidth() - 4,
+								bomb.getHeight() - 4);
+						if (player.getBoundingBox().checkCollision(box)) {
+							player.addWalkable(bomb);
 						}
 					}
 				}
@@ -234,9 +236,9 @@ public class Game extends AbstractGame {
 
 	public void addSpecials(PowerUp power) {
 		specials.add(power);
-		BATTLE_FIELD[(power.getX()/40) - 1][(power.getY()/40) - 1] = 4;
+		BATTLE_FIELD[(power.getX() / 40) - 1][(power.getY() / 40) - 1] = 4;
 	}
-	
+
 	/**
 	 * checks if the explosions have touched any of the player
 	 */
@@ -286,12 +288,14 @@ public class Game extends AbstractGame {
 	}
 
 	/**
-	 * The method checks if the entity is overlapping/colliding with any of the walls or obstacles
+	 * The method checks if the entity is overlapping/colliding with any of the
+	 * walls or obstacles
 	 * 
-	 * @param box the entity bounding box
+	 * @param box
+	 *            the entity bounding box
 	 * @return the entity it is colliding with
 	 */
-	Entity checkCollision(BoundingBox box) {
+	Engine2DRectangleEntity checkCollision(Engine2DBoundingRectangle box) {
 		for (Wall wall : walls) {
 			if (wall.getBoundingBox().checkCollision(box)) {
 				return wall;
@@ -305,7 +309,7 @@ public class Game extends AbstractGame {
 		return null;
 	}
 
-	public Entity getEntity(String key) {
+	public Engine2DRectangleEntity getEntity(String key) {
 		return entiteys.get(key);
 	}
 
@@ -321,18 +325,15 @@ public class Game extends AbstractGame {
 		obstacles.remove(index);
 	}
 
-	public void gameover() {
-		gameover = true;
-	}
-
 	@Override
 	public void onPause() {
 		// TODO Auto-generated method stub
 
 	}
 
-	public boolean gameOver() {
-		return gameover;
+	@Override
+	public void gameOver() {
+		gameover = true;
 	}
 
 }

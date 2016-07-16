@@ -12,9 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import game.engine2D.BoundingBox;
-import game.engine2D.Entity;
-
 public class Player extends Character {
 	private final Game game;
 	private final Image[][] skins = new Image[4][7];
@@ -105,17 +102,6 @@ public class Player extends Character {
 			}
 		}
 		game.updateWalkable();
-	}
-	
-	@Override
-	/**
-	 * what is executed when thread is set to run or start TODO : implement this
-	 */
-	public void run() {
-		play();
-		pickPower();
-		updateWalkable();
-		game.render();
 	}
 	
 	private class KeyInput extends KeyAdapter{
@@ -226,6 +212,14 @@ public class Player extends Character {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void update() {
+		play();
+		pickPower();
+		updateWalkable();
+		game.render();
 	}
 
 }

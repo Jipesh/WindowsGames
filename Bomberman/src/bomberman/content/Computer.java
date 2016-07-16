@@ -4,8 +4,7 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import game.engine2D.BoundingBox;
-import game.engine2D.Entity;
+import game.engine2D.Engine2DBoundingPolygon.Engine2DBoundingRectangle;
 
 public class Computer extends Character implements Runnable {
 	private final Game game;
@@ -35,7 +34,7 @@ public class Computer extends Character implements Runnable {
 		switch (x) {
 
 		case 1:
-			BoundingBox boxLeft = new BoundingBox(getX() - 40, getY(), getWidth(), getHeight());
+			Engine2DBoundingRectangle boxLeft = new Engine2DBoundingRectangle(getX() - 40, getY(), getWidth(), getHeight());
 			if (game.checkMap(boxLeft.getX() / 40, boxLeft.getY() / 40) == 0 && x != ignore) {
 				targetX = getX() - 40;
 				targetY = getY();
@@ -45,7 +44,7 @@ public class Computer extends Character implements Runnable {
 			}
 			break;
 		case 2:
-			BoundingBox boxRight = new BoundingBox(getX() + 40, getY(), getWidth(), getHeight());
+			Engine2DBoundingRectangle boxRight = new Engine2DBoundingRectangle(getX() + 40, getY(), getWidth(), getHeight());
 			if (game.checkMap(boxRight.getX() / 40, boxRight.getY() / 40) == 0 && x != ignore) {
 				targetX = getX() + 40;
 				targetY = getY();
@@ -55,7 +54,7 @@ public class Computer extends Character implements Runnable {
 			}
 			break;
 		case 3:
-			BoundingBox boxUp = new BoundingBox(getX(), getY() - 40, getWidth(), getHeight());
+			Engine2DBoundingRectangle boxUp = new Engine2DBoundingRectangle(getX(), getY() - 40, getWidth(), getHeight());
 			if (game.checkMap(boxUp.getX() / 40, boxUp.getY() / 40) == 0 && x != ignore) {
 				targetY = getY() - 40;
 				targetX = getX();
@@ -65,7 +64,7 @@ public class Computer extends Character implements Runnable {
 			}
 			break;
 		case 4:
-			BoundingBox boxDown = new BoundingBox(getX(), getY() + 40, getWidth(), getHeight());
+			Engine2DBoundingRectangle boxDown = new Engine2DBoundingRectangle(getX(), getY() + 40, getWidth(), getHeight());
 			if (game.checkMap(boxDown.getX() / 40, boxDown.getY() / 40) == 0 && x != ignore) {
 				targetY = getY() + 40;
 				targetX = getX();
@@ -77,7 +76,7 @@ public class Computer extends Character implements Runnable {
 		}
 	}
 
-	private boolean Obstaclecheck(BoundingBox box) {
+	private boolean Obstaclecheck(Engine2DBoundingRectangle box) {
 		if (game.checkMap((box.getX() / 40) - 1, (box.getY() / 40)) == 2
 				|| game.checkMap((box.getX() / 40) + 1, (box.getY() / 40)) == 2
 				|| game.checkMap((box.getX() / 40), (box.getY() / 40) - 1) == 2
@@ -87,7 +86,7 @@ public class Computer extends Character implements Runnable {
 		return false;
 	}
 
-	private boolean explostionCheck(BoundingBox comp) {
+	private boolean explostionCheck(Engine2DBoundingRectangle comp) {
 		for (Bomb bomb : game.getBombs()) {
 			if(!isOntop(bomb) && bomb.getDetonated() == false){
 			if (checkLeft(bomb.getX(), bomb.getY(), bomb.getSize(), comp)) {
@@ -107,8 +106,8 @@ public class Computer extends Character implements Runnable {
 		return false;
 	}
 
-	private boolean checkLeft(int x, int y, int amount, BoundingBox check) {
-		BoundingBox left = new BoundingBox(x - 40, y, 40, 40);
+	private boolean checkLeft(int x, int y, int amount, Engine2DBoundingRectangle check) {
+		Engine2DBoundingRectangle left = new Engine2DBoundingRectangle(x - 40, y, 40, 40);
 		for (int i = 0; i < amount; i++) {
 			if (check.checkCollision(left)) {
 				return true;
@@ -119,8 +118,8 @@ public class Computer extends Character implements Runnable {
 		return false;
 	}
 
-	private boolean checkRight(int x, int y, int amount, BoundingBox check) {
-		BoundingBox right = new BoundingBox(x + 40, y, 40, 40);
+	private boolean checkRight(int x, int y, int amount, Engine2DBoundingRectangle check) {
+		Engine2DBoundingRectangle right = new Engine2DBoundingRectangle(x + 40, y, 40, 40);
 		for (int i = 0; i < amount; i++) {
 			if (check.checkCollision(right)) {
 				return true;
@@ -131,8 +130,8 @@ public class Computer extends Character implements Runnable {
 		return false;
 	}
 
-	private boolean checkUp(int x, int y, int amount, BoundingBox check) {
-		BoundingBox up = new BoundingBox(x, y - 40, 40, 40);
+	private boolean checkUp(int x, int y, int amount, Engine2DBoundingRectangle check) {
+		Engine2DBoundingRectangle up = new Engine2DBoundingRectangle(x, y - 40, 40, 40);
 		for (int i = 0; i < amount; i++) {
 			if (check.checkCollision(up)) {
 				return true;
@@ -143,8 +142,8 @@ public class Computer extends Character implements Runnable {
 		return false;
 	}
 
-	private boolean checkDown(int x, int y, int amount, BoundingBox check) {
-		BoundingBox down = new BoundingBox(x, y + 40, 40, 40);
+	private boolean checkDown(int x, int y, int amount, Engine2DBoundingRectangle check) {
+		Engine2DBoundingRectangle down = new Engine2DBoundingRectangle(x, y + 40, 40, 40);
 		for (int i = 0; i < amount; i++) {
 			if (check.checkCollision(down)) {
 				return true;
@@ -218,7 +217,8 @@ public class Computer extends Character implements Runnable {
 		}
 	}
 
-	public void run() {
+	@Override
+	public void update() {
 		move();
 		pickPower();
 		updateWalkable();

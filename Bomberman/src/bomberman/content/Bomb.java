@@ -12,10 +12,10 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import game.engine2D.BoundingBox;
-import game.engine2D.Entity;
+import game.engine2D.Engine2DBoundingPolygon.Engine2DBoundingRectangle;
+import game.engine2D.Engine2DRectangleEntity;
 
-public class Bomb extends Entity {
+public class Bomb extends Engine2DRectangleEntity {
 	private final Game game;
 	private final Image bomb[] = new Image[3];
 	private final Character player;
@@ -234,7 +234,7 @@ public class Bomb extends Entity {
 		game.addSpecials(power);
 	}
 
-	public void detonateBomb(BoundingBox box) {
+	public void detonateBomb(Engine2DBoundingRectangle box) {
 		for (Bomb bomb : game.getBombs()) {
 			if (box.checkCollision(bomb.getBoundingBox()) && bomb.getDetonated() == false) {
 				bomb.detonateNow();
@@ -253,8 +253,8 @@ public class Bomb extends Entity {
 	 */
 	public void playerHit(int x, int y) {
 
-		BoundingBox explosion = new BoundingBox(x, y, 40, 40);
-		BoundingBox playerBox;
+		Engine2DBoundingRectangle explosion = new Engine2DBoundingRectangle(x, y, 40, 40);
+		Engine2DBoundingRectangle playerBox;
 		Iterator<Character> players = game.getPlayers().iterator();
 		while (players.hasNext()) {
 			Character player = players.next();
@@ -328,7 +328,7 @@ public class Bomb extends Entity {
 		return detonated;
 	}
 
-	public class ExplosionFlame extends Entity {
+	public class ExplosionFlame extends Engine2DRectangleEntity {
 
 		/**
 		 * 
