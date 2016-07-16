@@ -9,6 +9,10 @@ public abstract class Engine2DEntity {
 	private final Engine2DGame game;
 	private Image image;
 
+	public Engine2DEntity() {
+		this.game = null;
+	}
+	
 	/**
 	 * 
 	 * @param game - the game the entity belongs too
@@ -58,7 +62,11 @@ public abstract class Engine2DEntity {
 	 * @return the game object
 	 */
 	public Engine2DGame getGame(){
-		return game;
+		if(game == null){
+			return Engine2DGame.GAME;
+		}else{
+			return game;
+		}
 	}
 
 	public Image getImage() {

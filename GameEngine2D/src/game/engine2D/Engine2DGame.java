@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 public abstract class Engine2DGame {
+	protected static Engine2DGame GAME;
 	private final List<Screen> screens;
 	private boolean running, gameover;
 	private int fps;
@@ -43,6 +44,7 @@ public abstract class Engine2DGame {
 		this.screens = new ArrayList<>();
 		this.threads = new ArrayList<>();
 		this.gameTimer = new Timer();
+		this.GAME = this;
 	}
 
 	/**
@@ -84,6 +86,7 @@ public abstract class Engine2DGame {
 			
 			@Override
 			public void run() {
+				GAME = Engine2DGame.this;
 				setFPS(fps);
 				window.setVisible(true);
 				gameover = false;

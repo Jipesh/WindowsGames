@@ -1,0 +1,93 @@
+
+rev 1.0 (initial release)
+
+AbstractGame
+* The game constructor allows you to set seize for the frame as well as whether it is resizable or not
+* a game loop which runs with constant 60 fps
+* ability to add screen and set screen to one's on the list
+* ability to add key listener to the frame
+* ability to set default close operation for the frame
+
+Entity
+* a game objects which requires x and y coordinates as well as game objects
+* getters and setters for the x and y coordinates
+* entity implements Runnable therefore can be run on a separate thread
+
+BoundingBox
+* a constructor to set x, y, width, height
+* getters and setters for the fields
+* absolute collision between the current and another bounding box
+
+Screen 
+* a class which extends JPanel where all graphics will be draws on;
+* takes a game object
+
+=================================================================================
+
+rev 1.1 (update 1)
+
+AbstractGame
+* ability to get the window (JFrame)
+* ability to add threads and run threads
+* ability to getters and setters for running
+* getters and setters for sprite sheet
+* ability to set sprite sheet from local directory
+* ability to get sub-image of a sprite using specific x, y, width and height
+* pause method needed
+
+Entity
+* getters and setters for image
+* ability to set Image using a specific portion of the sprite sheet.
+* ability to set image using local directory
+
+BoundingBox
+* fixed collision
+
+==================================================================================
+
+rev 1.3 (update 2) [dev branch]
+
+* removed BoundingBox and replaced with RectangleBoundingShape which is an inner static class inside Engine2DBoundingShape
+
+Entity
+* now entity requires you to set Either RectangleBoundingShape or Engine2DBoundingShape
+* public field to get either type of BoundingBox
+
+New features:
+
+New Type of Entity
+* now Entity is one that not runnable however you can use Movable Entity which is runnable and will run on a separate thread
+
+New Boundingbox Box Shape
+* Polygon bounding box
+* Polygon bounding box movement, get xpoints, ypoints
+* ability to get the area
+* ability to get polygon representing the bounding box
+
+Threading
+* support for multi-threading using either movable polygon entity or rectangle entity
+* game runs on separate thread
+
+Game Loop
+* ability to stop main loop and resume it abstract method for different states *pause, gameOver
+* now gameLoop() should only contains code to run when game is running and game over is not true
+
+==================================================================================
+
+rev 1.3.1 (update 3) [dev branch]
+
+* removed the public BoundingBox fields
+* changed structure and renamed all classes so the prefix is "Engine2D"
+
+New feature:
+
+Multiple Entity type
+* different type of entity: RectangleEntity, MovableRectangleEntity, PolygonEntity, MovablePolygonEntity
+  and plain Entity which doesn't have a bounding box
+  
+Entity Loop
+* ability to stop loop
+
+BoundingBox collision
+* static area collision method added
+* different type of collision techniques for the polygon bounding box

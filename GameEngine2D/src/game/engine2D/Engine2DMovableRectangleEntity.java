@@ -3,15 +3,32 @@ package game.engine2D;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import game.engine2D.Engine2DBoundingPolygon.Engine2DBoundingRectangle;
-
 public abstract class Engine2DMovableRectangleEntity extends Engine2DRectangleEntity implements Runnable{
 	private Timer loopTimer;
 	
+	public Engine2DMovableRectangleEntity(Engine2DBoundingPolygon.Engine2DBoundingRectangle recBox) {
+		super(recBox);
+	}
+	
+
+	public Engine2DMovableRectangleEntity(int x, int y, int width, int height) {
+		super(x,y,width,height);
+	}
+	
+	/**
+	 * 
+	 * @deprecated calling a game from another thread and updating it's element here as well
+	 * 	on the main game thread causes ConcurrentModificationException
+	 */
 	public Engine2DMovableRectangleEntity(Engine2DBoundingPolygon.Engine2DBoundingRectangle recBox, Engine2DGame game) {
 		super(recBox,game);
 	}
 	
+	/**
+	 * 
+	 * @deprecated calling a game from another thread and updating it's element here as well
+	 * 	on the main game thread cause ConcurrentModificationException
+	 */
 	public Engine2DMovableRectangleEntity(int x, int y, int width, int height, Engine2DGame game) {
 		super(x,y,width,height,game);
 	}

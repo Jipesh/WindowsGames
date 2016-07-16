@@ -4,6 +4,16 @@ import game.engine2D.Engine2DBoundingPolygon;
 
 public abstract class Engine2DPolygonEntity extends Engine2DEntity {
 private final Engine2DBoundingPolygon polygonBox;
+
+	public Engine2DPolygonEntity(Engine2DBoundingPolygon polygonBox) {
+		super();
+		this.polygonBox = polygonBox;
+	}
+	
+	public Engine2DPolygonEntity(int[] xpoints, int[] ypoints) {
+		super();
+		this.polygonBox = new Engine2DBoundingPolygon(xpoints, ypoints);
+	}
 	
 	public Engine2DPolygonEntity(Engine2DBoundingPolygon polygonBox, Engine2DGame game) {
 		super(game);
