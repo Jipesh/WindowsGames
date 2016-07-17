@@ -7,11 +7,11 @@ package arrowgame;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class Player extends Entity implements KeyListener, Runnable {
+import game.engine2D.Engine2DMovableRectangleEntity;
 
-	private final int y;
+public class Player extends Engine2DMovableRectangleEntity implements KeyListener{
+
 	private int score;
-	private int x;
 	private boolean leftPressed;
 	private boolean rightPressed;
 
@@ -24,10 +24,7 @@ public class Player extends Entity implements KeyListener, Runnable {
 	 *            The starting Y value
 	 */
 	public Player(Game g, int x, int y) {
-		super(g);
-		this.x = x;
-		this.y = y;
-		super.setBoundingBox(new BoundingBox(x, y, 35, 62));
+		super(x, y, 35, 62);
 		score = 0;
 	}
 
@@ -59,9 +56,8 @@ public class Player extends Entity implements KeyListener, Runnable {
 	 * moves Player 5 pixels to the left but only if X is greater then 4
 	 */
 	private void moveLeft() {
-		if (x > 4) {
-			x -= 5;
-			this.getBox().setX(x);
+		if (getX() > 4) {
+			getBoundingBox().moveX(-5, 1);
 		}
 	}
 
@@ -69,9 +65,8 @@ public class Player extends Entity implements KeyListener, Runnable {
 	 * moves Player 5 pixels to the right but only if X is less then 356
 	 */
 	private void moveRight() {
-		if (x < 356) {
-			x += 5;
-			this.getBox().setX(x);
+		if (getX() < 356) {
+			getBoundingBox().moveX(5, 1);
 		}
 	}
 
@@ -80,20 +75,6 @@ public class Player extends Entity implements KeyListener, Runnable {
 	 */
 	public int getScore() {
 		return score;
-	}
-
-	/**
-	 * @return The X-pos
-	 */
-	public int getPosX() {
-		return x;
-	}
-
-	/**
-	 * @return The Y-pos
-	 */
-	public int getPosY() {
-		return y;
 	}
 
 	public void keyPressed(KeyEvent e) {
@@ -119,11 +100,14 @@ public class Player extends Entity implements KeyListener, Runnable {
 	}
 
 	public String toString() {
-		return "[" + x + "," + (x + this.getBox().getWidth()) + "," + y + "," + (y + this.getBox().getHeight()) + "]";
+		return "[" + getX() + "," + (getX() + this.getBoundingBox().getWidth()) + "," + getY() + "," + (getY() + this.getBoundingBox().getHeight()) + "]";
 	}
 
-	public void run() {
-		start();
+	@Override
+	public void update() {
+		if(getGame().getRunning()){
+			start();
+		}
 	}
 
 }

@@ -18,12 +18,15 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-public class GameGUI extends JPanel implements ActionListener {
+import game.engine2D.Engine2DScreen;
+
+public class GameGUI extends Engine2DScreen implements ActionListener{
 	private final Game GM;
 	private final JButton reset;
 	private Image rocket;
 
 	public GameGUI(Game g) {
+		super(g);
 		this.setLayout(null);
 		GM = g;
 		reset = new JButton("Retry");
@@ -43,7 +46,7 @@ public class GameGUI extends JPanel implements ActionListener {
 		super.paintComponent(g);
 		reset.setVisible(false);
 
-		g.drawImage(rocket, GM.getPlayer().getBox().getX(), GM.getPlayer().getBox().getY(), null);
+		g.drawImage(rocket, GM.getPlayer().getBoundingBox().getX(), GM.getPlayer().getBoundingBox().getY(), null);
 
 		/*
 		 * checks which range the score falls in and set's the colour of the
@@ -59,11 +62,11 @@ public class GameGUI extends JPanel implements ActionListener {
 				g.setColor(Color.ORANGE);
 			}
 
-			g.fillRect(GM.getSqrs(x).getBox().getX(), GM.getSqrs(x).getBox().getY(), GM.getSqrs(x).getBox().getWidth(),
-					GM.getSqrs(x).getBox().getHeight());
+			g.fillRect(GM.getSqrs(x).getBoundingBox().getX(), GM.getSqrs(x).getBoundingBox().getY(), GM.getSqrs(x).getBoundingBox().getWidth(),
+					GM.getSqrs(x).getBoundingBox().getHeight());
 			g.setColor(Color.BLACK);
-			g.drawRect(GM.getSqrs(x).getBox().getX(), GM.getSqrs(x).getBox().getY(), GM.getSqrs(x).getBox().getWidth(),
-					GM.getSqrs(x).getBox().getHeight());
+			g.drawRect(GM.getSqrs(x).getBoundingBox().getX(), GM.getSqrs(x).getBoundingBox().getY(), GM.getSqrs(x).getBoundingBox().getWidth(),
+					GM.getSqrs(x).getBoundingBox().getHeight());
 
 			/*
 			 * iterates through all squares and draws the square using their
@@ -76,14 +79,14 @@ public class GameGUI extends JPanel implements ActionListener {
 		g.setFont(new Font("Arial", Font.PLAIN, 20));
 
 		g.drawString(Integer.toString(GM.getPlayer().getScore()), 20, 50);
-
-		if (GM.getStatus() == true) {
+		
+		if (GM.getGameOver()) {
 			reset.setVisible(true);
 		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		GM.reset();
+		GM.resetGame();
 		reset.setVisible(false);
 	}
 
