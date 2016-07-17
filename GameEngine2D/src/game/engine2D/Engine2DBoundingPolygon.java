@@ -9,12 +9,16 @@ public class Engine2DBoundingPolygon {
 	private final Polygon polygon;
 	private Area area;
 
-	public Engine2DBoundingPolygon(int[] xpoints,int[] ypoints){
+	public Engine2DBoundingPolygon(int[] xpoints,int[] ypoints, int points){
 		if(xpoints.length != ypoints.length){
 			System.err.println("Polygon will fail to give accurate colision");
 		}
-		this.polygon = new Polygon(xpoints, ypoints, xpoints.length);
+		this.polygon = new Polygon(xpoints, ypoints, points);
 		this.area = new Area(polygon);
+	}
+	
+	public Engine2DBoundingPolygon(int[] xpoints,int[] ypoints){
+		this(xpoints, ypoints, xpoints.length);
 	}
 	
 	/**
@@ -23,24 +27,32 @@ public class Engine2DBoundingPolygon {
 	 * @param area of the other shape
 	 * @return if there is a collision between the two area's
 	 */
-	public static boolean checkAreaCollision(final Area area1, final Area area2){
-		Area a1 = area1;
-		a1.intersect(area2);
-		return a1.isEmpty();
+	public static boolean checkAreaCollision(final Polygon poly1, final Polygon poly2){
+		Area a1 = new Area(poly1);
+		Area a2 = new Area(poly2);
+		a1.intersect(a2);
+		return !a1.isEmpty();
 	}
 	
-	public boolean checkCollision(Area area){
-		return Engine2DBoundingPolygon.checkAreaCollision(this.area, area);
+	/**
+	 * Checks to see if there is a collision between the two areas
+	 * 
+	 * @param area of the other shape
+	 * @return if there is a collision between the two area's
+	 */
+	public static boolean checkAreaCollision(final Polygon poly1, final Engine2DBoundingRectangle rec){
+		Area a1 = new Area(poly1);
+		Area a2 = new Area(new Rectangle(rec.x, rec.y, rec.width, rec.height));
+		a1.intersect(a2);
+		return !a1.isEmpty();
 	}
 	
-	public boolean checkAriaCollision(Polygon polygon){
-		Area area2 = new Area(polygon);
-		return checkCollision(area2);
+	public boolean checkAreaCollision(Polygon polygon){
+		return Engine2DBoundingPolygon.checkAreaCollision(this.polygon,polygon);
 	}
 	
 	public boolean checkCollision(Engine2DBoundingRectangle recBox){
-		Rectangle rec = new Rectangle(recBox.x, recBox.y, recBox.width, recBox.height);
-		return Engine2DBoundingPolygon.checkAreaCollision(area, new Area(rec));
+		return Engine2DBoundingPolygon.checkAreaCollision(polygon, recBox);
 	}
 	
 	/**
@@ -194,7 +206,7 @@ public class Engine2DBoundingPolygon {
 		
 		public boolean checkCollision(Engine2DBoundingPolygon polygonBox) {
 			Rectangle rec = new Rectangle(x, y, width, height);
-			return Engine2DBoundingPolygon.checkAreaCollision(new Area(rec), polygonBox.area);
+			return Engine2DBoundingPolygon.checkAreaCollision(polygonBox.polygon, this);
 		}
 		
 		/**

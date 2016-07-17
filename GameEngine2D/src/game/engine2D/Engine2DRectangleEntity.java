@@ -38,7 +38,7 @@ private final Engine2DBoundingRectangle recBox;
 	}
 	
 	public int getWidth(){
-		return recBox.getX();
+		return recBox.getWidth();
 	}
 	
 	public int getHeight(){

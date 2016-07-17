@@ -16,7 +16,7 @@ import javax.swing.JFrame;
 
 public abstract class Engine2DGame {
 	protected static Engine2DGame GAME;
-	private final List<Screen> screens;
+	private final List<Engine2DScreen> screens;
 	private boolean running, gameover;
 	private int fps;
 	private JFrame window;
@@ -121,7 +121,7 @@ public abstract class Engine2DGame {
 		threads.add(thread);
 	}
 
-	public void addScreen(Screen screen) {
+	public void addScreen(Engine2DScreen screen) {
 		screens.add(screen);
 	}
 
@@ -133,7 +133,7 @@ public abstract class Engine2DGame {
 		}
 	}
 	
-	public Screen getScreen(int index){
+	public Engine2DScreen getScreen(int index){
 		try {
 			return screens.get(index);
 		} catch (IndexOutOfBoundsException e) {
