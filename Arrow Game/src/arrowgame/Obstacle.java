@@ -6,9 +6,9 @@ package arrowgame;
 
 import java.util.Random;
 
-import game.engine2D.Engine2DMovableRectangleEntity;
+import game.engine2D.Engine2DMovableRectangleBoundingBoxEntity;
 
-public class Obstacle extends Engine2DMovableRectangleEntity {
+public class Obstacle extends Engine2DMovableRectangleBoundingBoxEntity {
 	private final int WIDTH = 350;
 	private final int START = 0;
 	private final int End = 560;
@@ -134,7 +134,7 @@ public class Obstacle extends Engine2DMovableRectangleEntity {
 	 * @return true if it had collision with the player
 	 */
 	public boolean playerCollision() {
-		return GM.checkCollision(p1, this);
+		return getBoundingBox().checkCollision(p1.getBoundingBox());
 	}
 
 	public int getPosY() {

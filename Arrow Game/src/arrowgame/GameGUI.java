@@ -46,7 +46,7 @@ public class GameGUI extends Engine2DScreen implements ActionListener{
 		super.paintComponent(g);
 		reset.setVisible(false);
 
-		g.drawImage(rocket, GM.getPlayer().getBoundingBox().getX(), GM.getPlayer().getBoundingBox().getY(), null);
+		g.drawImage(rocket, GM.getPlayer().getX(), GM.getPlayer().getBoundingBox().getMinY(), null);
 
 		/*
 		 * checks which range the score falls in and set's the colour of the

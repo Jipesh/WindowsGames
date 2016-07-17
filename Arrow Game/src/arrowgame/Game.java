@@ -13,7 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import game.engine2D.Engine2DGame;
-import game.engine2D.Engine2DRectangleEntity;
+import game.engine2D.Engine2DMovableRectangleBoundingBoxEntity;
 import game.engine2D.Engine2DScreen;
 
 
@@ -30,7 +30,6 @@ public class Game extends Engine2DGame{
 	 */
 	public Game(String title, int width, int height, boolean resizable) {
 		super(title,width,height,resizable);
-		init();
 	}
 
 	/**
@@ -69,7 +68,7 @@ public class Game extends Engine2DGame{
 	 * A method which first checks collision between onject1 x1 to x2 and obj2
 	 * x1 to x2 then does the same for y values
 	 */
-	public boolean checkCollision(Engine2DRectangleEntity entity1, Engine2DRectangleEntity entity2) {
+	public boolean checkCollision(Engine2DMovableRectangleBoundingBoxEntity entity1, Engine2DMovableRectangleBoundingBoxEntity entity2) {
 		return entity1.getBoundingBox().checkCollision(entity2.getBoundingBox());
 	}
 
@@ -122,7 +121,11 @@ public class Game extends Engine2DGame{
 	public void init() {
 		obstacles = new HashMap<>();
 		obstaclesThread = new ArrayList<>();
-		user = new Player(this, 100, 500);
+		
+		int[] xpoints = {17,26,26,34,34,24,24,17,12,12,1,1,9,9};
+		int[] ypoints = {0,7,30,39,46,46,55,61,55,46,46,39,30,7};
+		
+		user = new Player(xpoints,ypoints);
 		userThread = new Thread(user);
 		for (int i = 0; i < 5; i++) {
 			obstacles.put(i, newObstacle(i)); // creates new obstacles
