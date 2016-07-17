@@ -3,14 +3,14 @@ package game.engine2D;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public abstract class Engine2DMovablePolygonEntity extends Engine2DPolygonEntity implements Runnable{
+public abstract class Engine2DMovablePolygonBoundingBoxEntity extends Engine2DPolygonBoundingBoxEntity implements Runnable{
 private Timer loopTimer;
 
-	public Engine2DMovablePolygonEntity(Engine2DBoundingPolygon polygonBox){
+	public Engine2DMovablePolygonBoundingBoxEntity(Engine2DPolygonBoundingBox polygonBox){
 		super(polygonBox);
 	}
 	
-	public Engine2DMovablePolygonEntity(int[] xpoints, int[] ypoints) {
+	public Engine2DMovablePolygonBoundingBoxEntity(int[] xpoints, int[] ypoints) {
 		super(xpoints,ypoints);
 	}
 
@@ -19,7 +19,7 @@ private Timer loopTimer;
 	 * @deprecated calling a game from another thread and updating it's element here as well
 	 * 	on the main game thread cause ConcurrentModificationException
 	 */
-	public Engine2DMovablePolygonEntity(Engine2DBoundingPolygon polygonBox, Engine2DGame game) {
+	public Engine2DMovablePolygonBoundingBoxEntity(Engine2DPolygonBoundingBox polygonBox, Engine2DGame game) {
 		super(polygonBox, game);
 	}
 	
@@ -28,7 +28,7 @@ private Timer loopTimer;
 	 * @deprecated calling a game from another thread and updating it's element here as well
 	 * 	on the main game thread cause ConcurrentModificationException
 	 */
-	public Engine2DMovablePolygonEntity(int[] xpoints, int[] ypoints, Engine2DGame game) {
+	public Engine2DMovablePolygonBoundingBoxEntity(int[] xpoints, int[] ypoints, Engine2DGame game) {
 		super(xpoints, ypoints, game);
 	}
 	

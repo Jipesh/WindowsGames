@@ -3,21 +3,25 @@ package game.engine2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 
-public class Engine2DBoundingPolygon {
+public class Engine2DPolygonBoundingBox {
 	private final Polygon polygon;
 	private Area area;
+	private int minX, maxX, minY, maxY, centerX, centerY;
 
-	public Engine2DBoundingPolygon(int[] xpoints,int[] ypoints, int points){
+	public Engine2DPolygonBoundingBox(int[] xpoints,int[] ypoints, int points){
 		if(xpoints.length != ypoints.length){
 			System.err.println("Polygon will fail to give accurate colision");
 		}
 		this.polygon = new Polygon(xpoints, ypoints, points);
+		setMinMax();
 		this.area = new Area(polygon);
 	}
 	
-	public Engine2DBoundingPolygon(int[] xpoints,int[] ypoints){
+	public Engine2DPolygonBoundingBox(int[] xpoints,int[] ypoints){
 		this(xpoints, ypoints, xpoints.length);
 	}
 	
@@ -40,7 +44,7 @@ public class Engine2DBoundingPolygon {
 	 * @param area of the other shape
 	 * @return if there is a collision between the two area's
 	 */
-	public static boolean checkAreaCollision(final Polygon poly1, final Engine2DBoundingRectangle rec){
+	public static boolean checkAreaCollision(final Polygon poly1, final Engine2DRectangleBoundingBox rec){
 		Area a1 = new Area(poly1);
 		Area a2 = new Area(new Rectangle(rec.x, rec.y, rec.width, rec.height));
 		a1.intersect(a2);
@@ -48,11 +52,11 @@ public class Engine2DBoundingPolygon {
 	}
 	
 	public boolean checkAreaCollision(Polygon polygon){
-		return Engine2DBoundingPolygon.checkAreaCollision(this.polygon,polygon);
+		return Engine2DPolygonBoundingBox.checkAreaCollision(this.polygon,polygon);
 	}
 	
-	public boolean checkCollision(Engine2DBoundingRectangle recBox){
-		return Engine2DBoundingPolygon.checkAreaCollision(polygon, recBox);
+	public boolean checkCollision(Engine2DRectangleBoundingBox recBox){
+		return Engine2DPolygonBoundingBox.checkAreaCollision(polygon, recBox);
 	}
 	
 	/**
@@ -65,6 +69,9 @@ public class Engine2DBoundingPolygon {
 		for(int i = 0 ; i < polygon.npoints ; i++){
 			polygon.xpoints [i] += (original * multiplier);
 		}
+		this.minX += (original * multiplier);
+		this.maxX += (original * multiplier);
+		setCenterPoints();
 	}
 	
 	/**
@@ -77,6 +84,9 @@ public class Engine2DBoundingPolygon {
 		for(int i = 0 ; i < polygon.npoints ; i++){
 			polygon.ypoints [i] += (original * multiplier);
 		}
+		this.minY += (original * multiplier);
+		this.maxY += (original * multiplier);
+		setCenterPoints();
 	}
 	
 	/**
@@ -127,8 +137,9 @@ public class Engine2DBoundingPolygon {
 	 * 
 	 * @param ypoints - set's the x points for the shape
 	 */
-	public void setX(int[] xpoints){
+	public void setXPoints(int[] xpoints){
 		getPolygon().xpoints =  xpoints;
+		setMinMax();
 	}
 	
 	/**
@@ -137,7 +148,7 @@ public class Engine2DBoundingPolygon {
 	 * @param ofset the offset for the block
 	 * @return the exact x points using the block size and offset 
 	 */
-	public int[] getX(int block,int ofset){
+	public int[] getXPoints(int block,int ofset){
 		int[]_xpoints = new int[getNumberOfPoints()];
 		for(int i = 0 ; i < getNumberOfPoints() ; i++){
 			_xpoints[i] = (getXPoints()[i]*block)+ofset;
@@ -149,8 +160,9 @@ public class Engine2DBoundingPolygon {
 	 * 
 	 * @param ypoints - set's the y points for the shape
 	 */
-	public void setY(int[] ypoints){
+	public void setYPoints(int[] ypoints){
 		getPolygon().ypoints =  ypoints;
+		setMinMax();
 	}
 	
 	/**
@@ -159,7 +171,7 @@ public class Engine2DBoundingPolygon {
 	 * @param ofset the offset for the block
 	 * @return the exact y position using the block size and offset 
 	 */
-	public int[] getY(int block, int ofset){
+	public int[] getYPoints(int block, int ofset){
 		int[]_ypoints = new int[getNumberOfPoints()];
 		for(int i = 0 ; i < getNumberOfPoints() ; i++){
 			_ypoints[i] = (getYPoints()[i]*block)+ofset;
@@ -167,7 +179,108 @@ public class Engine2DBoundingPolygon {
 		return _ypoints;
 	}
 	
-	public static class Engine2DBoundingRectangle {
+	/**
+	 * @return the minX
+	 */
+	public final int getMinX() {
+		return minX;
+	}
+
+	/**
+	 * @param minX the minX to set
+	 */
+	public final void setMinX(int minX) {
+		this.minX = minX;
+	}
+
+	/**
+	 * @return the maxX
+	 */
+	public final int getMaxX() {
+		return maxX;
+	}
+
+	/**
+	 * @param maxX the maxX to set
+	 */
+	public final void setMaxX(int maxX) {
+		this.maxX = maxX;
+	}
+
+	/**
+	 * @return the minY
+	 */
+	public final int getMinY() {
+		return minY;
+	}
+
+	/**
+	 * @param minY the minY to set
+	 */
+	public final void setMinY(int minY) {
+		this.minY = minY;
+	}
+
+	/**
+	 * @return the maxY
+	 */
+	public final int getMaxY() {
+		return maxY;
+	}
+
+	/**
+	 * @param maxY the maxY to set
+	 */
+	public final void setMaxY(int maxY) {
+		this.maxY = maxY;
+	}
+
+	/**
+	 * @return the centerX
+	 */
+	public final int getCenterX() {
+		return centerX;
+	}
+
+	/**
+	 * @param centerX the centerX to set
+	 */
+	public final void setCenterX(int centerX) {
+		this.centerX = centerX;
+	}
+
+	/**
+	 * @return the centerY
+	 */
+	public final int getCenterY() {
+		return centerY;
+	}
+
+	/**
+	 * @param centerY the centerY to set
+	 */
+	public final void setCenterY(int centerY) {
+		this.centerY = centerY;
+	}
+
+	private void setMinMax(){
+		int[] xpoints = getXPoints().clone();
+		int[] ypoints = getYPoints().clone();
+		Arrays.sort(xpoints);
+		Arrays.sort(ypoints);
+		this.minX = xpoints[0];
+		this.maxX = xpoints[xpoints.length - 1];
+		this.minY = ypoints[0];
+		this.maxY = ypoints[ypoints.length - 1];
+		setCenterPoints();
+	}
+	
+	private void setCenterPoints(){
+		this.centerX = (this.maxX - this.minX)/2;
+		this.centerY = (this.maxY - this.minY)/2;
+	}
+	
+	public static class Engine2DRectangleBoundingBox {
 	private int x, y, width, height;
 		
 	/**
@@ -182,9 +295,9 @@ public class Engine2DBoundingPolygon {
 	 * @param width
 	 *            the width of the box
 	 * 
-	 * @see Engine2DBoundingPolygon#checkCollision(Engine2DBoundingPolygon) checkCollision(BoundingBox)
+	 * @see Engine2DPolygonBoundingBox#checkCollision(Engine2DPolygonBoundingBox) checkCollision(BoundingBox)
 	 */	
-	public Engine2DBoundingRectangle(int x, int y, int width, int height){
+	public Engine2DRectangleBoundingBox(int x, int y, int width, int height){
 			this.x = x;
 			this.y = y;
 			this.width = width;
@@ -199,14 +312,14 @@ public class Engine2DBoundingPolygon {
 		 *            the bounding box to check for collision
 		 * @return true if its overlapping false if its not
 		 */
-		public boolean checkCollision(Engine2DBoundingRectangle recBox) {
+		public boolean checkCollision(Engine2DRectangleBoundingBox recBox) {
 			return ((this.x + this.width >= recBox.getX()) && (this.x <= recBox.getX() + recBox.getWidth()))
 					&& (this.y + this.height >= recBox.getY()) && (this.y <= recBox.getY() + recBox.getHeight());
 		}
 		
-		public boolean checkCollision(Engine2DBoundingPolygon polygonBox) {
+		public boolean checkCollision(Engine2DPolygonBoundingBox polygonBox) {
 			Rectangle rec = new Rectangle(x, y, width, height);
-			return Engine2DBoundingPolygon.checkAreaCollision(polygonBox.polygon, this);
+			return Engine2DPolygonBoundingBox.checkAreaCollision(polygonBox.polygon, this);
 		}
 		
 		/**
