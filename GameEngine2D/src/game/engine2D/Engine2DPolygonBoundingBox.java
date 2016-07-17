@@ -1,9 +1,12 @@
+/**
+ * 
+ * @author Jipesh
+ */
 package game.engine2D;
 
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 

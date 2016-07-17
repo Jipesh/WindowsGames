@@ -1,3 +1,7 @@
+/**
+ * 
+ * @author Jipesh
+ */
 package game.engine2D;
 
 import java.util.Timer;
@@ -33,6 +37,12 @@ public abstract class Engine2DMovableRectangleBoundingBoxEntity extends Engine2D
 		super(x,y,width,height,game);
 	}
 	
+	/**
+	 * This method will be called at the same rate as what was specified
+	 * in the game start method
+	 * 
+	 * @see Engine2DGame#start(int) start(fps)
+	 */
 	public abstract void update();
 	
 	public void stopLoop(){

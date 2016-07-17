@@ -1,3 +1,7 @@
+/**
+ * 
+ * @author Jipesh
+ */
 package game.engine2D;
 
 import java.awt.Dimension;
@@ -45,6 +49,7 @@ public abstract class Engine2DGame {
 		this.threads = new ArrayList<>();
 		this.gameTimer = new Timer();
 		this.GAME = this;
+		init();
 	}
 
 	/**
@@ -133,6 +138,10 @@ public abstract class Engine2DGame {
 		}
 	}
 	
+	public void setScreen(Engine2DScreen screen){
+		window.setContentPane(screen);
+	}
+	
 	public Engine2DScreen getScreen(int index){
 		try {
 			return screens.get(index);
@@ -144,6 +153,11 @@ public abstract class Engine2DGame {
 
 	public abstract void init();
 
+	/**
+	 * This is the code that will run when running is true and
+	 * game over is false
+	 * 
+	 */
 	public abstract void gameLoop();
 
 	public void setMinimumSize(int width, int height) {
@@ -169,6 +183,9 @@ public abstract class Engine2DGame {
 
 	public abstract void onPause();
 	
+	/**
+	 * Method that will run when game over is true
+	 */
 	public abstract void gameOver();
 
 	public void addKeyListener(KeyListener listener) {
@@ -232,6 +249,14 @@ public abstract class Engine2DGame {
 	
 	public int getFPS() {
 		return fps;
+	}
+	
+	List<Thread> getThreadList(){
+		return threads;
+	}
+	
+	Thread getGameThread(){
+		return gameThread;
 	}
 	
 	private class GameLoopTask extends TimerTask{
