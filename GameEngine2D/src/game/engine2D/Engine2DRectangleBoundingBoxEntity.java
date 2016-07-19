@@ -7,17 +7,8 @@ package game.engine2D;
 import game.engine2D.Engine2DPolygonBoundingBox.Engine2DRectangleBoundingBox;
 
 public abstract class Engine2DRectangleBoundingBoxEntity extends Engine2DEntity{
-private final Engine2DRectangleBoundingBox recBox;
 	
-	public Engine2DRectangleBoundingBoxEntity(Engine2DRectangleBoundingBox recBox) {
-		super();
-		this.recBox = recBox;
-	}
-
-	public Engine2DRectangleBoundingBoxEntity(int x, int y, int width, int height) {
-		super();
-		this.recBox = new Engine2DRectangleBoundingBox(x,y,width,height);
-	}
+	private final Engine2DRectangleBoundingBox recBox;
 
 	public Engine2DRectangleBoundingBoxEntity(Engine2DRectangleBoundingBox recBox, Engine2DGame game) {
 		super(game);

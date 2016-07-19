@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 
 public class Engine2DPolygonBoundingBox {
+	
 	private final Polygon polygon;
 	private Area area;
 	private int minX, maxX, minY, maxY, centerX, centerY;

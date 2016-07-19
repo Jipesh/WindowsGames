@@ -10,12 +10,9 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public abstract class Engine2DEntity {
+	
 	private final Engine2DGame game;
 	private Image image;
-
-	public Engine2DEntity() {
-		this.game = null;
-	}
 	
 	/**
 	 * 
@@ -66,11 +63,7 @@ public abstract class Engine2DEntity {
 	 * @return the game object
 	 */
 	public Engine2DGame getGame(){
-		if(game == null){
-			return Engine2DGame.GAME;
-		}else{
-			return game;
-		}
+		return game;
 	}
 
 	public Image getImage() {
