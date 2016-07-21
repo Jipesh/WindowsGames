@@ -114,12 +114,16 @@ public abstract class Engine2DEntity {
 	 * The method return the x position of the bounding box if bounding box was set
 	 * else throws error
 	 * 
-	 * @param x the x position to set
+	 * @return the x position of the bounding box
 	 * 
 	 * @see Engine2DBoundingBox#getX() getX()
 	 */
-	public void getX(){
-		getBoundingBox().getX();
+	public float getX(){
+		if (box != null){
+			return getBoundingBox().getX();
+		}else{
+			throw new NullPointerException("No bounding box set for entity");
+		}
 	}
 	
 	/**
@@ -128,34 +132,62 @@ public abstract class Engine2DEntity {
 	 * 
 	 * @param y the y position to set
 	 * 
-	 * @see Engine2DBoundingBox#setX(float) setY(float)
+	 * @see Engine2DBoundingBox#setY(float) setY(float)
 	 */
 	public void setY(float y){
-		getBoundingBox().setY(y);
+		if (box != null){
+			getBoundingBox().setY(y);
+		}else{
+			throw new NullPointerException("No bounding box set for entity");
+		}
 	}
 	
 	/**
 	 * The method returns the y position of the bounding box if bounding box was set
 	 * else throws error
 	 * 
+	 * @return the y position of the bounding box
+	 * 
 	 * @see Engine2DBoundingBox#getY() getY()
 	 */
-	public void getY(float y){
-		getBoundingBox().getY();
+	public float getY(){
+		if (box != null){
+			return getBoundingBox().getY();
+		}else{
+			throw new NullPointerException("No bounding box set for entity");
+		}
 	}
 
 	/**
-	 * The method returns the y width of the bounding box if bounding box was set
+	 * The method returns the width of the bounding box if bounding box was set
 	 * else throws error
+	 * 
+	 * @return the width of the bounding box
 	 * 
 	 * @see Engine2DBoundingBox#getWidth() getWidth()
 	 */
-	public void getWidth(float width){
-		getBoundingBox().getWidth();
+	public float getWidth(){
+		if (box != null){
+			return getBoundingBox().getWidth();
+		}else{
+			throw new NullPointerException("No bounding box set for entity");
+		}
 	}
 	
-	public void getHeight(float height){
-		getBoundingBox().getHeight();
+	/**
+	 * The method returns the height of the bounding box if bounding box was set
+	 * else throws error
+	 * 
+	 * @return the height of the bounding box
+	 * 
+	 * @see Engine2DBoundingBox#getHeight() getHeight()
+	 */
+	public float getHeight(){
+		if (box != null){
+			return getBoundingBox().getHeight();
+		}else{
+			throw new NullPointerException("No bounding box set for entity");
+		}
 	}
 
 	/**
