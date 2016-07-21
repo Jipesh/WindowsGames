@@ -112,3 +112,28 @@ Polygon Bounding Box
 * added minY can be used similar way as getY() for rectangle bounding box
 * added maxY can be used similar way as getHeight() for rectangle bounding box
 * added methods to set and get center points
+
+==============================================================================
+
+rev 1.4 (update 5)
+
+New feature:
+
+Game
+
+* added GameEventDispatcher Thread class which allows the ability to submit runnable task to a queue
+  to be processed using FIFO
+* added new ArrayLsit called GameArrayList - it is a special type of list which only allows you to
+  add or remove element from the list on the GameEventDispatcher Thread
+* changed gameLoop to make it run at constant rate, on a new thread
+
+Bounding Box
+
+* changed structure two two separate classes which extends Engine2DBoundingBox
+* added main method such as setX(), setY(), getCenterX(), getCenterY() etc.
+
+Entity
+
+* changed structure so that there are only two classes Entity and MovableEntity, but now you have the
+  ability to set bounding box
+* Movable entity loop changed to loop similar to the main GameThread loop

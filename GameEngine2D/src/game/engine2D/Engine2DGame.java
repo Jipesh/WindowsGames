@@ -31,12 +31,13 @@ public abstract class Engine2DGame {
 	private final List<Engine2DScreen> screens;
 	private final JFrame window;
 	private final List<Thread> threads;
-	private final HashMap<String, GameThreadList<Engine2DEntity>> entityLists;
-	private boolean running, gameover;
+	private final HashMap<String, GameArrayList<Engine2DEntity>> entityLists;
+	private final Engine2DEventDispatcher eventDispatcher;
+	private boolean running, gameover, appRunning;
 	private int fps;
+
 	private BufferedImage sprite_sheet;
 	private Engine2DScreen currentScreen;
-	private Timer gameTimer;
 	private Engine2DGameThread gameThread;
 
 	/**
@@ -55,13 +56,14 @@ public abstract class Engine2DGame {
 		this.window = new JFrame(title);
 		this.window.setSize(width, height);
 		this.window.setResizable(resizable);
+		this.appRunning = true;
 		this.entityLists = new HashMap<>();
 		this.screens = new ArrayList<>();
 		this.threads = new ArrayList<>();
-		this.gameTimer = new Timer();
 		this.gameThread = new Engine2DGameThread(this, "GameThread");
-		this.gameThread.startThread();
-		this.gameThread.setPriority(Thread.MAX_PRIORITY);
+		this.eventDispatcher = new Engine2DEventDispatcher(this, "GameEventDispatcher");
+		this.eventDispatcher.startThread();
+		this.eventDispatcher.setPriority(Thread.MAX_PRIORITY);
 	}
 
 	/**
@@ -99,16 +101,17 @@ public abstract class Engine2DGame {
 	 * The main loop which start's all the threads and the main game loop as
 	 * well as setting the frame visible
 	 * 
+	 * @param fps the target fps for the game
+	 * 
 	 * @see Engine2DGame#startThreads() startTheads()
-	 * @see Engine2DGame#startLoop() startLoop()
 	 */
 	public void start(int fps) {
 		setFPS(fps);
 		window.setVisible(true);
 		gameover = false;
 		running = true;
+		gameThread.startThread();
 		startThreads();
-		startLoop();
 	}
 
 	/**
@@ -191,18 +194,23 @@ public abstract class Engine2DGame {
 
 	/**
 	 * The method renders graphics on the screen by calling the repaint method
-	 * from it
+	 * on the current screen if there was no screen added then the content pane
+	 * of the window will be re-painted
 	 * 
 	 * @see Container#repaint() repaint()
 	 */
 	public void render() {
-		window.getContentPane().repaint();
+		if(currentScreen != null){
+			currentScreen.repaint();
+		}else{
+			window.getContentPane().repaint();
+		}
+		
 	}
 
 	/**
 	 * This is the code that will run when running is true and game over is
 	 * false
-	 * 
 	 */
 	public abstract void gameLoop();
 
@@ -218,7 +226,7 @@ public abstract class Engine2DGame {
 		return screens.size();
 	}
 
-	private void pause() {
+	void pause() {
 		running = false;
 		onPause();
 	}
@@ -296,22 +304,19 @@ public abstract class Engine2DGame {
 		threads.clear();
 	}
 
-	public Timer getTimer() {
-		return gameTimer;
-	}
-
 	/**
-	 * This method add's a entity to an GameThreadList by submitting task to the
-	 * gameThread
+	 * This method add a entity to an GameArrayList by submitting task to the
+	 * GameEventDispatcher queue
+	 * 
 	 * 
 	 * @param list
-	 *            the GameThreadList object
+	 *            the GameArrayList object
 	 * @param e
 	 *            the element you want to add to the list
 	 * 
 	 * @see Engine2DGame#submitTask(Runnable) submitTask(Runnable)
 	 */
-	public <E> void addToGameThreadList(GameThreadList<E> list, E e) {
+	public <E> void addToGameArrayList(GameArrayList<E> list, E e) {
 		submitTask(new Runnable() {
 
 			@Override
@@ -322,17 +327,17 @@ public abstract class Engine2DGame {
 	}
 
 	/**
-	 * This method removes a entity from the GameThreadList by submitting task
-	 * to the gameThread
+	 * This method removes a entity from the GameArrayList by submitting task
+	 * to the GameEventDispatcher queue
 	 * 
 	 * @param list
-	 *            the GameThreadList object
+	 *            the GameArrayList object
 	 * @param e
 	 *            the element you want to add to the list
 	 * 
 	 * @see Engine2DGame#submitTask(Runnable) submitTask(Runnable)
 	 */
-	public <E> void removeFromGameThreadList(GameThreadList<E> list, E e) {
+	public <E> void removeFromGameArrayList(GameArrayList<E> list, E e) {
 		submitTask(new Runnable() {
 
 			@Override
@@ -344,14 +349,14 @@ public abstract class Engine2DGame {
 
 	/**
 	 * The methods adds the entity to the list present in the entity HashMap,
-	 * this is submitted to the gameThread queue
+	 * this is submitted to the GameEventDispatcher queue
 	 * 
 	 * @param key
 	 *            the key to access the list
 	 * @param entity
 	 *            the entity to remove from the list
 	 * 
-	 * @see Engine2DGame#addEntityList(String, GameThreadList)
+	 * @see Engine2DGame#addEntityList(String, GameArrayList)
 	 *      addEntityList(String, GameThreadList)
 	 * @see Engine2DGame#submitTask(Runnable) submitTask(Runnable)
 	 */
@@ -366,16 +371,16 @@ public abstract class Engine2DGame {
 	}
 
 	/**
-	 * The methods removes the entity from a GameThreadList present in game
-	 * entity list HashMap, this is submitted to the gameThread queue
+	 * The methods removes the entity from a GameArrayList present in game
+	 * entity list HashMap, this is submitted to the GameEventDispatcher queue
 	 * 
 	 * @param key
 	 *            the key to access the list
 	 * @param entity
 	 *            the entity to add to the list
 	 * 
-	 * @see Engine2DGame#addEntityList(String, GameThreadList)
-	 *      addEntityList(String, GameThreadList)
+	 * @see Engine2DGame#addEntityList(String, GameArrayList)
+	 *      addEntityList(String,GameArrayList)
 	 * @see Engine2DGame#submitTask(Runnable) submitTask(Runnable)
 	 */
 	public void removeEntityFromList(String key, Engine2DEntity entity) {
@@ -389,31 +394,6 @@ public abstract class Engine2DGame {
 	}
 
 	/**
-	 * 
-	 * @throws NullPointerException
-	 *             if the timer has already been stopped
-	 * 
-	 * @see Engine2DGame#startLoop() startLoop()
-	 */
-	public void stopLoop() throws NullPointerException {
-		gameTimer.cancel();
-	}
-
-	/**
-	 * Start's the main game loop and runs the code at the desired fps
-	 * 
-	 * @see Engine2DGame#start(int) start(fps)
-	 * @see Engine2DGame#setFPS(int) setFPS(fps)
-	 * @see Engine2DGame#onPause() onPause()
-	 * @see Engine2DGame#gameOver() gameOver()
-	 * 
-	 */
-	public void startLoop() {
-		gameTimer = new Timer();
-		gameTimer.scheduleAtFixedRate(new GameLoopTask(), 0, (long) (1000f / fps));
-	}
-
-	/**
 	 * This method will end the game thread
 	 * 
 	 * @throws InterruptedException
@@ -423,6 +403,10 @@ public abstract class Engine2DGame {
 		gameThread.stopThread();
 	}
 
+	/**
+	 * 
+	 * @param fps the target FPS;
+	 */
 	protected void setFPS(final int fps) {
 		this.fps = fps;
 	}
@@ -438,8 +422,23 @@ public abstract class Engine2DGame {
 	 * @param list
 	 *            the GameThreadList to add to the entity HashMap
 	 */
-	protected void addEntityList(String key, GameThreadList<Engine2DEntity> list) {
+	protected void addEntityList(String key, GameArrayList<Engine2DEntity> list) {
 		this.entityLists.put(key, list);
+	}
+	
+	/**
+	 * 
+	 * @param key
+	 *            to access the list in future
+	 * @param list
+	 *            the GameArrayList to remove from the entity HashMap
+	 */
+	protected void removeEntityList(String key, GameArrayList<Engine2DEntity> list) {
+		this.entityLists.remove(key);
+	}
+	
+	protected void clearHashMap(){
+		this.entityLists.clear();
 	}
 
 	/**
@@ -449,7 +448,7 @@ public abstract class Engine2DGame {
 	 * 
 	 * @return the Entity GameThreadList which has this key
 	 * 
-	 * @see Engine2DGame#addEntityList(String, GameThreadList)
+	 * @see Engine2DGame#addEntityList(String, GameArrayList)
 	 *      addEntityList(String, GameThreadList)
 	 */
 	public List<Engine2DEntity> getEntityList(String key) {
@@ -517,40 +516,31 @@ public abstract class Engine2DGame {
 	 *            the task to submit
 	 */
 	protected void submitTask(Runnable runnable) {
-		gameThread.sumbitTask(runnable);
+		eventDispatcher.sumbitTask(runnable);
 	}
 
-	private class GameLoopTask extends TimerTask {
-
-		@Override
-		public void run() {
-			if (!gameover) {
-				if (running) {
-					gameLoop();
-					render();
-				} else {
-					pause();
-				}
-			} else {
-				gameOver();
-			}
-		}
-
+	/**
+	 * @return the currentScreen
+	 */
+	public final Engine2DScreen getCurrentScreen() {
+		return currentScreen;
+	}
+	
+	/**
+	 * @return the appRunning
+	 */
+	public final boolean isAppRunning() {
+		return appRunning;
 	}
 
 	/**
 	 * A special type of arrayList which requires modification such as add(E e)
-	 * and remove (E e) and remove(index) to be submitted to run on the
+	 * and {@linkplain ArrayList#remove(Object) remove(Object)} and {@linkplain ArrayList#remove(int) remove(index)} to be submitted to run on the
 	 * GameThread()
 	 */
-	public class GameThreadList<E> extends ArrayList<E> {
+	public class GameArrayList<E> extends ArrayList<E> {
 
-		/**
-		 * A special type of arrayList which requires modification such as add(E
-		 * e) and remove (E e) and remove(index) to be submitted to run on the
-		 * GameThread()
-		 */
-		public GameThreadList() {
+		public GameArrayList() {
 			super();
 		}
 
@@ -559,16 +549,18 @@ public abstract class Engine2DGame {
 			if (Thread.currentThread().getName().equals(getGameThreadName())) {
 				return super.add(e);
 			} else {
-				throw new IllegalAccessError("modification to the GameThreadList must be done on gameThread");
+				throw new IllegalAccessError(
+						"modification to the GameArrayList must be done on " + eventDispatcher.getName());
 			}
 		}
 
 		@Override
 		public boolean remove(Object o) {
-			if (Thread.currentThread().getName().equals(getGameThreadName())) {
+			if (Thread.currentThread().getName().equals(eventDispatcher.getName())) {
 				return super.remove(o);
 			} else {
-				throw new IllegalAccessError("modification to the GameThreadList must be done on gameThread");
+				throw new IllegalAccessError(
+						"modification to the GameArrayList must be done on " + eventDispatcher.getName());
 			}
 		}
 
@@ -577,7 +569,8 @@ public abstract class Engine2DGame {
 			if (Thread.currentThread().getName().equals(getGameThreadName())) {
 				return super.remove(index);
 			} else {
-				throw new IllegalAccessError("modification to the GameThreadList must be done on gameThread");
+				throw new IllegalAccessError(
+						"modification to the GameArrayList must be done on " + eventDispatcher.getName());
 			}
 		}
 	}
