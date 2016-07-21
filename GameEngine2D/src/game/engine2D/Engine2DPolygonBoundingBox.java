@@ -52,17 +52,6 @@ public class Engine2DPolygonBoundingBox extends Engine2DBoundingBox {
 
 	/**
 	 * 
-	 * @param xpoints
-	 *            the array for x points of the polygon
-	 * @param ypoints
-	 *            the array for the y points of the polygon
-	 */
-	public Engine2DPolygonBoundingBox(int[] xpoints, int[] ypoints) {
-		this(xpoints, ypoints, 0);
-	}
-
-	/**
-	 * 
 	 * @param polyBox
 	 *            the polygon bounding box object
 	 * 
@@ -107,8 +96,6 @@ public class Engine2DPolygonBoundingBox extends Engine2DBoundingBox {
 		for (int i = 0; i < polygon.npoints; i++) {
 			polygon.xpoints[i] += (block * ofset);
 		}
-		this.setX(getX() + (block * ofset));
-		setCenterPoints();
 	}
 
 	@Override
@@ -124,8 +111,6 @@ public class Engine2DPolygonBoundingBox extends Engine2DBoundingBox {
 		for (int i = 0; i < polygon.npoints; i++) {
 			polygon.ypoints[i] += (block * ofset);
 		}
-		this.setY(getY() + (block * ofset));
-		setCenterPoints();
 	}
 
 	/**
@@ -231,7 +216,7 @@ public class Engine2DPolygonBoundingBox extends Engine2DBoundingBox {
 	 * @param value
 	 *            the value to change to
 	 */
-	public void setXPoint(int index, int value) {
+	public void setXPoint(int index, int value){
 		xpoints[index] = value;
 		setMinMax();
 	}
@@ -243,7 +228,7 @@ public class Engine2DPolygonBoundingBox extends Engine2DBoundingBox {
 	 * @param value
 	 *            the value to change to
 	 */
-	public void setYPoint(int index, int value) {
+	public void setYPoint(int index, int value){
 		ypoints[index] = value;
 		setMinMax();
 	}

@@ -70,13 +70,14 @@ public abstract class Engine2DBoundingBox {
 		switch (type) {
 		case RECTANGLE_BOUNDING_BOX:
 			this.x += (block * offset);
-			this.centerX += (block * offset);
 			break;
 		case POLYGON_BOUNDING_BOX:
 			Engine2DPolygonBoundingBox polyBox = (Engine2DPolygonBoundingBox) this;
 			polyBox.moveX(block, offset);
+			this.x += (block * offset);
 			break;
 		}
+		setCenterPoints();
 
 	}
 
@@ -88,16 +89,12 @@ public abstract class Engine2DBoundingBox {
 	 *            the offset in pixels
 	 */
 	public void moveY(int block, float offset) {
-		switch (type) {
-		case RECTANGLE_BOUNDING_BOX:
-			this.y += (block * offset);
-			this.centerY += (block * offset);
-			break;
-		case POLYGON_BOUNDING_BOX:
+		if(type.equals(POLYGON_BOUNDING_BOX)){
 			Engine2DPolygonBoundingBox polyBox = (Engine2DPolygonBoundingBox) this;
 			polyBox.moveY(block, offset);
-			break;
 		}
+		this.y += (block * offset);
+		setCenterPoints();
 	}
 
 	/**
@@ -135,6 +132,7 @@ public abstract class Engine2DBoundingBox {
 			polyBox.moveX(moveX, 1);
 		}
 		this.x = x;
+		setCenterPoints();
 	}
 
 	/**
@@ -155,6 +153,7 @@ public abstract class Engine2DBoundingBox {
 			polyBox.moveX(moveX, 1);
 		}
 		this.x = (this.getX() * block) + offset;
+		setCenterPoints();
 	}
 
 	/**
@@ -192,6 +191,7 @@ public abstract class Engine2DBoundingBox {
 			polyBox.moveX(moveY, 1);
 		}
 		this.y = y;
+		setCenterPoints();
 	}
 
 	/**
@@ -287,5 +287,10 @@ public abstract class Engine2DBoundingBox {
 
 	final void setCenterY(float centerY) {
 		this.centerY = centerY;
+	}
+
+	private void setCenterPoints() {
+		this.centerX = (this.width - this.x) / 2;
+		this.centerY = (this.height - this.y) / 2;
 	}
 }
