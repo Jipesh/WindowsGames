@@ -30,7 +30,7 @@ final class Engine2DGameThread extends Thread {
 	}
 	
 	private void loop(){
-		long tickTime = (long) (1000f / getGame().getFPS());
+		long tickTime = (long) (1e3f / getGame().getFPS());
 		long now;
 		long lastTime = System.currentTimeMillis();
 		while (getGame().isAppRunning()) {
@@ -40,16 +40,12 @@ final class Engine2DGameThread extends Thread {
 				tick();
 				lastTime = System.currentTimeMillis();
 			}
-			long temp1 = System.currentTimeMillis();
-			if (temp1 - now < 1) {
-				synchronized (monitor) {
-					try {
-						monitor.wait(1);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
 		}
 	}
 	

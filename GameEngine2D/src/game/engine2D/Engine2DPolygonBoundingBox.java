@@ -83,31 +83,29 @@ public class Engine2DPolygonBoundingBox extends Engine2DBoundingBox {
 		return Engine2DBoundingBox.checkAreaCollision(this, recBox);
 	}
 
-	@Override
 	/**
 	 * updates x positions using the original offset and the multiplier/speed
 	 * 
-	 * @param original
-	 *            the original offset
-	 * @param multiplier
-	 *            the speed multiplier
+	 * @param block
+	 *            the original step to move
+	 * @param offset
+	 *            the x offset
 	 */
-	public void moveX(int block, float ofset) {
+	public void moveXPos(int block, float offset) {
 		for (int i = 0; i < polygon.npoints; i++) {
-			polygon.xpoints[i] += (block * ofset);
+			polygon.xpoints[i] += (block * offset);
 		}
 	}
 
-	@Override
 	/**
 	 * updates y position using the original offset and the multiplier/speed
 	 * 
-	 * @param original
-	 *            the original offset
-	 * @param multiplier
-	 *            the speed multiplier
+	 * @param block
+	 *            the original step to move
+	 * @param offset
+	 *            the y offset
 	 */
-	public void moveY(int block, float ofset) {
+	void moveYPos(int block, float ofset) {
 		for (int i = 0; i < polygon.npoints; i++) {
 			polygon.ypoints[i] += (block * ofset);
 		}
@@ -116,7 +114,7 @@ public class Engine2DPolygonBoundingBox extends Engine2DBoundingBox {
 	/**
 	 * 
 	 * @param xpoints
-	 *            - set's the x points for the shape
+	 *            the x points of the shape to set
 	 */
 	public void setXPoints(int[] xpoints) {
 		getPolygon().xpoints = xpoints;
@@ -127,14 +125,14 @@ public class Engine2DPolygonBoundingBox extends Engine2DBoundingBox {
 	 * 
 	 * @param block
 	 *            the block size
-	 * @param ofset
+	 * @param offset
 	 *            the offset for the block
 	 * @return the exact x points using the block size and offset
 	 */
-	public int[] getXPoints(int block, int ofset) {
+	public int[] getXPoints(int block, int offset) {
 		int[] _xpoints = new int[getNumberOfPoints()];
 		for (int i = 0; i < getNumberOfPoints(); i++) {
-			_xpoints[i] = (getXPoints()[i] * block) + ofset;
+			_xpoints[i] = (getXPoints()[i] * block) + offset;
 		}
 		return _xpoints;
 	}
@@ -142,7 +140,7 @@ public class Engine2DPolygonBoundingBox extends Engine2DBoundingBox {
 	/**
 	 * 
 	 * @param ypoints
-	 *            - set's the y points for the shape
+	 *           the y points of the shape to set
 	 */
 	public void setYPoints(int[] ypoints) {
 		getPolygon().ypoints = ypoints;

@@ -34,8 +34,7 @@ public class Engine2DRectangleBoundingBox extends Engine2DBoundingBox {
 		this.setY(y);
 		this.setWidth(width);
 		this.setHeight(height);
-		setCenterX((getWidth() - getX())/2);
-		setCenterY((getHeight() - getY())/2);
+		setCenterPoint();
 	}
 
 	/**
@@ -57,35 +56,6 @@ public class Engine2DRectangleBoundingBox extends Engine2DBoundingBox {
 		Rectangle rec = new Rectangle((int)getX(), (int)getY(), (int)getWidth(), (int)getHeight());
 		return Engine2DBoundingBox.checkAreaCollision(polygonBox, this);
 	}
-
-	@Override
-	/**
-	 * updates x position using the original offset and the multiplier/speed
-	 * 
-	 * @param original
-	 *            the original offset
-	 * @param multiplier
-	 *            the speed multiplier
-	 */
-	public void moveX(int block, float multiplier) {
-		super.moveX(block, multiplier);
-	}
-
-	@Override
-	/**
-	 * updates y position using the original offset and the multiplier/speed
-	 * 
-	 * 
-	 * @param original
-	 *            the original offset
-	 * @param multiplier
-	 *            the speed multiplier
-	 *            
-	 *            
-	 */
-	public void moveY(int block, float ofset) {
-		super.moveY(block, ofset);
-	}
 	
 	/**
 	 * 
@@ -100,6 +70,11 @@ public class Engine2DRectangleBoundingBox extends Engine2DBoundingBox {
 	 * @param height the height to set for this bounding box
 	 */
 	public void setHeight(float height){
-		super.setWidth(height);
+		super.setHeight(height);
+	}
+	
+	private void setCenterPoint(){
+		setCenterX((getWidth() - getX())/2);
+		setCenterY((getHeight() - getY())/2);
 	}
 }

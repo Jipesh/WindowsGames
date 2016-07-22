@@ -101,7 +101,8 @@ public abstract class Engine2DGame {
 	 * The main loop which start's all the threads and the main game loop as
 	 * well as setting the frame visible
 	 * 
-	 * @param fps the target fps for the game
+	 * @param fps
+	 *            the target fps for the game
 	 * 
 	 * @see Engine2DGame#startThreads() startTheads()
 	 */
@@ -200,12 +201,12 @@ public abstract class Engine2DGame {
 	 * @see Container#repaint() repaint()
 	 */
 	public void render() {
-		if(currentScreen != null){
+		if (currentScreen != null) {
 			currentScreen.repaint();
-		}else{
+		} else {
 			window.getContentPane().repaint();
 		}
-		
+
 	}
 
 	/**
@@ -308,6 +309,8 @@ public abstract class Engine2DGame {
 	 * This method add a entity to an GameArrayList by submitting task to the
 	 * GameEventDispatcher queue
 	 * 
+	 * @param <E>
+	 *            the type
 	 * 
 	 * @param list
 	 *            the GameArrayList object
@@ -327,8 +330,11 @@ public abstract class Engine2DGame {
 	}
 
 	/**
-	 * This method removes a entity from the GameArrayList by submitting task
-	 * to the GameEventDispatcher queue
+	 * This method removes a entity from the GameArrayList by submitting task to
+	 * the GameEventDispatcher queue
+	 * 
+	 * @param <E>
+	 *            the type
 	 * 
 	 * @param list
 	 *            the GameArrayList object
@@ -405,7 +411,8 @@ public abstract class Engine2DGame {
 
 	/**
 	 * 
-	 * @param fps the target FPS;
+	 * @param fps
+	 *            the target FPS;
 	 */
 	protected void setFPS(final int fps) {
 		this.fps = fps;
@@ -425,7 +432,7 @@ public abstract class Engine2DGame {
 	protected void addEntityList(String key, GameArrayList<Engine2DEntity> list) {
 		this.entityLists.put(key, list);
 	}
-	
+
 	/**
 	 * 
 	 * @param key
@@ -436,8 +443,8 @@ public abstract class Engine2DGame {
 	protected void removeEntityList(String key, GameArrayList<Engine2DEntity> list) {
 		this.entityLists.remove(key);
 	}
-	
-	protected void clearHashMap(){
+
+	protected void clearHashMap() {
 		this.entityLists.clear();
 	}
 
@@ -525,7 +532,7 @@ public abstract class Engine2DGame {
 	public final Engine2DScreen getCurrentScreen() {
 		return currentScreen;
 	}
-	
+
 	/**
 	 * @return the appRunning
 	 */
@@ -535,8 +542,9 @@ public abstract class Engine2DGame {
 
 	/**
 	 * A special type of arrayList which requires modification such as add(E e)
-	 * and {@linkplain ArrayList#remove(Object) remove(Object)} and {@linkplain ArrayList#remove(int) remove(index)} to be submitted to run on the
-	 * GameThread()
+	 * and {@linkplain ArrayList#remove(Object) remove(Object)} and
+	 * {@linkplain ArrayList#remove(int) remove(index)} to be submitted to run
+	 * on the GameThread()
 	 */
 	public class GameArrayList<E> extends ArrayList<E> {
 

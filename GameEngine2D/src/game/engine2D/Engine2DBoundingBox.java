@@ -67,16 +67,11 @@ public abstract class Engine2DBoundingBox {
 	 *            the offset in pixels
 	 */
 	public void moveX(int block, float offset) {
-		switch (type) {
-		case RECTANGLE_BOUNDING_BOX:
-			this.x += (block * offset);
-			break;
-		case POLYGON_BOUNDING_BOX:
+		if(type.equals(POLYGON_BOUNDING_BOX)){
 			Engine2DPolygonBoundingBox polyBox = (Engine2DPolygonBoundingBox) this;
-			polyBox.moveX(block, offset);
-			this.x += (block * offset);
-			break;
+			polyBox.moveXPos(block, offset);
 		}
+		this.x += (block * offset);
 		setCenterPoints();
 
 	}
@@ -91,7 +86,7 @@ public abstract class Engine2DBoundingBox {
 	public void moveY(int block, float offset) {
 		if(type.equals(POLYGON_BOUNDING_BOX)){
 			Engine2DPolygonBoundingBox polyBox = (Engine2DPolygonBoundingBox) this;
-			polyBox.moveY(block, offset);
+			polyBox.moveYPos(block, offset);
 		}
 		this.y += (block * offset);
 		setCenterPoints();
@@ -127,11 +122,11 @@ public abstract class Engine2DBoundingBox {
 	 */
 	public final void setX(float x) {
 		if (type.equals(Engine2DBoundingBox.POLYGON_BOUNDING_BOX)) {
-			Engine2DPolygonBoundingBox polyBox = (Engine2DPolygonBoundingBox) this;
 			int moveX = (int) (x - getX());
-			polyBox.moveX(moveX, 1);
+			moveX(moveX, 1);
+		}else if (type.equals(Engine2DBoundingBox.RECTANGLE_BOUNDING_BOX)){
+			this.x = x;
 		}
-		this.x = x;
 		setCenterPoints();
 	}
 
@@ -148,11 +143,11 @@ public abstract class Engine2DBoundingBox {
 	 */
 	public void setX(int block, int offset) {
 		if (type.equals(Engine2DBoundingBox.POLYGON_BOUNDING_BOX)) {
-			Engine2DPolygonBoundingBox polyBox = (Engine2DPolygonBoundingBox) this;
 			int moveX = (int) (((this.x * block) + offset) - this.x);
-			polyBox.moveX(moveX, 1);
+			moveX(moveX, 1);
+		}else if (type.equals(Engine2DBoundingBox.RECTANGLE_BOUNDING_BOX)){
+			this.x = (this.getX() * block) + offset;
 		}
-		this.x = (this.getX() * block) + offset;
 		setCenterPoints();
 	}
 
@@ -216,6 +211,7 @@ public abstract class Engine2DBoundingBox {
 
 	void setWidth(float width) {
 		this.width = width;
+		setCenterPoints();
 	}
 
 	/**
@@ -235,6 +231,7 @@ public abstract class Engine2DBoundingBox {
 
 	void setHeight(float height) {
 		this.height = height;
+		setCenterPoints();
 	}
 
 	/**
