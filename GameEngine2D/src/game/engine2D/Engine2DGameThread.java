@@ -1,35 +1,34 @@
 package game.engine2D;
 
-
 final class Engine2DGameThread extends Thread {
-	
+
 	private final Object monitor = new Object();
 	private final Engine2DGame game;
 	private final Thread mThread = this;
-	
-	public Engine2DGameThread(Engine2DGame game, String name){
+
+	public Engine2DGameThread(Engine2DGame game, String name) {
 		super(name);
 		this.game = game;
 	}
-	
-	public void startThread(){
+
+	public void startThread() {
 		mThread.start();
 	}
-	
-	public void stopThread() throws InterruptedException{
+
+	public void stopThread() throws InterruptedException {
 		mThread.join();
 	}
 
 	public Engine2DGame getGame() {
 		return game;
 	}
-	
+
 	@Override
-	public void run(){
+	public void run() {
 		loop();
 	}
-	
-	private void loop(){
+
+	private void loop() {
 		long tickTime = (long) (1e3f / getGame().getFPS());
 		long now;
 		long lastTime = System.currentTimeMillis();
@@ -40,15 +39,17 @@ final class Engine2DGameThread extends Thread {
 				tick();
 				lastTime = System.currentTimeMillis();
 			}
-			try {
-				monitor.wait(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
+			synchronized (monitor) {
+				try {
+					monitor.wait(1);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
-	
+
 	private void tick() {
 		if (!game.getGameOver()) {
 			if (game.getRunning()) {
@@ -62,5 +63,4 @@ final class Engine2DGameThread extends Thread {
 		}
 	}
 
-	
 }

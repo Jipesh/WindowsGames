@@ -48,7 +48,7 @@ public abstract class Engine2DEntity {
 	/**
 	 * @return the bounding box object for the entity
 	 */
-	public final Engine2DBoundingBox getBoundingBox() {
+	public Engine2DBoundingBox getBoundingBox() {
 		return box;
 	}
 		
