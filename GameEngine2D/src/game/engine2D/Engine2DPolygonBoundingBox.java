@@ -68,6 +68,8 @@ public class Engine2DPolygonBoundingBox extends Engine2DBoundingBox {
 	}
 
 	/**
+	 * The method checks to see if there is a collision with current bounding box
+	 * and rectangle another rectangle bounding box
 	 * 
 	 * @param recBox
 	 *            the rectangle bounding box object

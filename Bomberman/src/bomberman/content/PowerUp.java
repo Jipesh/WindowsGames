@@ -15,6 +15,7 @@ private Image powerup;
 	
 	public PowerUp(final int id, final int x, final int y,final Game game){
 		super(x,y,40,40,game);
+		this.s
 		this.game = game;
 		this.id = id;
 		setPower(id);

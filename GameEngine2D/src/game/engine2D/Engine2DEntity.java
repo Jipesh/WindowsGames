@@ -16,6 +16,7 @@ public abstract class Engine2DEntity {
 	private Image image;
 
 	/**
+	 * The game the entity belongs too
 	 * 
 	 * @param game
 	 *            - the game the entity belongs too
@@ -50,6 +51,7 @@ public abstract class Engine2DEntity {
 	public final Engine2DBoundingBox getBoundingBox() {
 		return box;
 	}
+		
 	
 	/**
 	 * The method set's an image file for the entity from the current directory

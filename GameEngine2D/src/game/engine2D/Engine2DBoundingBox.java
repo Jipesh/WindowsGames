@@ -48,7 +48,7 @@ public abstract class Engine2DBoundingBox {
 	 * @param rec
 	 *            a rectangle bounding box object
 	 * 
-	 * @return if there is a collision
+	 * @return if a collision exists
 	 */
 	public static boolean checkAreaCollision(final Engine2DPolygonBoundingBox polyBox,
 			final Engine2DRectangleBoundingBox rec) {
@@ -60,35 +60,37 @@ public abstract class Engine2DBoundingBox {
 	}
 
 	/**
+	 * Move the bounding box in the x axis
 	 * 
 	 * @param block
 	 *            the block in pixels to move in
-	 * @param offset
-	 *            the offset in pixels
+	 * @param multiplier
+	 *            the multiplier
 	 */
-	public void moveX(int block, float offset) {
+	public void moveX(int block, float multiplier) {
 		if(type.equals(POLYGON_BOUNDING_BOX)){
 			Engine2DPolygonBoundingBox polyBox = (Engine2DPolygonBoundingBox) this;
-			polyBox.moveXPos(block, offset);
+			polyBox.moveXPos(block, multiplier);
 		}
-		this.x += (block * offset);
+		this.x += (block * multiplier);
 		setCenterPoints();
 
 	}
 
 	/**
+	 * Move the bounding box in the y axis
 	 * 
 	 * @param block
 	 *            the block in pixels to move in
-	 * @param offset
-	 *            the offset in pixels
+	 * @param multiplier
+	 *            the multiplier
 	 */
-	public void moveY(int block, float offset) {
+	public void moveY(int block, float multiplier) {
 		if(type.equals(POLYGON_BOUNDING_BOX)){
 			Engine2DPolygonBoundingBox polyBox = (Engine2DPolygonBoundingBox) this;
-			polyBox.moveYPos(block, offset);
+			polyBox.moveYPos(block, multiplier);
 		}
-		this.y += (block * offset);
+		this.y += (block * multiplier);
 		setCenterPoints();
 	}
 

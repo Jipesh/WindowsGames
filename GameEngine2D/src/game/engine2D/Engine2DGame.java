@@ -34,8 +34,7 @@ public abstract class Engine2DGame {
 	private final HashMap<String, GameArrayList<Engine2DEntity>> entityLists;
 	private final Engine2DEventDispatcher eventDispatcher;
 	private boolean running, gameover, appRunning;
-	private int fps;
-
+	private float fps;
 	private BufferedImage sprite_sheet;
 	private Engine2DScreen currentScreen;
 	private Engine2DGameThread gameThread;
@@ -67,6 +66,7 @@ public abstract class Engine2DGame {
 	}
 
 	/**
+	 * The method set the sprite sheet from the current directory
 	 * 
 	 * @param res
 	 *            the path to the sprite sheet
@@ -78,6 +78,8 @@ public abstract class Engine2DGame {
 	}
 
 	/**
+	 * The method allow the ability to get a individual sprite from sprite sheet
+	 * using x, y, width, height
 	 * 
 	 * @param x
 	 *            the x position on the sheet
@@ -98,7 +100,7 @@ public abstract class Engine2DGame {
 	}
 
 	/**
-	 * The main loop which start's all the threads and the main game loop as
+	 * The main loop which start's all the threads and the main game thread as
 	 * well as setting the frame visible
 	 * 
 	 * @param fps
@@ -113,6 +115,17 @@ public abstract class Engine2DGame {
 		running = true;
 		gameThread.startThread();
 		startThreads();
+	}
+	
+	/**
+	 * Allows ability to start a specific thread
+	 * 
+	 * @param index of the thread in the thread list
+	 */
+	public void startThread(int index){
+		if(!threads.isEmpty()){
+			threads.get(index).start();
+		}
 	}
 
 	/**
@@ -129,7 +142,7 @@ public abstract class Engine2DGame {
 	}
 
 	/**
-	 * This adds a thread to the game which will be started in a new thread
+	 * This adds a thread object to the threads list
 	 * 
 	 * @param thread
 	 *            the thread to add to the game
@@ -139,6 +152,7 @@ public abstract class Engine2DGame {
 	}
 
 	/**
+	 * The method adds screen to the screens list
 	 * 
 	 * @param screen
 	 *            the screen to add to the list
@@ -414,11 +428,11 @@ public abstract class Engine2DGame {
 	 * @param fps
 	 *            the target FPS;
 	 */
-	protected void setFPS(final int fps) {
+	protected void setFPS(final float fps) {
 		this.fps = fps;
 	}
 
-	public int getFPS() {
+	public float getFPS() {
 		return fps;
 	}
 
@@ -464,7 +478,7 @@ public abstract class Engine2DGame {
 
 	/**
 	 * 
-	 * @return the size of the thread list
+	 * @return the size of the threads list
 	 */
 	public int getThreadSize() {
 		return threads.size();
@@ -554,7 +568,7 @@ public abstract class Engine2DGame {
 
 		@Override
 		public boolean add(E e) {
-			if (Thread.currentThread().getName().equals(getGameThreadName())) {
+			if (Thread.currentThread().getName().equals(eventDispatcher.getName())) {
 				return super.add(e);
 			} else {
 				throw new IllegalAccessError(
@@ -574,7 +588,7 @@ public abstract class Engine2DGame {
 
 		@Override
 		public E remove(int index) {
-			if (Thread.currentThread().getName().equals(getGameThreadName())) {
+			if (Thread.currentThread().getName().equals(eventDispatcher.getName())) {
 				return super.remove(index);
 			} else {
 				throw new IllegalAccessError(

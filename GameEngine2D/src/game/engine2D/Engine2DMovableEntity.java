@@ -15,6 +15,7 @@ public abstract class Engine2DMovableEntity extends Engine2DEntity implements Ru
 	 * in the game start method
 	 * 
 	 * @see Engine2DGame#start(int) start(fps)
+	 * @see Engine2DGame#setFPS(float) setFPS(fps)
 	 */
 	public abstract void update();
 

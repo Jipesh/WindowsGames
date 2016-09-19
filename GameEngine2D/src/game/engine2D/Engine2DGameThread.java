@@ -17,7 +17,7 @@ final class Engine2DGameThread extends Thread {
 	}
 	
 	public void stopThread() throws InterruptedException{
-		mThread.join();;
+		mThread.join();
 	}
 
 	public Engine2DGame getGame() {
@@ -41,7 +41,7 @@ final class Engine2DGameThread extends Thread {
 				lastTime = System.currentTimeMillis();
 			}
 			try {
-				Thread.sleep(1);
+				monitor.wait(1);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
