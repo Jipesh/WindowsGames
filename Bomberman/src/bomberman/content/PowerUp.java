@@ -6,9 +6,9 @@ package bomberman.content;
 
 import java.awt.Image;
 
-import game.engine2D.Engine2DRectangleEntity;
+import game.engine2D.Engine2DEntity;
 
-public class PowerUp extends Engine2DRectangleEntity{
+public class PowerUp extends Engine2DEntity{
 private final int id;
 private final Game game;
 private Image powerup;

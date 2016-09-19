@@ -6,7 +6,9 @@ package arrowgame;
 
 import java.util.Random;
 
-public class Obstacle extends Entity implements Runnable {
+import game.engine2D.Engine2DMovableRectangleBoundingBoxEntity;
+
+public class Obstacle extends Engine2DMovableRectangleBoundingBoxEntity {
 	private final int WIDTH = 350;
 	private final int START = 0;
 	private final int End = 560;
@@ -25,7 +27,7 @@ public class Obstacle extends Entity implements Runnable {
 	 *            The currant Game
 	 */
 	public Obstacle(Player p, Game g) {
-		super(g);
+		super(0,0,50,50);
 		GM = g;
 		p1 = p;
 		rnd = new Random();
@@ -36,7 +38,9 @@ public class Obstacle extends Entity implements Runnable {
 		x = rnd.nextInt(WIDTH); // Spawns the obstacle on a random x value
 								// between 0 to 400
 		
-		super.setBoundingBox(new BoundingBox(x,y,50,50));
+		getBoundingBox().setX(x);
+		getBoundingBox().setY(y);
+		
 		
 		if (rnd.nextInt(3) == 0 || rnd.nextInt(3) == 1) {
 			speed = 5;
@@ -52,11 +56,14 @@ public class Obstacle extends Entity implements Runnable {
 	 */
 	public synchronized void start() {
 		y += speed;
-		this.getBox().setY(y);
+		getBoundingBox().setY(y);
 		speed += 0.0001;
 		if (y > End) {
 			p1.nextStage();
 			reposition(); // reset's position
+		}
+		if (playerCollision() == true) {
+			getGame().setGameOver(true);
 		}
 	}
 
@@ -67,10 +74,10 @@ public class Obstacle extends Entity implements Runnable {
 	public void reset() {
 		y = 0 - rnd.nextInt(START + 250); // Allows there to be space between
 											// when the object comes into range
-		this.getBox().setY(y);
+		getBoundingBox().setY(y);
 		x = rnd.nextInt(WIDTH); // Spawns the obstacle on a random x value
 								// between 0 to 400
-		this.getBox().setX(x);
+		getBoundingBox().setX(x);
 		if (spawnCollision() == true) {
 			reset();
 		} else {
@@ -90,9 +97,9 @@ public class Obstacle extends Entity implements Runnable {
 	 */
 	private void reposition() {
 		y = 0 - rnd.nextInt(START + 200);
-		this.getBox().setY(y);
+		getBoundingBox().setY(y);
 		x = rnd.nextInt(WIDTH);
-		this.getBox().setX(x);
+		getBoundingBox().setX(x);
 		if (spawnCollision() == true) {
 			reposition();
 		} else {
@@ -127,7 +134,7 @@ public class Obstacle extends Entity implements Runnable {
 	 * @return true if it had collision with the player
 	 */
 	public boolean playerCollision() {
-		return GM.checkCollision(p1, this);
+		return getBoundingBox().checkCollision(p1.getBoundingBox());
 	}
 
 	public int getPosY() {
@@ -139,17 +146,14 @@ public class Obstacle extends Entity implements Runnable {
 	}
 
 	public String toString() {
-		return "[" + x + "," + (x + this.getBox().getWidth()) + "," + y + "," + (y + this.getBox().getHeight()) + "]"; // for
+		return "[" + x + "," + (x + getBoundingBox().getWidth()) + "," + y + "," + (y + getBoundingBox().getHeight()) + "]"; // for
 																			// debugging
 	}
 
-	/**
-	 * calls the start method when run method is called by the thread
-	 * @see Obstacle#start() start()
-	 * @see Game#start()
-	 */
-	public void run() {
-		start();
-
+	@Override
+	public void update() {
+		if(getGame().getRunning()){
+			start();
+		}
 	}
 }
