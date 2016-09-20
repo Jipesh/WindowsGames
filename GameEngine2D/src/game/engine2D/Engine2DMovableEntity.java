@@ -1,13 +1,13 @@
 package game.engine2D;
 
-public abstract class Engine2DMovableEntity extends Engine2DEntity implements Runnable{
+public abstract class Engine2DMovableEntity extends Engine2DEntity {
 
 	private final Object monitor = new Object();
-	private final Thread entityThread;
+	private EntityThread entityThread;
 	
-	public Engine2DMovableEntity(Engine2DGame game) {
-		super(game);
-		entityThread = new Thread();
+	public Engine2DMovableEntity() {
+		super();
+		entityThread = new EntityThread();
 	}
 	
 	/**
@@ -18,21 +18,33 @@ public abstract class Engine2DMovableEntity extends Engine2DEntity implements Ru
 	 * @see Engine2DGame#setFPS(float) setFPS(fps)
 	 */
 	public abstract void update();
-
-	@Override
-	public void run(){
-		startLoop();
+	
+	public void stopThread() throws InterruptedException{
+		entityThread.join();
 	}
 	
-	public void stopLoop() throws InterruptedException{
-		entityThread.join();
+	/**
+	 * re-instantiates the thread, if thread is already instantiated then
+	 * it starts the thread
+	 * 
+	 * @throws InterruptedException if the thread was interrupted
+	 */
+	public void resetThread() throws InterruptedException{
+		if(entityThread != null && entityThread.isAlive()){
+			stopThread();
+		}
+		entityThread = new EntityThread();
+	}
+	
+	public Thread getThread(){
+		return entityThread;
 	}
 	
 	private void startLoop(){
 		long tickTime = (long) (1000f / getGame().getFPS());
 		long now;
 		long lastTime = System.currentTimeMillis();
-		while (true) {
+		while (getGame().isAppRunning()) {
 			now = System.currentTimeMillis();
 			long dif = now - lastTime;
 			if (dif >= tickTime) {
@@ -49,6 +61,14 @@ public abstract class Engine2DMovableEntity extends Engine2DEntity implements Ru
 					}
 				}
 			}
+		}
+	}
+	
+	private class EntityThread extends Thread{
+		
+		@Override
+		public void run(){
+			startLoop();
 		}
 	}
 

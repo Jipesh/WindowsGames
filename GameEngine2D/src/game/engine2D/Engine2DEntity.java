@@ -11,18 +11,15 @@ import javax.imageio.ImageIO;
 
 public abstract class Engine2DEntity {
 
-	private final Engine2DGame game;
 	private Engine2DBoundingBox box = null;
 	private Image image;
+	private State state;
 
 	/**
-	 * The game the entity belongs too
-	 * 
-	 * @param game
-	 *            - the game the entity belongs too
+	 * set the stte to alive
 	 */
-	public Engine2DEntity(Engine2DGame game) {
-		this.game = game;
+	public Engine2DEntity() {
+		this.state = State.ALIVE;
 	}
 
 	/**
@@ -89,8 +86,8 @@ public abstract class Engine2DEntity {
 	 * 
 	 */
 	public void setImage(int x, int y, int width, int height) {
-		if (game.getSpriteSheet() != null) {
-			image = game.getSprite(x, y, width, height);
+		if (getGame().getSpriteSheet() != null) {
+			image = getGame().getSprite(x, y, width, height);
 		} else {
 			throw new RuntimeException("Spritesheet not set");
 		}
@@ -197,7 +194,7 @@ public abstract class Engine2DEntity {
 	 * @return the game object
 	 */
 	public Engine2DGame getGame() {
-		return game;
+		return Engine2DGame.GAME;
 	}
 
 	public Image getImage() {
@@ -206,6 +203,22 @@ public abstract class Engine2DEntity {
 
 	public void setImage(Image image) {
 		this.image = image;
+	}
+	
+	/**
+	 * Changes the state to dead, this would be helpful when you need to
+	 * check if the object need to be removed from a list
+	 */
+	public void destroy(){
+		this.state = State.DEAD;
+	}
+	
+	public State getState(){
+		return state;
+	}
+	
+	public enum State{
+		ALIVE,DEAD
 	}
 	
 }

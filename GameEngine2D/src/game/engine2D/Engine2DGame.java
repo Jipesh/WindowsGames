@@ -33,6 +33,7 @@ public abstract class Engine2DGame {
 	private final List<Thread> threads;
 	private final HashMap<String, GameArrayList<Engine2DEntity>> entityLists;
 	private final Engine2DEventDispatcher eventDispatcher;
+	static Engine2DGame GAME;
 	private boolean running, gameover, appRunning;
 	private float fps;
 	private BufferedImage sprite_sheet;
@@ -50,8 +51,10 @@ public abstract class Engine2DGame {
 	 *            the height of the frame
 	 * @param resizable
 	 *            should it be resizable
+	 *            
 	 */
 	public Engine2DGame(String title, int width, int height, boolean resizable) {
+		this.GAME = this;
 		this.window = new JFrame(title);
 		this.window.setSize(width, height);
 		this.window.setResizable(resizable);
@@ -59,8 +62,8 @@ public abstract class Engine2DGame {
 		this.entityLists = new HashMap<>();
 		this.screens = new ArrayList<>();
 		this.threads = new ArrayList<>();
-		this.gameThread = new Engine2DGameThread(this, "GameThread");
-		this.eventDispatcher = new Engine2DEventDispatcher(this, "GameEventDispatcher");
+		this.gameThread = new Engine2DGameThread("GameThread");
+		this.eventDispatcher = new Engine2DEventDispatcher("GameEventDispatcher");
 		this.eventDispatcher.startThread();
 		this.eventDispatcher.setPriority(Thread.MAX_PRIORITY);
 	}
@@ -70,6 +73,9 @@ public abstract class Engine2DGame {
 	 * 
 	 * @param res
 	 *            the path to the sprite sheet
+	 *            
+	 * @see Class#getResourceAsStream(String) getResourceAsStream(path)
+	 *  
 	 * @throws IOException
 	 *             if the path entered is invalid
 	 */
@@ -511,6 +517,9 @@ public abstract class Engine2DGame {
 	}
 
 	protected void startGameThread() {
+		if(gameThread != null){
+			gameThread = new Engine2DGameThread("GameThread");
+		}
 		gameThread.start();
 	}
 
@@ -553,12 +562,29 @@ public abstract class Engine2DGame {
 	public final boolean isAppRunning() {
 		return appRunning;
 	}
+	
+	/**
+	 * Removes all threads and attempts to make them join
+	 * 
+	 * @throws InterruptedException if the thread was interrupted when joining
+	 */
+	public void exit() throws InterruptedException{
+		this.appRunning = false;
+		if(!threads.isEmpty()){
+			for(int i = 0 ; i < threads.size() ; i++){
+				removeThread(i);
+			}
+		}
+		gameThread.join();
+		eventDispatcher.join();
+		System.exit(1);
+	}
 
 	/**
 	 * A special type of arrayList which requires modification such as add(E e)
 	 * and {@linkplain ArrayList#remove(Object) remove(Object)} and
 	 * {@linkplain ArrayList#remove(int) remove(index)} to be submitted to run
-	 * on the GameThread()
+	 * on the GameEventDispatcher()
 	 */
 	public class GameArrayList<E> extends ArrayList<E> {
 

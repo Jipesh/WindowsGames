@@ -4,16 +4,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Engine2DEventDispatcher extends Thread {
 
-	private final Engine2DGame game;
 	private final Object monitor = new Object();
 	private final LinkedBlockingQueue<Runnable> mProcessQueue;
 	private final TaskHandler handler;
 	private final Thread mThread;
 	private boolean running;
 
-	Engine2DEventDispatcher(Engine2DGame game, String name) {
+	Engine2DEventDispatcher(String name) {
 		super(name);
-		this.game = game;
 		this.mProcessQueue = new LinkedBlockingQueue<Runnable>();
 		this.handler = new TaskHandler();
 		this.running = true;
@@ -65,7 +63,7 @@ public class Engine2DEventDispatcher extends Thread {
 	 * @return the game
 	 */
 	public final Engine2DGame getGame() {
-		return game;
+		return Engine2DGame.GAME;
 	}
 	
 	private void processTask(Runnable runnable) {

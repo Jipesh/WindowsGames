@@ -3,12 +3,10 @@ package game.engine2D;
 final class Engine2DGameThread extends Thread {
 
 	private final Object monitor = new Object();
-	private final Engine2DGame game;
 	private final Thread mThread = this;
 
-	public Engine2DGameThread(Engine2DGame game, String name) {
+	public Engine2DGameThread(String name) {
 		super(name);
-		this.game = game;
 	}
 
 	public void startThread() {
@@ -20,7 +18,7 @@ final class Engine2DGameThread extends Thread {
 	}
 
 	public Engine2DGame getGame() {
-		return game;
+		return Engine2DGame.GAME;
 	}
 
 	@Override
@@ -51,15 +49,15 @@ final class Engine2DGameThread extends Thread {
 	}
 
 	private void tick() {
-		if (!game.getGameOver()) {
-			if (game.getRunning()) {
-				game.gameLoop();
-				game.render();
+		if (!getGame().getGameOver()) {
+			if (getGame().getRunning()) {
+				getGame().gameLoop();
+				getGame().render();
 			} else {
-				game.pause();
+				getGame().pause();
 			}
 		} else {
-			game.gameOver();
+			getGame().gameOver();
 		}
 	}
 

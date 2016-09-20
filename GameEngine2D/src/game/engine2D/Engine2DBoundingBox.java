@@ -19,6 +19,10 @@ public abstract class Engine2DBoundingBox {
 	void setType(String type) {
 		this.type = type;
 	}
+	
+	public String getType(){
+		return type;
+	}
 
 	/**
 	 * The method checks if there is a collision between two 2D polygon using
