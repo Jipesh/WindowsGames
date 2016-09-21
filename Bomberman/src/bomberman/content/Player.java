@@ -12,18 +12,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import game.engine2D.Engine2DRectangleBoundingBox;
+
 public class Player extends Character {
-	private final Game game;
-	private final Image[][] skins = new Image[4][7];
 	private boolean leftPressed, rightPressed, upPressed, downPressed, spacePressed, aPressed, dPressed, wPressed,
 			sPressed, mPressed;
-	private int bombs, explosion_size;
-	protected int skin;
-	private int running;
-	private int last_running;
 	private int character;
-	private List<Bomb> ontop = new ArrayList<>();
-	private double speed;
 
 	/**
 	 * Since this is a 2D game and their are collision checks therefore i use a
@@ -45,18 +39,12 @@ public class Player extends Character {
 	 * @see BoundingBox#BoundingBox(int, int, int, int)
 	 *      BoundingBox(x,y,width,height)
 	 */
-	public Player(int character, int x, int y, Game game) {
-		super(character, x, y, game);
-		this.game = game;
-		this.bombs = 1;
-		this.speed = 3;
-		this.explosion_size = 1;
+	public Player(int character, int x, int y) {
+		super(character, x, y);
 		skin = 0;
-		skins[1][0] = game.getSprite(1, 4);
 		this.character = character;
 		setSkins(character);
-		last_running = 0;
-		game.addKeyListener(new KeyInput());
+		getGame().addKeyListener(new KeyInput());
 	}
 
 	/**
@@ -67,41 +55,40 @@ public class Player extends Character {
 	 * @see Character#plantBomb() plantBomb()
 	 * 
 	 */
-	public synchronized void play() {
+	public void play() {
 		if (character == 1) {
-			if (leftPressed || aPressed) {
-				skin = 2;
+			if (leftPressed) {
+				setSkin(2);;
 				moveLeft();
-			} if (rightPressed || dPressed) {
-				skin = 3;
+			} if (rightPressed) {
+				setSkin(3);
 				moveRight();
-			} if (upPressed || wPressed) {
-				skin = 1;
+			} if (upPressed) {
+				setSkin(1);
 				moveUp();
-			} if (downPressed || sPressed) {
-				skin = 0;
+			} if (downPressed) {
+				setSkin(0);
 				moveDown();
-			} if (mPressed || sPressed) {
+			} if (mPressed) {
 				plantBomb();
 			}
 		}else if(character == 2){
 			if (aPressed) {
-				skin = 2;
+				setSkin(2);
 				moveLeft();
 			} if (dPressed) {
-				skin = 3;
+				setSkin(3);
 				moveRight();
 			} if (wPressed) {
-				skin = 1;
+				setSkin(1);
 				moveUp();
 			} if (sPressed) {
-				skin = 0;
+				setSkin(0);
 				moveDown();
 			} if (spacePressed) {
 				plantBomb();
 			}
 		}
-		game.updateWalkable();
 	}
 	
 	private class KeyInput extends KeyAdapter{
@@ -116,23 +103,19 @@ public class Player extends Character {
 			if (character == 1) {
 				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 					leftPressed = true;
-					running = 1;
-					last_running = ++last_running % 2;
+					setRunning(getMinRunning() +getanimationFrame());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 					rightPressed = true;
-					running = 1;
-					last_running = ++last_running % 2;
+					setRunning(getMinRunning() +getanimationFrame());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_UP) {
 					upPressed = true;
-					running = 1;
-					last_running = ++last_running % 2;
+					setRunning(getMinRunning() +getanimationFrame());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 					downPressed = true;
-					running = 1;
-					last_running = ++last_running % 2;
+					setRunning(getMinRunning() +getanimationFrame());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_M) {
 					mPressed = true;
@@ -140,23 +123,16 @@ public class Player extends Character {
 			} else if (character == 2) {
 				if (e.getKeyCode() == KeyEvent.VK_A) {
 					aPressed = true;
-					running = 5;
-					last_running = ++last_running % 2;
+					
 				}
 				if (e.getKeyCode() == KeyEvent.VK_D) {
 					dPressed = true;
-					running = 5;
-					last_running = ++last_running % 2;
 				}
 				if (e.getKeyCode() == KeyEvent.VK_W) {
 					wPressed = true;
-					running = 5;
-					last_running = ++last_running % 2;
 				}
 				if (e.getKeyCode() == KeyEvent.VK_S) {
 					sPressed = true;
-					running = 5;
-					last_running = ++last_running % 2;
 				}
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					spacePressed = true;
@@ -173,19 +149,19 @@ public class Player extends Character {
 			if (character == 1) {
 				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 					leftPressed = false;
-					running = 0;
+					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 					rightPressed = false;
-					running = 0;
+					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_UP) {
 					upPressed = false;
-					running = 0;
+					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 					downPressed = false;
-					running = 0;
+					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_M) {
 					mPressed = false;
@@ -193,19 +169,19 @@ public class Player extends Character {
 			} else if (character == 2) {
 				if (e.getKeyCode() == KeyEvent.VK_A) {
 					aPressed = false;
-					running = 3;
+					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_D) {
 					dPressed = false;
-					running = 3;
+					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_W) {
 					wPressed = false;
-					running = 3;
+					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_S) {
 					sPressed = false;
-					running = 3;
+					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					spacePressed = false;
@@ -219,7 +195,10 @@ public class Player extends Character {
 		play();
 		pickPower();
 		updateWalkable();
-		game.render();
+	}
+	
+	public Engine2DRectangleBoundingBox getBoundingBox(){
+		return (Engine2DRectangleBoundingBox)super.getBoundingBox();
 	}
 
 }

@@ -6,9 +6,10 @@ package bomberman.content;
 
 import java.awt.Image;
 
-import game.engine2D.Engine2DRectangleEntity;
+import game.engine2D.Engine2DEntity;
+import game.engine2D.Engine2DRectangleBoundingBox;
 
-public class Obstacle extends Engine2DRectangleEntity{
+public class Obstacle extends GameObject{
 private final Image obstacle;
 private final int id;
 
@@ -20,7 +21,7 @@ private final int id;
 	 * @param game the game which the obstacle is used in
 	 */
 	public Obstacle(int index, int x, int y, Game game) {
-		super(x,y,40,40,game);
+		this.setBoundingBox(new Engine2DRectangleBoundingBox(x,y,40,40));
 		this.id = index;
 		this.obstacle = game.getSprite(0, 0);
 	}

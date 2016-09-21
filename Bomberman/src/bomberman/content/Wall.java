@@ -6,9 +6,10 @@ package bomberman.content;
 
 import java.awt.Image;
 
-import game.engine2D.Engine2DRectangleEntity;
+import game.engine2D.Engine2DEntity;
+import game.engine2D.Engine2DRectangleBoundingBox;
 
-public class Wall extends Engine2DRectangleEntity{
+public class Wall extends GameObject{
 private final Image wall;
 
 	/**
@@ -17,14 +18,17 @@ private final Image wall;
 	 * @param y the y position
 	 * @param game the game it is used in
 	 */
-	public Wall(int x, int y, Game game) {
-		super(x,y,40,40,game);
-		this.wall = game.getSprite(2, 0);
+	public Wall(int x, int y) {
+		this.setBoundingBox(new Engine2DRectangleBoundingBox(x,y,40,40));
+		this.wall = getGame().getSprite(2, 0);
 	}
 	
 	public Image getImage(){
 		return wall;
 	}
 	
-
+	public Engine2DRectangleBoundingBox getBoundingBox(){
+		return (Engine2DRectangleBoundingBox)super.getBoundingBox();
+	}
+	
 }

@@ -7,16 +7,14 @@ package bomberman.content;
 import java.awt.Image;
 
 import game.engine2D.Engine2DEntity;
+import game.engine2D.Engine2DRectangleBoundingBox;
 
-public class PowerUp extends Engine2DEntity{
+public class PowerUp extends GameObject{
 private final int id;
-private final Game game;
 private Image powerup;
 	
-	public PowerUp(final int id, final int x, final int y,final Game game){
-		super(x,y,40,40,game);
-		this.s
-		this.game = game;
+	public PowerUp(final int id, final int x, final int y){
+		this.setBoundingBox(new Engine2DRectangleBoundingBox(x,y,40,40));
 		this.id = id;
 		setPower(id);
 	}
@@ -27,7 +25,7 @@ private Image powerup;
 	 * @param id the id of the power-up
 	 */
 	public void setPower(int id){
-		powerup = game.getSprite(--id, 8);
+		powerup = getGame().getSprite(--id, 8);
 	}
 	
 	public Image getImage(){

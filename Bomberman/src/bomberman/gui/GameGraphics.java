@@ -14,13 +14,13 @@ import javax.swing.JButton;
 import bomberman.content.Bomb;
 import bomberman.content.Bomb.ExplosionFlame;
 import bomberman.content.Character;
-import game.engine2D.Engine2DBoundingPolygon.Engine2DBoundingRectangle;
+import game.engine2D.Engine2DRectangleBoundingBox;
+import game.engine2D.Engine2DScreen;
 import bomberman.content.Game;
 import bomberman.content.Obstacle;
 import bomberman.content.PowerUp;
-import game.engine2D.Screen;
 
-public class GameGraphics extends Screen {
+public class GameGraphics extends Engine2DScreen {
 	private Image background;
 	private JButton restart;
 
@@ -32,9 +32,10 @@ public class GameGraphics extends Screen {
 			e.printStackTrace();
 		}
 		restart = new JButton("Restart");
-		restart.setBounds(250, 580, 60, 40);
+		restart.setBounds(getGame().getWindow().getWidth()/2, getGame().getWindow().getHeight()/2, 60, 40);
 		restart.setFocusable(false);
 		restart.setVisible(false);
+		this.add(restart);
 	}
 
 	@Override
@@ -45,19 +46,19 @@ public class GameGraphics extends Screen {
 		if (game.getGameOver()) {
 			restart.setVisible(true);
 			g.setColor(Color.WHITE);
-			if (game.getPlayers().get(0).getCharacter() == 1) {
+			if (game.getPlayers_READONLY().get(0).getCharacter() == 1) {
 				g.drawString("Player 1 Wins", 700 / 2, 558 / 2);
-			} else if (game.getPlayers().get(0).getCharacter() == 2) {
+			} else if (game.getPlayers_READONLY().get(0).getCharacter() == 2) {
 				g.drawString("Player 2 Wins", 700 / 2, 558 / 2);
 			}
 		} else {
-			Iterator<Obstacle> obstacles = game.getObstacles().iterator();
+			Iterator<Obstacle> obstacles = game.getObstacles_READONLY().iterator();
 			while (obstacles.hasNext()) {
 				Obstacle obs = obstacles.next();
-				g.drawImage(obs.getImage(), obs.getX(), obs.getY(), null);
+				g.drawImage(obs.getImage(), (int)obs.getX(), (int)obs.getY(), null);
 			}
 			int position = 0;
-			for (Character player : game.getPlayers()) {
+			for (Character player : game.getPlayers_READONLY()) {
 				g.setColor(Color.DARK_GRAY);
 				g.fillRect((position * 40), 13 * 40, 200, 120);
 				int id = player.getCharacter();
@@ -72,30 +73,25 @@ public class GameGraphics extends Screen {
 						13 * 40 + 60);
 				position += 6;
 
-				if (!(game.getBombs().isEmpty())) {
-					Iterator<Bomb> bombs = game.getBombs().iterator();
+				if (!(game.getBombs_READONLY().isEmpty())) {
+					Iterator<Bomb> bombs = game.getBombs_READONLY().iterator();
 					while (bombs.hasNext()) {
 						// TODO : add explosion check here
 						Bomb bomb = bombs.next();
 						if (bomb.hasDetonated()) {
-							g.drawImage(player.getImage(), player.getX(), player.getY(), null);
-							g.drawImage(bomb.getImage(), bomb.getX(), bomb.getY(), null);
-							for (ExplosionFlame exp : bomb.getExplostions()) {
-								Engine2DBoundingRectangle box = exp.getBoundingBox();
-								g.drawImage(exp.getImage(), box.getX(), box.getY(), null);
+							g.drawImage(player.getImage(), (int)player.getX(), (int)player.getY(), null);
+							g.drawImage(bomb.getImage(), (int)bomb.getX(), (int)bomb.getY(), null);
+							for (ExplosionFlame exp : bomb.getExplostions_READONLY()) {
+								Engine2DRectangleBoundingBox box = (Engine2DRectangleBoundingBox) exp.getBoundingBox();
+								g.drawImage(exp.getImage(), (int)box.getX(), (int)box.getY(), null);
 
 								/*
 								 * player will be bellow the explosion
 								 */
 							}
-							if (bomb.delete()) {
-								bombs.remove();
-								game.makeAvailable(bomb.getX() / 40, bomb.getY() / 40);
-								bomb.updatePlayer();
-							}
 						} else {
-							g.drawImage(bomb.getImage(), bomb.getX(), bomb.getY(), null);
-							g.drawImage(player.getImage(), player.getX(), player.getY(), null);
+							g.drawImage(bomb.getImage(), (int)bomb.getX(), (int)bomb.getY(), null);
+							g.drawImage(player.getImage(), (int)player.getX(), (int)player.getY(), null);
 
 							/*
 							 * player will be ontop of the box
@@ -103,13 +99,13 @@ public class GameGraphics extends Screen {
 						}
 					}
 				} else {
-					g.drawImage(player.getImage(), player.getX(), player.getY(), null);
+					g.drawImage(player.getImage(), (int)player.getX(), (int)player.getY(), null);
 
 					// there may be no bombs plated
 				}
 			}
-			for (PowerUp power : game.getSpecials()) {
-				g.drawImage(power.getImage(), power.getX(), power.getY(), null);
+			for (PowerUp power : game.getSpecials_READONLY()) {
+				g.drawImage(power.getImage(), (int)power.getX(), (int)power.getY(), null);
 			}
 
 		}

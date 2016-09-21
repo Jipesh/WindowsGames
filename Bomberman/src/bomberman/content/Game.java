@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -19,23 +20,25 @@ import bomberman.content.Bomb.ExplosionFlame;
 import bomberman.gui.GameGraphics;
 
 import game.engine2D.Engine2DGame;
-import game.engine2D.Engine2DRectangleEntity;
-import game.engine2D.Engine2DBoundingPolygon.Engine2DBoundingRectangle;
+import game.engine2D.Engine2DRectangleBoundingBox;
+import game.engine2D.Engine2DScreen;
 import game.engine2D.Engine2DEntity;
-import game.engine2D.Screen;
+import game.engine2D.Engine2DEntity.State;
 
 public class Game extends Engine2DGame {
 	private final int[][] BATTLE_FIELD = new int[17][11];
-	private final HashMap<String, Engine2DRectangleEntity> entiteys;
 	private final List<Character> players = new ArrayList<>();
 	private final List<PowerUp> specials = new ArrayList<>();
 	private final List<Wall> walls = new ArrayList<>();
 	private final List<Obstacle> obstacles = new ArrayList<>();
 	private final List<Bomb> bombs = new ArrayList<>();
+	private final List<Engine2DEntity> removelist = new ArrayList<>();
+	private final HashMap<String, Engine2DEntity> entityList = new HashMap<>();
 	private BufferedImage sprite_sheet;
 	private boolean gameover = false;
 	private Character player1, player2;
-	private Screen gui;
+	private Engine2DScreen gui;
+	private int x, y;
 
 	public Game() {
 		super("BomberMan", 766, 620, false);
@@ -44,11 +47,9 @@ public class Game extends Engine2DGame {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.entiteys = new HashMap<>();
 		init();
 	}
 
-	@Override
 	/**
 	 * initiate method which set up the battlefield with the brick
 	 * wall(Obstacle) and walls, Battle field array represent the map in terms
@@ -60,9 +61,9 @@ public class Game extends Engine2DGame {
 			for (int j = 0; j < 17; j++) {
 				if (j % 2 == 1 && i % 2 == 1 && (i != 0 || i != 16)) {
 					BATTLE_FIELD[j][i] = 1;
-					Wall wall = new Wall(((j + 1) * 40), ((i + 1) * 40), this);
+					Wall wall = new Wall(((j + 1) * 40), ((i + 1) * 40));
 					walls.add(wall);
-
+					entityList.put("xPos" + (j + 1) + "yPos" + (i + 1), wall);
 					/*
 					 * j+1 and i+1 because it should not be placed at the border
 					 */
@@ -75,7 +76,7 @@ public class Game extends Engine2DGame {
 						BATTLE_FIELD[j][i] = 2;
 						Obstacle obs = new Obstacle(index++, ((j + 1) * 40), ((i + 1) * 40), this);
 						obstacles.add(obs);
-						entiteys.put(j + "x" + i + "y", obs);
+						entityList.put("xPos" + (j + 1) + "yPos" + (i + 1), obs);
 					}
 				}
 			}
@@ -84,125 +85,90 @@ public class Game extends Engine2DGame {
 		gui = new GameGraphics(this);
 		addScreen(gui);
 		setScreen(0);
-		gameover = false;
 		start(60);
-	}
-
-	private void addPlayers() {
-		player1 = new Player(1, 42, 42, this); // for starting stage only
-		addThread(new Thread(player1));
-		players.add(player1);
-		player2 = new Player(2, (17 * 40) + 2, 42, this); // for starting stage
-															// only
-		addThread(new Thread(player2));
-		players.add(player2);
-
 	}
 
 	@Override
 	public void gameLoop() {
-		if (players.size() == 1) {
-			gameOver(); // if there is only one player then game will be over
+		if (!removelist.isEmpty()) {
+			updateLists();
 		}
 		checkGameover();
+		if (players.size() == 1) {
+			setGameOver(true);
+			/*
+			 * gui.revalidate(); gui.repaint();
+			 */
+		}
 	}
 
 	public void render() {
 		gui.repaint();
 	}
 
-	/**
-	 * frees up the exact value in the array by setting it to zero which means
-	 * empty space
-	 * 
-	 * @param x
-	 *            the x position
-	 * @param y
-	 *            the y position
-	 * 
-	 */
-	public void makeAvailable(int x, int y) {
-		BATTLE_FIELD[x - 1][y - 1] = 0;
-	}
-
-	/**
-	 * @return the walls
-	 */
 	public List<Wall> getWalls() {
 		return walls;
 	}
 
 	/**
+	 * A clone of the obstacles list
+	 * 
 	 * @return the obstacles
 	 */
-	public List<Obstacle> getObstacles() {
-		return obstacles;
+	public ArrayList<Obstacle> getObstacles_READONLY() {
+		return (ArrayList<Obstacle>) ((ArrayList<Obstacle>) obstacles).clone();
+	}
+
+	ArrayList<Obstacle> getObstacles() {
+		return (ArrayList<Obstacle>) obstacles;
 	}
 
 	/**
+	 * A clone of the players list
+	 * 
 	 * @return the players
 	 */
-	public List<Character> getPlayers() {
-		return players;
+	public ArrayList<Character> getPlayers_READONLY() {
+		return (ArrayList<Character>) ((ArrayList<Character>) players).clone();
+	}
+
+	ArrayList<Character> getPlayers() {
+		return (ArrayList<Character>) players;
 	}
 
 	/**
+	 * A clone of the bombs list
+	 * 
 	 * @return the bombs
 	 */
-	public List<Bomb> getBombs() {
-		return bombs;
+	public ArrayList<Bomb> getBombs_READONLY() {
+		return (ArrayList<Bomb>) ((ArrayList<Bomb>) bombs).clone();
+	}
+
+	ArrayList<Bomb> getBombs() {
+		return (ArrayList<Bomb>) bombs;
 	}
 
 	/**
+	 * A clone of the power-ups list
+	 * 
 	 * @return the power-ups
 	 */
-	public List<PowerUp> getSpecials() {
-		return specials;
+	public List<PowerUp> getSpecials_READONLY() {
+		return (ArrayList<PowerUp>) ((ArrayList<PowerUp>) specials).clone();
 	}
 
-	/**
-	 * returns the exact sprite image using the x position and the multiply by
-	 * block size which is 40 to locate the image x and y coordinate on the
-	 * sprite sheet
-	 * 
-	 * @param x
-	 *            the x position
-	 * @param y
-	 *            the y position
-	 * @return the exact sprite from the sprite sheet
-	 */
-	public Image getSprite(int x, int y, int width, int height) {
-		return sprite_sheet.getSubimage((x * 40), (y * 40), width, height);
+	ArrayList<PowerUp> getSpecials() {
+		return (ArrayList<PowerUp>) specials;
 	}
 
-	protected Bomb bombCollision(Engine2DRectangleEntity e) {
-		for (Bomb bomb : getBombs()) {
-			if (e.getBoundingBox().checkCollision(bomb.getBoundingBox())) {
+	protected Bomb bombCollision(Character e) {
+		for (Bomb bomb : getBombs_READONLY()) {
+			if ((e.getBoundingBox()).checkCollision(bomb.getBoundingBox())) {
 				return bomb;
 			}
 		}
 		return null;
-
-	}
-
-	/**
-	 * the method checks if the player is on top of the bomb and around the
-	 * center
-	 */
-	protected void updateWalkable() {
-		if (!bombs.isEmpty()) {
-			for (Bomb bomb : getBombs()) {
-				for (Character player : getPlayers()) {
-					if (bomb.getBoundingBox().checkCollision(player.getBoundingBox())) {
-						Engine2DBoundingRectangle box = new Engine2DBoundingRectangle(bomb.getX() + 4, bomb.getY() + 4, bomb.getWidth() - 4,
-								bomb.getHeight() - 4);
-						if (player.getBoundingBox().checkCollision(box)) {
-							player.addWalkable(bomb);
-						}
-					}
-				}
-			}
-		}
 	}
 
 	/**
@@ -228,46 +194,43 @@ public class Game extends Engine2DGame {
 	 *            the bomb to add to the list
 	 */
 	void addBomb(Bomb bomb) {
-		if (checkAvailability((bomb.getX() / 40), (bomb.getY() / 40))) {
+		int x = (int) (bomb.getX() / 40);
+		int y = (int) (bomb.getY() / 40);
+		if (checkMap(x, y) == 0) {
 			bombs.add(bomb);
-			BATTLE_FIELD[(bomb.getX() / 40) - 1][(bomb.getY() / 40) - 1] = 3;
+			bomb.start();
+			BATTLE_FIELD[x - 1][y - 1] = 3;
+			entityList.put("xPos" + x + "yPos" + y, bomb);
 		}
 	}
 
 	public void addSpecials(PowerUp power) {
 		specials.add(power);
-		BATTLE_FIELD[(power.getX() / 40) - 1][(power.getY() / 40) - 1] = 4;
+		int x = ((int) power.getX() / 40);
+		int y = ((int) power.getY() / 40);
+		entityList.put("xPos" + x + "yPos" + y, power);
+	}
+
+	Engine2DEntity getEntity(int x, int y) {
+		return entityList.get("xPos" + x + "yPos" + y);
+	}
+
+	void invokeDestroy(Engine2DEntity entity) {
+		removelist.add(entity);
 	}
 
 	/**
 	 * checks if the explosions have touched any of the player
 	 */
-	synchronized void checkGameover() {
-		for (Bomb bomb : getBombs()) {
+	private void checkGameover() {
+		for (Bomb bomb : getBombs_READONLY()) {
 			if (bomb.getDetonated()) {
-				for (ExplosionFlame exp : bomb.getExplostions()) {
-					bomb.playerHit(exp.getBoundingBox().getX(), exp.getBoundingBox().getY());
+				for (ExplosionFlame exp : bomb.getExplostions_READONLY()) {
+					Character player = bomb.playerHit(exp.getBoundingBox().getX(), exp.getBoundingBox().getY());
+					players.remove(player);
 				}
 			}
 		}
-	}
-
-	/**
-	 * A method to check if the x and y position are available on the map
-	 * 
-	 * @param x
-	 *            the x value on first array
-	 * @param y
-	 *            the y value on second array
-	 * @return if the area is empty space
-	 */
-	boolean checkAvailability(int x, int y) {
-		if (x - 1 < 0 || y - 1 < 0 || x - 1 > 16 || y - 1 > 10) {
-			return false;
-		} else if (BATTLE_FIELD[x - 1][y - 1] == 0) {
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -295,30 +258,27 @@ public class Game extends Engine2DGame {
 	 *            the entity bounding box
 	 * @return the entity it is colliding with
 	 */
-	Engine2DRectangleEntity checkCollision(Engine2DBoundingRectangle box) {
+	Engine2DEntity checkCollision(Engine2DRectangleBoundingBox box) {
 		for (Wall wall : walls) {
-			if (wall.getBoundingBox().checkCollision(box)) {
+			if ((wall.getBoundingBox()).checkCollision(box)) {
 				return wall;
 			}
 		}
-		for (Obstacle obs : obstacles) {
-			if (obs.getBoundingBox().checkCollision(box)) {
-				return obs;
+		if (!obstacles.isEmpty()) {
+			for (Obstacle obs : getObstacles_READONLY()) {
+				if ((obs.getBoundingBox()).checkCollision(box)) {
+					return obs;
+				}
+			}
+		}
+		if (!bombs.isEmpty()) {
+			for (Bomb bomb : getBombs_READONLY()) {
+				if (bomb.getBoundingBox().checkCollision(box)) {
+					return bomb;
+				}
 			}
 		}
 		return null;
-	}
-
-	public Engine2DRectangleEntity getEntity(String key) {
-		return entiteys.get(key);
-	}
-
-	public Set<String> getKeys() {
-		return entiteys.keySet();
-	}
-
-	public void removeEntity(int x, int y) {
-		entiteys.remove(x + "x" + y + "y");
 	}
 
 	public void removeObstacle(int index) {
@@ -331,9 +291,72 @@ public class Game extends Engine2DGame {
 
 	}
 
-	@Override
 	public void gameOver() {
-		gameover = true;
+	}
+
+	private HashMap<String, Engine2DEntity> getentityList_READONLY() {
+		return (HashMap<String, Engine2DEntity>) entityList.clone();
+	}
+
+	private ArrayList<Engine2DEntity> getRemoveList_READONLY() {
+		return (ArrayList<Engine2DEntity>) ((ArrayList<Engine2DEntity>) removelist).clone();
+	}
+	
+	private void addPlayers() {
+		player1 = new Player(1, 42, 42); // for starting stage only
+		addThread(player1.getThread());
+		players.add(player1);
+		player2 = new Player(2, (17 * 40) + 2, 42); // for starting stage
+													// only
+		addThread(player2.getThread());
+		players.add(player2);
+
+	}
+
+	/**
+	 * frees up the exact value in the array by setting it to zero which means
+	 * empty space
+	 * 
+	 * @param x
+	 *            the x position
+	 * @param y
+	 *            the y position
+	 * 
+	 */
+	private void makeAvailable(int x, int y) {
+		BATTLE_FIELD[x - 1][y - 1] = 0;
+	}
+
+	private void removeEntity(float x, float y) {
+		int _x = (int) x;
+		int _y = (int) y;
+		entityList.remove("xPos" + _x + "yPos" + _y);
+		makeAvailable(_x, _y);
+	}
+
+	private void updateLists() {
+		if (!removelist.isEmpty()) {
+			for (Engine2DEntity entity : getRemoveList_READONLY()) {
+				removeFromList(entity);
+			}
+		}
+	}
+
+	private void removeFromList(Engine2DEntity entity) {
+		if (entity instanceof Bomb) {
+			bombs.remove(entity);
+			removeEntity((int) entity.getX() / 40, (int) entity.getY() / 40);
+		} else if (entity instanceof PowerUp) {
+			specials.remove(entity);
+			removeEntity((int) entity.getX() / 40, (int) entity.getY() / 40);
+		} else if (entity instanceof Obstacle) {
+			obstacles.remove(entity);
+			removeEntity((int) entity.getX() / 40, (int) entity.getY() / 40);
+			int x = ((int) entity.getX() / 40);
+			int y = ((int) entity.getY() / 40);
+			BATTLE_FIELD[x - 1][y - 1] = 4;
+		}
+		removelist.remove(entity);
 	}
 
 }

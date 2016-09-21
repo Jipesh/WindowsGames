@@ -4,16 +4,17 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import game.engine2D.Engine2DBoundingPolygon.Engine2DBoundingRectangle;
+import game.engine2D.Engine2DEntity;
+import game.engine2D.Engine2DRectangleBoundingBox;
 
-public class Computer extends Character implements Runnable {
+public class Computer extends Character {
 	private final Game game;
 	private final Random rnd;
 	private int targetX, targetY, ignore;
 	private final Timer moveDecider = new Timer();
 
 	public Computer(int character, int x, int y, Game game) {
-	super(character, x, y, game);
+	super(character, x, y);
 	this.game = game;
 	this.rnd = new Random();
 	setTarget();
@@ -34,40 +35,44 @@ public class Computer extends Character implements Runnable {
 		switch (x) {
 
 		case 1:
-			Engine2DBoundingRectangle boxLeft = new Engine2DBoundingRectangle(getX() - 40, getY(), getWidth(), getHeight());
-			if (game.checkMap(boxLeft.getX() / 40, boxLeft.getY() / 40) == 0 && x != ignore) {
-				targetX = getX() - 40;
-				targetY = getY();
+			Engine2DRectangleBoundingBox boxLeft = new Engine2DRectangleBoundingBox((int)(getX() - 40), (int)getY(),
+					(int)getWidth(), (int)getHeight());
+			if (game.checkMap((int)(boxLeft.getX()/40f), (int)(boxLeft.getY()/40f)) == 0 && x != ignore) {
+				targetX = (int) (getX() - 40);
+				targetY = (int) getY();
 			} else {
 				ignore = 1;
 				setTarget();
 			}
 			break;
 		case 2:
-			Engine2DBoundingRectangle boxRight = new Engine2DBoundingRectangle(getX() + 40, getY(), getWidth(), getHeight());
-			if (game.checkMap(boxRight.getX() / 40, boxRight.getY() / 40) == 0 && x != ignore) {
-				targetX = getX() + 40;
-				targetY = getY();
+			Engine2DRectangleBoundingBox boxRight = new Engine2DRectangleBoundingBox((int)(getX() + 40), (int)getY(),
+					(int)getWidth(), (int)getHeight());
+			if (game.checkMap((int)(boxRight.getX()/40), (int)(boxRight.getY()/40)) == 0 && x != ignore) {
+				targetX = (int) (getX() + 40);
+				targetY = (int) getY();
 			} else {
 				ignore = 2;
 				setTarget();
 			}
 			break;
 		case 3:
-			Engine2DBoundingRectangle boxUp = new Engine2DBoundingRectangle(getX(), getY() - 40, getWidth(), getHeight());
-			if (game.checkMap(boxUp.getX() / 40, boxUp.getY() / 40) == 0 && x != ignore) {
-				targetY = getY() - 40;
-				targetX = getX();
+			Engine2DRectangleBoundingBox boxUp = new Engine2DRectangleBoundingBox((int)getX(), (int)(getY() - 40),
+					(int)getWidth(), (int)getHeight());
+			if (game.checkMap((int)(boxUp.getX()/40), (int)(boxUp.getY()/40)) == 0 && x != ignore) {
+				targetY = (int) (getY() - 40);
+				targetX = (int) getX();
 			} else {
 				ignore = 3;
 				setTarget();
 			}
 			break;
 		case 4:
-			Engine2DBoundingRectangle boxDown = new Engine2DBoundingRectangle(getX(), getY() + 40, getWidth(), getHeight());
-			if (game.checkMap(boxDown.getX() / 40, boxDown.getY() / 40) == 0 && x != ignore) {
-				targetY = getY() + 40;
-				targetX = getX();
+			Engine2DRectangleBoundingBox boxDown = new Engine2DRectangleBoundingBox((int)getX(), (int)getY() + 40,
+					(int)getWidth(), (int)getHeight());
+			if (game.checkMap((int)boxDown.getX() / 40, (int)boxDown.getY() / 40) == 0 && x != ignore) {
+				targetY = (int) (getY() + 40);
+				targetX = (int) getX();
 			} else {
 				ignore = 4;
 				setTarget();
@@ -76,29 +81,30 @@ public class Computer extends Character implements Runnable {
 		}
 	}
 
-	private boolean Obstaclecheck(Engine2DBoundingRectangle box) {
-		if (game.checkMap((box.getX() / 40) - 1, (box.getY() / 40)) == 2
-				|| game.checkMap((box.getX() / 40) + 1, (box.getY() / 40)) == 2
-				|| game.checkMap((box.getX() / 40), (box.getY() / 40) - 1) == 2
-				|| game.checkMap((box.getX() / 40), (box.getY() / 40) + 1) == 2) {
+	private boolean Obstaclecheck(Engine2DRectangleBoundingBox box) {
+		if (game.checkMap((int)(box.getX() / 40) - 1, (int)(box.getY() / 40)) == 2
+				|| game.checkMap((int)(box.getX() / 40) + 1, (int)(box.getY() / 40)) == 2
+				|| game.checkMap((int)(box.getX() / 40), (int)(box.getY() / 40) - 1) == 2
+				|| game.checkMap((int)(box.getX() / 40), (int)(box.getY() / 40) + 1) == 2) {
 			return true;
 		}
 		return false;
 	}
 
-	private boolean explostionCheck(Engine2DBoundingRectangle comp) {
+	private boolean explostionCheck(Engine2DEntity comp) {
 		for (Bomb bomb : game.getBombs()) {
 			if(!isOntop(bomb) && bomb.getDetonated() == false){
-			if (checkLeft(bomb.getX(), bomb.getY(), bomb.getSize(), comp)) {
+				Engine2DRectangleBoundingBox box = (Engine2DRectangleBoundingBox) comp.getBoundingBox();
+			if (checkLeft(bomb.getX(), bomb.getY(), bomb.getSize(), box)) {
 				return true;
 			}
-			if (checkRight(bomb.getX(), bomb.getY(), bomb.getSize(), comp)) {
+			if (checkRight(bomb.getX(), bomb.getY(), bomb.getSize(), box)) {
 				return true;
 			}
-			if (checkUp(bomb.getX(), bomb.getY(), bomb.getSize(), comp)) {
+			if (checkUp(bomb.getX(), bomb.getY(), bomb.getSize(), box)) {
 				return true;
 			}
-			if (checkDown(bomb.getX(), bomb.getY(), bomb.getSize(), comp)) {
+			if (checkDown(bomb.getX(), bomb.getY(), bomb.getSize(), box)) {
 				return true;
 			}
 			}
@@ -106,8 +112,8 @@ public class Computer extends Character implements Runnable {
 		return false;
 	}
 
-	private boolean checkLeft(int x, int y, int amount, Engine2DBoundingRectangle check) {
-		Engine2DBoundingRectangle left = new Engine2DBoundingRectangle(x - 40, y, 40, 40);
+	private boolean checkLeft(float x, float y, float amount, Engine2DRectangleBoundingBox check) {
+		Engine2DRectangleBoundingBox left = new Engine2DRectangleBoundingBox((int)x - 40,(int) y, 40, 40);
 		for (int i = 0; i < amount; i++) {
 			if (check.checkCollision(left)) {
 				return true;
@@ -118,8 +124,8 @@ public class Computer extends Character implements Runnable {
 		return false;
 	}
 
-	private boolean checkRight(int x, int y, int amount, Engine2DBoundingRectangle check) {
-		Engine2DBoundingRectangle right = new Engine2DBoundingRectangle(x + 40, y, 40, 40);
+	private boolean checkRight(float x, float y, int amount, Engine2DRectangleBoundingBox check) {
+		Engine2DRectangleBoundingBox right = new Engine2DRectangleBoundingBox((int)x + 40, (int)y, 40, 40);
 		for (int i = 0; i < amount; i++) {
 			if (check.checkCollision(right)) {
 				return true;
@@ -130,8 +136,8 @@ public class Computer extends Character implements Runnable {
 		return false;
 	}
 
-	private boolean checkUp(int x, int y, int amount, Engine2DBoundingRectangle check) {
-		Engine2DBoundingRectangle up = new Engine2DBoundingRectangle(x, y - 40, 40, 40);
+	private boolean checkUp(float x, float y, int amount, Engine2DRectangleBoundingBox check) {
+		Engine2DRectangleBoundingBox up = new Engine2DRectangleBoundingBox((int)x, (int)y - 40, 40, 40);
 		for (int i = 0; i < amount; i++) {
 			if (check.checkCollision(up)) {
 				return true;
@@ -142,8 +148,8 @@ public class Computer extends Character implements Runnable {
 		return false;
 	}
 
-	private boolean checkDown(int x, int y, int amount, Engine2DBoundingRectangle check) {
-		Engine2DBoundingRectangle down = new Engine2DBoundingRectangle(x, y + 40, 40, 40);
+	private boolean checkDown(float x, float y, int amount, Engine2DRectangleBoundingBox check) {
+		Engine2DRectangleBoundingBox down = new Engine2DRectangleBoundingBox((int)x, (int)y + 40, 40, 40);
 		for (int i = 0; i < amount; i++) {
 			if (check.checkCollision(down)) {
 				return true;
@@ -163,28 +169,28 @@ public class Computer extends Character implements Runnable {
 			if (targetX < getX() && targetY == getY()) {
 				skin = 2;
 				moveLeft();
-				if(explostionCheck(getBoundingBox())){
+				if(explostionCheck(this)){
 					nextAvailable();
 					ignore = 1;
 				}
 			} else if (targetX > getX() && targetY == getY()) {
 				skin = 3;
 				moveRight();
-				if(explostionCheck(getBoundingBox())){
+				if(explostionCheck(this)){
 					nextAvailable();
 					ignore = 2;
 				}
 			} else if (targetY < getY() && targetX == getX()) {
 				skin = 1;
 				moveUp();
-				if(explostionCheck(getBoundingBox())){
+				if(explostionCheck(this)){
 					nextAvailable();
 					ignore = 3;
 				}
 			} else if (targetY > getY()  && targetX == getX()) {
 				skin = 0;
 				moveDown();
-				if(explostionCheck(getBoundingBox())){
+				if(explostionCheck(this)){
 					nextAvailable();
 					ignore = 4;
 				}
@@ -193,18 +199,18 @@ public class Computer extends Character implements Runnable {
 	}
 	
 	private void nextAvailable(){
-		if(game.checkAvailability((getX()-40)/40, getY()/40)){
-			targetX = getX() - 40;
-			targetY = getY();
-		}else if(game.checkAvailability((getX()+40)/40, getY()/40)){
-			targetX = getX() + 40;
-			targetY = getY();
-		}else if(game.checkAvailability(getX()/40, (getY()-40)/40)){
-			targetX = getX();
-			targetY = getY() - 40;
-		}else if(game.checkAvailability(getX()/40, (getY()+40)/40)){
-			targetX = getX();
-			targetY = getY() + 40;
+		if(game.checkMap( (int)(getX()-40)/40, (int)(getY()/40)) == 0){
+			targetX = (int) (getX() - 40);
+			targetY = (int) getY();
+		}else if(game.checkMap( (int)(getX()+40)/40, (int)(getY()/40)) == 0){
+			targetX = (int) (getX() + 40);
+			targetY = (int) getY();
+		}else if(game.checkMap( (int)getX()/40, (int)(getY()-40)/40) == 0){
+			targetX = (int) getX();
+			targetY = (int) (getY() - 40);
+		}else if(game.checkMap( (int)getX()/40, (int)(getY()+40)/40) == 0){
+			targetX = (int) getX();
+			targetY = (int) (getY() + 40);
 		}
 	}
 
@@ -223,6 +229,10 @@ public class Computer extends Character implements Runnable {
 		pickPower();
 		updateWalkable();
 		game.render();
+	}
+	
+	public Game getGame(){
+		return (Game)super.getGame();
 	}
 
 }
