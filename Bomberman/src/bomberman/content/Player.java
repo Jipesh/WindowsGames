@@ -123,16 +123,19 @@ public class Player extends Character {
 			} else if (character == 2) {
 				if (e.getKeyCode() == KeyEvent.VK_A) {
 					aPressed = true;
-					
+					setRunning(getMinRunning() +getanimationFrame());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_D) {
 					dPressed = true;
+					setRunning(getMinRunning() +getanimationFrame());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_W) {
 					wPressed = true;
+					setRunning(getMinRunning() +getanimationFrame());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_S) {
 					sPressed = true;
+					setRunning(getMinRunning() +getanimationFrame());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					spacePressed = true;
@@ -149,18 +152,22 @@ public class Player extends Character {
 			if (character == 1) {
 				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 					leftPressed = false;
+					resetPrevious();
 					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 					rightPressed = false;
+					resetPrevious();
 					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_UP) {
 					upPressed = false;
+					resetPrevious();
 					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 					downPressed = false;
+					resetPrevious();
 					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_M) {
@@ -169,18 +176,22 @@ public class Player extends Character {
 			} else if (character == 2) {
 				if (e.getKeyCode() == KeyEvent.VK_A) {
 					aPressed = false;
+					resetPrevious();
 					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_D) {
 					dPressed = false;
+					resetPrevious();
 					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_W) {
 					wPressed = false;
+					resetPrevious();
 					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_S) {
 					sPressed = false;
+					resetPrevious();
 					setRunning(getMinRunning());
 				}
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {

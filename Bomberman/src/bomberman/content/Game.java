@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -96,18 +95,11 @@ public class Game extends Engine2DGame {
 		checkGameover();
 		if (players.size() == 1) {
 			setGameOver(true);
-			/*
-			 * gui.revalidate(); gui.repaint();
-			 */
 		}
 	}
 
 	public void render() {
 		gui.repaint();
-	}
-
-	public List<Wall> getWalls() {
-		return walls;
 	}
 
 	/**
@@ -119,10 +111,6 @@ public class Game extends Engine2DGame {
 		return (ArrayList<Obstacle>) ((ArrayList<Obstacle>) obstacles).clone();
 	}
 
-	ArrayList<Obstacle> getObstacles() {
-		return (ArrayList<Obstacle>) obstacles;
-	}
-
 	/**
 	 * A clone of the players list
 	 * 
@@ -130,10 +118,6 @@ public class Game extends Engine2DGame {
 	 */
 	public ArrayList<Character> getPlayers_READONLY() {
 		return (ArrayList<Character>) ((ArrayList<Character>) players).clone();
-	}
-
-	ArrayList<Character> getPlayers() {
-		return (ArrayList<Character>) players;
 	}
 
 	/**
@@ -145,30 +129,13 @@ public class Game extends Engine2DGame {
 		return (ArrayList<Bomb>) ((ArrayList<Bomb>) bombs).clone();
 	}
 
-	ArrayList<Bomb> getBombs() {
-		return (ArrayList<Bomb>) bombs;
-	}
-
 	/**
 	 * A clone of the power-ups list
 	 * 
 	 * @return the power-ups
 	 */
-	public List<PowerUp> getSpecials_READONLY() {
+	public ArrayList<PowerUp> getSpecials_READONLY() {
 		return (ArrayList<PowerUp>) ((ArrayList<PowerUp>) specials).clone();
-	}
-
-	ArrayList<PowerUp> getSpecials() {
-		return (ArrayList<PowerUp>) specials;
-	}
-
-	protected Bomb bombCollision(Character e) {
-		for (Bomb bomb : getBombs_READONLY()) {
-			if ((e.getBoundingBox()).checkCollision(bomb.getBoundingBox())) {
-				return bomb;
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -223,10 +190,11 @@ public class Game extends Engine2DGame {
 	 * checks if the explosions have touched any of the player
 	 */
 	private void checkGameover() {
-		for (Bomb bomb : getBombs_READONLY()) {
+		ArrayList<Bomb> list = getBombs_READONLY();
+		for (Bomb bomb : list) {
 			if (bomb.getDetonated()) {
 				for (ExplosionFlame exp : bomb.getExplostions_READONLY()) {
-					Character player = bomb.playerHit(exp.getBoundingBox().getX(), exp.getBoundingBox().getY());
+					Character player = bomb.playerHit(exp.getBoundingBox());
 					players.remove(player);
 				}
 			}
@@ -265,16 +233,22 @@ public class Game extends Engine2DGame {
 			}
 		}
 		if (!obstacles.isEmpty()) {
-			for (Obstacle obs : getObstacles_READONLY()) {
-				if ((obs.getBoundingBox()).checkCollision(box)) {
-					return obs;
-				}
+			ArrayList<Obstacle> list = getObstacles_READONLY();
+			for (Obstacle obs : list) {
+				if (obs != null && obs.getState() == State.ALIVE)
+					if ((obs.getBoundingBox()).checkCollision(box)) {
+						return obs;
+					}
 			}
 		}
 		if (!bombs.isEmpty()) {
-			for (Bomb bomb : getBombs_READONLY()) {
-				if (bomb.getBoundingBox().checkCollision(box)) {
-					return bomb;
+			Iterator<Bomb> list = getBombs_READONLY().iterator();
+			while (list.hasNext()) {
+				Bomb bomb = list.next();
+				if (bomb != null && bomb.getState() == State.ALIVE) {
+					if (bomb.getBoundingBox().checkCollision(box)) {
+						return bomb;
+					}
 				}
 			}
 		}
@@ -301,7 +275,7 @@ public class Game extends Engine2DGame {
 	private ArrayList<Engine2DEntity> getRemoveList_READONLY() {
 		return (ArrayList<Engine2DEntity>) ((ArrayList<Engine2DEntity>) removelist).clone();
 	}
-	
+
 	private void addPlayers() {
 		player1 = new Player(1, 42, 42); // for starting stage only
 		addThread(player1.getThread());
@@ -327,6 +301,13 @@ public class Game extends Engine2DGame {
 		BATTLE_FIELD[x - 1][y - 1] = 0;
 	}
 
+	/**
+	 * The method removes the entity from the hash-map then makes the position
+	 * on the map available
+	 * 
+	 * @param x the x pos on the map
+	 * @param y the y pos on the map
+	 */
 	private void removeEntity(float x, float y) {
 		int _x = (int) x;
 		int _y = (int) y;
@@ -334,6 +315,10 @@ public class Game extends Engine2DGame {
 		makeAvailable(_x, _y);
 	}
 
+	/**
+	 * The method removes the entity in the remove list and calls invoke delete on
+	 * any bombs who's ate is "DEAD"
+	 */
 	private void updateLists() {
 		if (!removelist.isEmpty()) {
 			for (Engine2DEntity entity : getRemoveList_READONLY()) {
@@ -342,10 +327,17 @@ public class Game extends Engine2DGame {
 		}
 	}
 
+	/**
+	 * Finds out which Class the entity belongs too, and removes it from the corresponding list
+	 * 
+	 * @param entity to be removed
+	 */
 	private void removeFromList(Engine2DEntity entity) {
 		if (entity instanceof Bomb) {
 			bombs.remove(entity);
 			removeEntity((int) entity.getX() / 40, (int) entity.getY() / 40);
+			Bomb bomb = (Bomb) entity;
+			bomb.finish();
 		} else if (entity instanceof PowerUp) {
 			specials.remove(entity);
 			removeEntity((int) entity.getX() / 40, (int) entity.getY() / 40);

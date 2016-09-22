@@ -83,8 +83,8 @@ public class GameGraphics extends Engine2DScreen {
 							g.drawImage(bomb.getImage(), (int)bomb.getX(), (int)bomb.getY(), null);
 							for (ExplosionFlame exp : bomb.getExplostions_READONLY()) {
 								Engine2DRectangleBoundingBox box = (Engine2DRectangleBoundingBox) exp.getBoundingBox();
-								g.drawImage(exp.getImage(), (int)box.getX(), (int)box.getY(), null);
-
+								g.drawImage(exp.getImage(), (int)box.getX() - 4, (int)box.getY() - 4, null);
+								
 								/*
 								 * player will be bellow the explosion
 								 */

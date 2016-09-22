@@ -17,7 +17,7 @@ public abstract class Character extends Engine2DMovableEntity {
 	protected int skin;
 	private int running, min_running, animation, character;
 	private List<Bomb> ontop = new ArrayList<>();
-	private float speed;
+	private float speed, previous_speed;
 
 	/**
 	 * Since this is a 2D game and their are collision checks therefore i use a
@@ -42,8 +42,9 @@ public abstract class Character extends Engine2DMovableEntity {
 	public Character(int character, int x, int y) {
 		super();
 		this.setBoundingBox(new Engine2DRectangleBoundingBox(x, y, 37, 37));
-		this.bombs = 3;
+		this.bombs = 1;
 		this.speed = 1;
+		this.previous_speed = 0;
 		this.explosion_size = 1;
 		this.character = character;
 		setSkins(character);
@@ -97,22 +98,41 @@ public abstract class Character extends Engine2DMovableEntity {
 	 */
 	public void moveUp() {
 		if (getY() > 40) {
+			
+			updateSpeed();
+			
 			setRunning(getMinRunning() + getanimationFrame());
 			Engine2DRectangleBoundingBox box = new Engine2DRectangleBoundingBox((int) getX(), (int) getY(),
 					(int) getWidth(), (int) getHeight());
-			box.moveY(1, -speed);
+			box.moveY(1, -previous_speed);
 			Engine2DEntity entity = getGame().checkCollision(box);
 			if (entity != null) {
-				if(entity instanceof Bomb){
-					Bomb bomb = (Bomb)entity;
-					if(getOnTop_READONLY().contains(bomb)){
-						getBoundingBox().moveY(1, -speed);
+				if (entity instanceof Bomb) {
+					Bomb bomb = (Bomb) entity;
+					if (getOnTop_READONLY().contains(bomb)) {
+						getBoundingBox().moveY(1, -previous_speed);
 					}
-				}else{
-					setY(entity.getY()+getHeight()+4);
+				} else {
+					setY(entity.getY() + getHeight() + 4);
+					float difference = Math.abs(entity.getX() - getX());
+					if (difference >= 24) {
+						if (entity.getX() < getX()) {
+							if (getGame().checkMap(((int) entity.getX() / 40) + 1, ((int) entity.getY() / 40)) == 0
+									|| getGame().checkMap(((int) entity.getX() / 40) + 1,
+											((int) entity.getY() / 40)) == 4) {
+								getBoundingBox().moveX(1, 1);
+							}
+						} else if (entity.getX() > getX()) {
+							if (getGame().checkMap(((int) entity.getX() / 40) - 1, ((int) entity.getY() / 40)) == 0
+									|| getGame().checkMap(((int) entity.getX() / 40) - 1,
+											((int) entity.getY() / 40)) == 4) {
+								getBoundingBox().moveX(1, -1);
+							}
+						}
+					}
 				}
-			}else {
-				getBoundingBox().moveY(1, -speed);
+			} else {
+				getBoundingBox().moveY(1, -previous_speed);
 			}
 			box = null;
 		}
@@ -120,22 +140,41 @@ public abstract class Character extends Engine2DMovableEntity {
 
 	public void moveDown() {
 		if (getY() < (11 * 40) + 2) {
+			
+			updateSpeed();
+			
 			setRunning(getMinRunning() + getanimationFrame());
 			Engine2DRectangleBoundingBox box = new Engine2DRectangleBoundingBox((int) getX(), (int) getY(),
 					(int) getWidth(), (int) getHeight());
-			box.moveY(1, speed);
+			box.moveY(1, previous_speed);
 			Engine2DEntity entity = getGame().checkCollision(box);
 			if (entity != null) {
-				if(entity instanceof Bomb){
-					Bomb bomb = (Bomb)entity;
-					if(getOnTop_READONLY().contains(bomb)){
-						getBoundingBox().moveY(1, speed);
+				if (entity instanceof Bomb) {
+					Bomb bomb = (Bomb) entity;
+					if (getOnTop_READONLY().contains(bomb)) {
+						getBoundingBox().moveY(1, previous_speed);
 					}
-				}else{
-					setY(entity.getY()-38);
+				} else {
+					setY(entity.getY() - 38);
+					float difference = Math.abs(entity.getX() - getX());
+					if (difference >= 24) {
+						if (entity.getX() < getX()) {
+							if (getGame().checkMap(((int) entity.getX() / 40) + 1, ((int) entity.getY() / 40)) == 0
+									|| getGame().checkMap(((int) entity.getX() / 40) + 1,
+											((int) entity.getY() / 40)) == 4) {
+								getBoundingBox().moveX(1, 1);
+							}
+						} else if (entity.getX() > getX()) {
+							if (getGame().checkMap(((int) entity.getX() / 40) - 1, ((int) entity.getY() / 40)) == 0
+									|| getGame().checkMap(((int) entity.getX() / 40) - 1,
+											((int) entity.getY() / 40)) == 4) {
+								getBoundingBox().moveX(1, -1);
+							}
+						}
+					}
 				}
 			} else {
-				getBoundingBox().moveY(1, speed);
+				getBoundingBox().moveY(1, previous_speed);
 			}
 			box = null;
 		}
@@ -143,22 +182,41 @@ public abstract class Character extends Engine2DMovableEntity {
 
 	public void moveLeft() {
 		if (getX() > 40) {
+			
+			updateSpeed();
+			
 			setRunning(getMinRunning() + getanimationFrame());
 			Engine2DRectangleBoundingBox box = new Engine2DRectangleBoundingBox((int) getX(), (int) getY(),
 					(int) getWidth(), (int) getHeight());
-			box.moveX(1, -speed);
+			box.moveX(1, -previous_speed);
 			Engine2DEntity entity = getGame().checkCollision(box);
 			if (entity != null) {
-				if(entity instanceof Bomb){
-					Bomb bomb = (Bomb)entity;
-					if(getOnTop_READONLY().contains(bomb)){
-						getBoundingBox().moveX(1, -speed);
+				if (entity instanceof Bomb) {
+					Bomb bomb = (Bomb) entity;
+					if (getOnTop_READONLY().contains(bomb)) {
+						getBoundingBox().moveX(1, -previous_speed);
 					}
-				}else{
-					setX(entity.getX()+getWidth()+4);
+				} else {
+					setX(entity.getX() + getWidth() + 4);
+					float difference = Math.abs(entity.getY() - getY());
+					if (difference >= 24) {
+						if (entity.getY() < getY()) {
+							if (getGame().checkMap(((int) entity.getX() / 40), ((int) entity.getY() / 40) + 1) == 0
+									|| getGame().checkMap(((int) entity.getX() / 40),
+											((int) entity.getY() / 40) + 1) == 4) {
+								getBoundingBox().moveY(1, 1);
+							}
+						} else if (getY() < entity.getY()) {
+							if (getGame().checkMap(((int) entity.getX() / 40), ((int) entity.getY() / 40) - 1) == 0
+									|| getGame().checkMap(((int) entity.getX() / 40),
+											((int) entity.getY() / 40) - 1) == 4) {
+								getBoundingBox().moveY(1, -1);
+							}
+						}
+					}
 				}
 			} else {
-				getBoundingBox().moveX(1, -speed);
+				getBoundingBox().moveX(1, -previous_speed);
 			}
 			box = null;
 		}
@@ -166,22 +224,41 @@ public abstract class Character extends Engine2DMovableEntity {
 
 	public void moveRight() {
 		if ((getX() < (17 * 40) + 4)) {
+			
+			updateSpeed();
+			
 			setRunning(getMinRunning() + getanimationFrame());
 			Engine2DRectangleBoundingBox box = new Engine2DRectangleBoundingBox((int) getX(), (int) getY(),
 					(int) getWidth(), (int) getHeight());
-			box.moveX(1, speed);
+			box.moveX(1, previous_speed);
 			Engine2DEntity entity = getGame().checkCollision(box);
 			if (entity != null) {
-				if(entity instanceof Bomb){
-					Bomb bomb = (Bomb)entity;
-					if(getOnTop_READONLY().contains(bomb)){
-						getBoundingBox().moveX(1, speed);
+				if (entity instanceof Bomb) {
+					Bomb bomb = (Bomb) entity;
+					if (getOnTop_READONLY().contains(bomb)) {
+						getBoundingBox().moveX(1, previous_speed);
 					}
-				}else{
-					setX(entity.getX()-38);
+				} else {
+					setX(entity.getX() - 38);
+					float difference = Math.abs(entity.getY() - getY());
+					if (difference >= 24) {
+						if (entity.getY() < getY()) {
+							if (getGame().checkMap(((int) entity.getX() / 40), ((int) entity.getY() / 40) + 1) == 0
+									|| getGame().checkMap(((int) entity.getX() / 40),
+											((int) entity.getY() / 40) + 1) == 4) {
+								getBoundingBox().moveY(1, 1);
+							}
+						} else if (getY() < entity.getY()) {
+							if (getGame().checkMap(((int) entity.getX() / 40), ((int) entity.getY() / 40) - 1) == 0
+									|| getGame().checkMap(((int) entity.getX() / 40),
+											((int) entity.getY() / 40) - 1) == 4) {
+								getBoundingBox().moveY(1, -1);
+							}
+						}
+					}
 				}
 			} else {
-				getBoundingBox().moveX(1, speed);
+				getBoundingBox().moveX(1, previous_speed);
 			}
 			box = null;
 		}
@@ -218,9 +295,22 @@ public abstract class Character extends Engine2DMovableEntity {
 	 * @see Player#play() play()
 	 */
 	protected void updateWalkable() {
-		for (Bomb bomb : getOnTop_READONLY()) {
-			if (!(getBoundingBox().checkCollision(bomb.getBoundingBox()))) {
-				removeFromOnTop(bomb);
+		if (!getGame().getBombs_READONLY().isEmpty()) {
+			ArrayList<Bomb> bombs = getGame().getBombs_READONLY();
+			for (Bomb bomb : bombs) {
+				if (bomb != null) {
+					Engine2DRectangleBoundingBox box = new Engine2DRectangleBoundingBox((int) (bomb.getX() + 4),
+							(int) (bomb.getY() + 4), 36, 36);
+					if (ontop.contains(bomb)) {
+						if (!(getBoundingBox().checkCollision(bomb.getBoundingBox()))) {
+							removeFromOnTop(bomb);
+						}
+					} else {
+						if (box.checkCollision(getBoundingBox())) {
+							ontop.add(bomb);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -231,33 +321,36 @@ public abstract class Character extends Engine2DMovableEntity {
 	 * 
 	 */
 	protected void pickPower() {
-		for (PowerUp power : getGame().getSpecials_READONLY()) {
-			Engine2DRectangleBoundingBox powerBox = power.getBoundingBox();
-			if (powerBox.checkCollision(getBoundingBox()) && power.getState() == State.ALIVE) {
-				if (power.getID() == 1) {
-					explosion_size--;
-					if (explosion_size < 1) {
-						explosion_size = 1;
+		Iterator<PowerUp> list = getGame().getSpecials_READONLY().iterator();
+		while (list.hasNext()) {
+			PowerUp power = list.next();
+			if (power != null && power.getState() == State.ALIVE) {
+				Engine2DRectangleBoundingBox powerBox = power.getBoundingBox();
+				if (powerBox.checkCollision(getBoundingBox())) {
+					if (power.getID() == 1) {
+						explosion_size--;
+						if (explosion_size < 1) {
+							explosion_size = 1;
+						}
+					} else if (power.getID() == 2) {
+						--bombs;
+						if (bombs < 1) {
+							bombs = 1;
+						}
+					} else if (power.getID() == 3) {
+						--speed;
+						if (speed < 1) {
+							speed = 1;
+						}
+					} else if (power.getID() == 4) {
+						explosion_size++;
+					} else if (power.getID() == 5) {
+						++bombs;
+					} else if (power.getID() == 6) {
+						++speed;
 					}
-				} else if (power.getID() == 2) {
-					--bombs;
-					if (bombs < 1) {
-						bombs = 1;
-					}
-				} else if (power.getID() == 3) {
-					--speed;
-					if (speed < 1) {
-						speed = 1;
-					}
-				} else if (power.getID() == 4) {
-					explosion_size++;
-					System.out.println(explosion_size);
-				} else if (power.getID() == 5) {
-					++bombs;
-				} else if (power.getID() == 6) {
-					++speed;
+					power.destroy();
 				}
-				power.destroy();
 			}
 		}
 	}
@@ -382,6 +475,21 @@ public abstract class Character extends Engine2DMovableEntity {
 	void removeFromOnTop(Bomb bomb) {
 		if (ontop.contains(bomb)) {
 			ontop.remove(bomb);
+		}
+	}
+	
+	void resetPrevious(){
+		previous_speed = 0;
+	}
+	
+	private void updateSpeed() {
+		if(previous_speed == 0){
+			previous_speed = 1;
+		}else if(speed > 1 && previous_speed >= 1){
+			++previous_speed;
+			if(previous_speed > speed){
+				previous_speed = speed;
+			}
 		}
 	}
 

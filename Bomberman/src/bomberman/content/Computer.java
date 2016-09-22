@@ -1,5 +1,6 @@
 package bomberman.content;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -92,7 +93,8 @@ public class Computer extends Character {
 	}
 
 	private boolean explostionCheck(Engine2DEntity comp) {
-		for (Bomb bomb : game.getBombs()) {
+		ArrayList<Bomb> bombs = game.getBombs_READONLY();
+		for (Bomb bomb : bombs) {
 			if(!isOntop(bomb) && bomb.getDetonated() == false){
 				Engine2DRectangleBoundingBox box = (Engine2DRectangleBoundingBox) comp.getBoundingBox();
 			if (checkLeft(bomb.getX(), bomb.getY(), bomb.getSize(), box)) {
