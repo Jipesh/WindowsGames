@@ -1,3 +1,7 @@
+/**
+ * 
+ * @author Jipesh
+ */
 package game.engine2D;
 
 final class Engine2DGameThread extends Thread {

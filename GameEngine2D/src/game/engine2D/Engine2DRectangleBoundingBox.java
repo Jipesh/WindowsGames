@@ -28,7 +28,7 @@ public class Engine2DRectangleBoundingBox extends Engine2DBoundingBox {
 	 *            the width of the box
 	 * 
 	 */
-	public Engine2DRectangleBoundingBox(int x, int y, int width, int height) {
+	public Engine2DRectangleBoundingBox(float x, float y, float width, float height) {
 		this.setType(Engine2DBoundingBox.RECTANGLE_BOUNDING_BOX);
 		this.setX(x);
 		this.setY(y);
