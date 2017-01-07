@@ -1,0 +1,23 @@
+=============================================
+		Bomberman
+=============================================
+
+player 1 controls - red and blue costume
+--------------------
+Up Arrow     =  Up
+Down Arrow   =  Down
+Left Arrow   =  Left
+Right arrow  =  Right
+m            =  Plant Bomb
+
+Player 2 controls - blue and green costume
+--------------------
+w      =  Up
+s      =  Down
+a      =  Left
+d      =  Right
+space  =  Plant Bomb
+
+If you want to run the game you can run it using the bomberman jar file
+
+latest version: v0.4
