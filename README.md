@@ -70,3 +70,24 @@ _A two player bomberman game, the game is a remake of the modern bomberman games
 _A simple game engine which can be used to make 2D games easily_
 
 [change log] (https://github.com/Jipesh/WindowsGames/blob/master/GameEngine2D/CHANGE_LOG)
+
+## How to setup on eclipse
+
+1. make a new project
+2. open git shell on the directory e.g `cd C:\Users\<username>\workspace\<eclipse project>`
+3. clone repository `git clone https://github.com/Jipesh/WindowsGames.git`
+4. open eclipse and refresh the project
+5. navigate to one of the project e.g. `Bomberman` right click on it's src folder
+6. click on Build Path -> Use as Source Folder
+
+![screenshot for "6"] (https://s24.postimg.org/xzf7jffg5/Screenshot_from_2017_01_07_17_47_17.png)
+
+#### Setup GameEngine for source code
+
+1. right click on the project and click on properties
+2. Java Build Path -> Libraries -> Add Jar
+3. navigate to the lib folder of the project: `<eclipseproject> -> WindowsGames -> <project> -> lib -> <latest game engine>.jar`
+4. click apply and ok
+5. Now the project should be clean with no errors
+
+![screenshot for "3"] (https://s27.postimg.org/n5cgviagj/Screenshot_from_2017_01_07_17_50_22.png)
