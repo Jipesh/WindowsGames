@@ -1,44 +1,72 @@
 # WindowsGames
 
-<b>Current Projects</b>
+#### Current Projects
 - Arrow Game (realesed)
 - Bomberman (under-development)
 - PingPong (realesed)
 - GameEngine2D (under-development)
 
-<b>ArrowGame</b>  
+## [Project: Arrow Game](https://github.com/Jipesh/WindowsGames/tree/master/Arrow%20Game)
 
-<br><b><i>Instructions</i></b></br>
-Your aim is to dodge as many squares as you can for each square which successfully reaches the bottom of the screen you earn 2 point towards your score
+_An action game, the aim is to survive as long as you can by avoiding the falling squares. The velocity of the squares increases over time_
 
-<b><i><br/>Arrow Game Controls</br></i></b>
+#### Instructions
+_Your aim is to dodge as many squares as you can, for each square that reaches the bottom of the game screen you earn 2 points_
 
-- Left arrow - <i>move left</i>
-- Right arrow - <i>move right</i>
+#### Arrow Game Controls
 
-<b>Ping Pong</b> 
+- Left arrow - _move left_
+- Right arrow - _move right_
 
-<br><b><i>Instructions</i></b></br>
-A simple ping pong game where you can either play <b>player vs player</b>, <b>player vs computer</b> or watch two computer play against each other
+#### Arrow Game Screenshots
 
-<b><i><br/>Ping Pong Controls</br></i></b>
 
-<b><i>Player 1</i></b>
+![gameplay_screenshot] (https://github.com/Jipesh/WindowsGames/raw/master/Arrow%20Game/screenshot/Arrow%20Game.png) 
+![test] (https://github.com/Jipesh/WindowsGames/raw/master/Arrow%20Game/screenshot/gameover.png)
+
+## <a href="https://github.com/Jipesh/WindowsGames/tree/master/PingPong">Project: PingPong</a>
+
+#### Instructions
+_A simple ping pong game where you can either play **player vs player**, **player vs computer** or watch two computer play against each other_
+
+#### Ping Pong Controls
+
+##### Player 1
 
 - W - <i>move up</i>
 - S - <i>move down</i>
 
-<b><i>Player 2</i></b>
+##### Player 2
 
 - Up arrow - <i>move up</i>
 - Down arrow - <i>move down</i>
 
-<b><i>Game Controls</i></b>
+#### Game Controls
 
 - D - <i>dark theme</i>
 - L - <i>light theme</i>
 - P - <i>pause</i>
 
-<b>Game Engine 2D<b>
+#### Ping Pong Screenshots
 
-<i>A simple game engine which can be used to make 2D games easily</i>
+
+![main_menu_screenshot] (https://github.com/Jipesh/WindowsGames/raw/master/PingPong/screenshot/main_menu.png)
+![dark_theme_screenshot] (https://github.com/Jipesh/WindowsGames/raw/master/PingPong/screenshot/dark_theme.png)
+![light_theme_screenshot] (https://github.com/Jipesh/WindowsGames/raw/master/PingPong/screenshot/light_theme.png)
+
+## [Project: Bomberman] (https://github.com/Jipesh/WindowsGames/tree/master/Bomberman)
+
+_A two player bomberman game, the game is a remake of the modern bomberman games, where you have the ability to pick up Power-Ups to upgrade your current skills and your aim is to be the last man standing. The game uses multi threading therefore can also be translated to a server sided game with ease._
+
+[game controls] (https://github.com/Jipesh/WindowsGames/blob/master/Bomberman/README)
+
+#### Bomberman Screenshots
+
+![bomberman_screenshot] (https://github.com/Jipesh/WindowsGames/raw/master/Bomberman/screenshot/bomberman.png)
+![action_gameplay_screenshot] (https://github.com/Jipesh/WindowsGames/raw/master/Bomberman/screenshot/action_gameplay.png)
+
+## [Project: GameEngine2D] (https://github.com/Jipesh/WindowsGames/tree/master/GameEngine2D)
+
+_A simple game engine which can be used to make 2D games easily_
+
+[change log] (https://github.com/Jipesh/WindowsGames/blob/master/GameEngine2D/CHANGE_LOG)
