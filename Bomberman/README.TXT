@@ -20,7 +20,7 @@ Player 2 controls - blue and green costume
 --------------------
 w      =  Up
 s      =  Down
-a  	   =  Left
+a      =  Left
 d      =  Right
 space  =  Plant Bomb
 

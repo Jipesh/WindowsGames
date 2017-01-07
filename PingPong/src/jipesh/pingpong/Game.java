@@ -43,7 +43,7 @@ public class Game implements KeyListener {
 	private void setGame() {
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setTitle("Test");
+		frame.setTitle("Ping Pong");
 		frame.setSize(800, 600);
 		frame.setResizable(false);
 		inGame = new GameContent(this);

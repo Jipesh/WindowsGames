@@ -40,7 +40,7 @@ public class Game extends Engine2DGame {
 	private int x, y;
 
 	public Game() {
-		super("BomberMan", 766, 620, false);
+		super("Bomberman", 766, 620, false);
 		try {
 			sprite_sheet = ImageIO.read(getClass().getResource("/bomberman/resources/sprite_sheet.png"));
 		} catch (IOException e) {
