@@ -13,7 +13,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import game.engine2D.Engine2DGame;
-import game.engine2D.Engine2DMovableRectangleBoundingBoxEntity;
+import game.engine2D.Engine2DMovableEntity;
+import game.engine2D.Engine2DRectangleBoundingBox;
 import game.engine2D.Engine2DScreen;
 
 
@@ -30,6 +31,7 @@ public class Game extends Engine2DGame{
 	 */
 	public Game(String title, int width, int height, boolean resizable) {
 		super(title,width,height,resizable);
+		init();
 	}
 
 	/**
@@ -68,8 +70,8 @@ public class Game extends Engine2DGame{
 	 * A method which first checks collision between onject1 x1 to x2 and obj2
 	 * x1 to x2 then does the same for y values
 	 */
-	public boolean checkCollision(Engine2DMovableRectangleBoundingBoxEntity entity1, Engine2DMovableRectangleBoundingBoxEntity entity2) {
-		return entity1.getBoundingBox().checkCollision(entity2.getBoundingBox());
+	public boolean checkCollision(Engine2DMovableEntity entity1, Engine2DMovableEntity entity2) {
+		return ((Engine2DRectangleBoundingBox) entity1.getBoundingBox()).checkCollision((Engine2DRectangleBoundingBox) entity2.getBoundingBox());
 	}
 
 	/**
@@ -83,7 +85,7 @@ public class Game extends Engine2DGame{
 			obstacles.get(x).reset();
 		}
 		setGameOver(false);
-		startLoop();
+		startGameThread();
 	}
 
 	/**
@@ -114,10 +116,18 @@ public class Game extends Engine2DGame{
 	@Override
 	public void gameOver() {
 		GUI.repaint();
-		stopLoop();
+		try {
+			user.getThread().join();
+			for(Thread obsThreads : obstaclesThread){
+				obsThreads.join();
+			}
+			stopThread();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	@Override
 	public void init() {
 		obstacles = new HashMap<>();
 		obstaclesThread = new ArrayList<>();
@@ -126,10 +136,10 @@ public class Game extends Engine2DGame{
 		int[] ypoints = {0,7,30,39,46,46,55,61,55,46,46,39,30,7};
 		
 		user = new Player(xpoints,ypoints);
-		userThread = new Thread(user);
+		userThread = user.getThread();
 		for (int i = 0; i < 5; i++) {
 			obstacles.put(i, newObstacle(i)); // creates new obstacles
-			addThread(new Thread(obstacles.get(i)));
+			addThread(obstacles.get(i).getThread());
 		}
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		GUI = new GameGUI(this);

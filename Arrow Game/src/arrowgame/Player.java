@@ -7,9 +7,10 @@ package arrowgame;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import game.engine2D.Engine2DMovablePolygonBoundingBoxEntity;
+import game.engine2D.Engine2DMovableEntity;
+import game.engine2D.Engine2DPolygonBoundingBox;
 
-public class Player extends Engine2DMovablePolygonBoundingBoxEntity implements KeyListener{
+public class Player extends Engine2DMovableEntity implements KeyListener{
 
 	private int score;
 	private boolean leftPressed;
@@ -24,7 +25,7 @@ public class Player extends Engine2DMovablePolygonBoundingBoxEntity implements K
 	 *            The starting Y value
 	 */
 	public Player(int[] xpoints, int[] ypoints) {
-		super(xpoints, ypoints);
+		setBoundingBox(new Engine2DPolygonBoundingBox(xpoints, ypoints, xpoints.length));
 		getBoundingBox().moveX(150, 1);
 		getBoundingBox().moveY(500, 1);
 		score = 0;
@@ -101,12 +102,17 @@ public class Player extends Engine2DMovablePolygonBoundingBoxEntity implements K
 	public void keyTyped(KeyEvent e) {
 	}
 	
-	public int getX(){
-		return getBoundingBox().getMinX() - 1;
+	public float getX(){
+		return getBoundingBox().getX();
+	}
+	
+	public float getY(){
+		return getBoundingBox().getY();
 	}
 
 	public String toString() {
-		return "[" + getX() + "," + (getX() + this.getBoundingBox().getMaxX()) + "," + getY() + "," + (getBoundingBox().getMinY() + getBoundingBox().getMaxY()) + "]";
+		return "[" + getX() + "," + (getX() + this.getBoundingBox().getWidth()) + "," 
+				+ getY() + "," + (getBoundingBox().getY() + (getY() + getBoundingBox().getHeight())) + "]";
 	}
 
 	@Override

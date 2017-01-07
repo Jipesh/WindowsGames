@@ -6,9 +6,12 @@ package arrowgame;
 
 import java.util.Random;
 
-import game.engine2D.Engine2DMovableRectangleBoundingBoxEntity;
+import game.engine2D.Engine2DEntity;
+import game.engine2D.Engine2DMovableEntity;
+import game.engine2D.Engine2DPolygonBoundingBox;
+import game.engine2D.Engine2DRectangleBoundingBox;
 
-public class Obstacle extends Engine2DMovableRectangleBoundingBoxEntity {
+public class Obstacle extends Engine2DMovableEntity {
 	private final int WIDTH = 350;
 	private final int START = 0;
 	private final int End = 560;
@@ -27,7 +30,7 @@ public class Obstacle extends Engine2DMovableRectangleBoundingBoxEntity {
 	 *            The currant Game
 	 */
 	public Obstacle(Player p, Game g) {
-		super(0,0,50,50);
+		this.setBoundingBox(new Engine2DRectangleBoundingBox(0,0,50,50));
 		GM = g;
 		p1 = p;
 		rnd = new Random();
@@ -134,7 +137,7 @@ public class Obstacle extends Engine2DMovableRectangleBoundingBoxEntity {
 	 * @return true if it had collision with the player
 	 */
 	public boolean playerCollision() {
-		return getBoundingBox().checkCollision(p1.getBoundingBox());
+		return getBoundingBox().checkCollision((Engine2DPolygonBoundingBox) p1.getBoundingBox());
 	}
 
 	public int getPosY() {
@@ -143,6 +146,10 @@ public class Obstacle extends Engine2DMovableRectangleBoundingBoxEntity {
 
 	public int getPosX() {
 		return x;
+	}
+	
+	public Engine2DRectangleBoundingBox getBoundingBox(){
+		return ((Engine2DRectangleBoundingBox) super.getBoundingBox());
 	}
 
 	public String toString() {

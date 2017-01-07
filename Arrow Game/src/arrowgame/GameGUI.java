@@ -46,7 +46,7 @@ public class GameGUI extends Engine2DScreen implements ActionListener{
 		super.paintComponent(g);
 		reset.setVisible(false);
 
-		g.drawImage(rocket, GM.getPlayer().getX(), GM.getPlayer().getBoundingBox().getMinY(), null);
+		g.drawImage(rocket, (int) GM.getPlayer().getX(), (int)GM.getPlayer().getY(), null);
 
 		/*
 		 * checks which range the score falls in and set's the colour of the
@@ -62,11 +62,11 @@ public class GameGUI extends Engine2DScreen implements ActionListener{
 				g.setColor(Color.ORANGE);
 			}
 
-			g.fillRect(GM.getSqrs(x).getBoundingBox().getX(), GM.getSqrs(x).getBoundingBox().getY(), GM.getSqrs(x).getBoundingBox().getWidth(),
-					GM.getSqrs(x).getBoundingBox().getHeight());
+			g.fillRect((int)GM.getSqrs(x).getBoundingBox().getX(), (int) GM.getSqrs(x).getBoundingBox().getY(), (int) GM.getSqrs(x).getBoundingBox().getWidth(),
+					(int) GM.getSqrs(x).getBoundingBox().getHeight());
 			g.setColor(Color.BLACK);
-			g.drawRect(GM.getSqrs(x).getBoundingBox().getX(), GM.getSqrs(x).getBoundingBox().getY(), GM.getSqrs(x).getBoundingBox().getWidth(),
-					GM.getSqrs(x).getBoundingBox().getHeight());
+			g.drawRect((int)GM.getSqrs(x).getBoundingBox().getX(), (int) GM.getSqrs(x).getBoundingBox().getY(), (int) GM.getSqrs(x).getBoundingBox().getWidth(),
+					(int) GM.getSqrs(x).getBoundingBox().getHeight());
 
 			/*
 			 * iterates through all squares and draws the square using their
