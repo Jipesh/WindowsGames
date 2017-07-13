@@ -1,9 +1,9 @@
 # WindowsGames
 
 #### Current Projects
-- Arrow Game (realesed)
+- Arrow Game (released)
 - Bomberman (under-development)
-- PingPong (realesed)
+- PingPong (released)
 - GameEngine2D (under-development)
 
 ## [Project: Arrow Game](https://github.com/Jipesh/WindowsGames/tree/master/Arrow%20Game)
@@ -21,8 +21,8 @@ _Your aim is to dodge as many squares as you can, for each square that reaches t
 #### Arrow Game Screenshots
 
 
-![gameplay_screenshot] (https://github.com/Jipesh/WindowsGames/raw/master/Arrow%20Game/screenshot/Arrow%20Game.png) 
-![test] (https://github.com/Jipesh/WindowsGames/raw/master/Arrow%20Game/screenshot/gameover.png)
+![gameplay_screenshot](https://github.com/Jipesh/WindowsGames/raw/master/Arrow%20Game/screenshot/Arrow%20Game.png) 
+![test](https://github.com/Jipesh/WindowsGames/raw/master/Arrow%20Game/screenshot/gameover.png)
 
 ## <a href="https://github.com/Jipesh/WindowsGames/tree/master/PingPong">Project: PingPong</a>
 
@@ -50,26 +50,26 @@ _A simple ping pong game where you can either play **player vs player**, **playe
 #### Ping Pong Screenshots
 
 
-![main_menu_screenshot] (https://github.com/Jipesh/WindowsGames/raw/master/PingPong/screenshot/main_menu.png)
-![dark_theme_screenshot] (https://github.com/Jipesh/WindowsGames/raw/master/PingPong/screenshot/dark_theme.png)
-![light_theme_screenshot] (https://github.com/Jipesh/WindowsGames/raw/master/PingPong/screenshot/light_theme.png)
+![main_menu_screenshot](https://github.com/Jipesh/WindowsGames/raw/master/PingPong/screenshot/main_menu.png)
+![dark_theme_screenshot](https://github.com/Jipesh/WindowsGames/raw/master/PingPong/screenshot/dark_theme.png)
+![light_theme_screenshot](https://github.com/Jipesh/WindowsGames/raw/master/PingPong/screenshot/light_theme.png)
 
-## [Project: Bomberman] (https://github.com/Jipesh/WindowsGames/tree/master/Bomberman)
+## [Project: Bomberman](https://github.com/Jipesh/WindowsGames/tree/master/Bomberman)
 
 _A two player bomberman game, the game is a remake of the modern bomberman games, where you have the ability to pick up Power-Ups to upgrade your current skills and your aim is to be the last man standing. The game uses multi threading therefore can also be translated to a server sided game with ease._
 
-[game controls] (https://github.com/Jipesh/WindowsGames/blob/master/Bomberman/README)
+[game controls](https://github.com/Jipesh/WindowsGames/blob/master/Bomberman/README)
 
 #### Bomberman Screenshots
 
-![bomberman_screenshot] (https://github.com/Jipesh/WindowsGames/raw/master/Bomberman/screenshot/bomberman.png)
-![action_gameplay_screenshot] (https://github.com/Jipesh/WindowsGames/raw/master/Bomberman/screenshot/action_gameplay.png)
+![bomberman_screenshot](https://github.com/Jipesh/WindowsGames/raw/master/Bomberman/screenshot/bomberman.png)
+![action_gameplay_screenshot](https://github.com/Jipesh/WindowsGames/raw/master/Bomberman/screenshot/action_gameplay.png)
 
-## [Project: GameEngine2D] (https://github.com/Jipesh/WindowsGames/tree/master/GameEngine2D)
+## [Project: GameEngine2D](https://github.com/Jipesh/WindowsGames/tree/master/GameEngine2D)
 
 _A simple game engine which can be used to make 2D games easily_
 
-[change log] (https://github.com/Jipesh/WindowsGames/blob/master/GameEngine2D/CHANGE_LOG)
+[change log](https://github.com/Jipesh/WindowsGames/blob/master/GameEngine2D/CHANGE_LOG)
 
 ## How to setup on eclipse
 
@@ -80,7 +80,7 @@ _A simple game engine which can be used to make 2D games easily_
 5. navigate to one of the project e.g. `Bomberman` right click on it's src folder
 6. click on Build Path -> Use as Source Folder
 
-![screenshot for "6"] (https://s24.postimg.org/xzf7jffg5/Screenshot_from_2017_01_07_17_47_17.png)
+![screenshot for "6"](https://s24.postimg.org/xzf7jffg5/Screenshot_from_2017_01_07_17_47_17.png)
 
 #### Setup GameEngine for source code
 
@@ -90,4 +90,4 @@ _A simple game engine which can be used to make 2D games easily_
 4. click apply and ok
 5. Now the project should be clean with no errors
 
-![screenshot for "3"] (https://s27.postimg.org/n5cgviagj/Screenshot_from_2017_01_07_17_50_22.png)
+![screenshot for "3"](https://s27.postimg.org/n5cgviagj/Screenshot_from_2017_01_07_17_50_22.png)
